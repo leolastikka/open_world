@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Courier New', Courier, monospace;
+}
+#mainCanvas {
+  z-index: 1;
+  position: absolute;
+}
+#login, #loading, #connecting {
+  z-index: 2;
+  position: absolute;
+  background-color: #012009; /* dark green */
+  color: greenyellow;
+  height: 100%;
+  width: 100%;
+}
+#login p, #loading p, #connecting p {
+  margin: 0;
+}
+#login input, #login button, #connecting button {
+  border: 1px solid greenyellow;
+  background: #012009; /* dark green */
+  color: greenyellow;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 0;
+}
+
+/* ul {
+  list-style: none;
+  padding: 0px;
+}
+
+ul li:before
+{
+  content: '>';
+  margin: 0 2em;    /* any design * /
+} */

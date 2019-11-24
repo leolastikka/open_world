@@ -1,0 +1,77 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="OpenWorld">
+
+  <title>OpenWorld</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="crt.css">
+
+  <script src="./js/connection.js"></script>
+  <script src="./js/display.js"></script>
+  <script src="./js/game_object.js"></script>
+  <script src="./js/game.js"></script>
+  <script src="./js/math.js"></script>
+  <script src="./js/renderer.js"></script>
+  <script src="./js/state.js"></script>
+  <script src="./js/storage.js"></script>
+  <script src="./js/time.js"></script>
+</head>
+
+<body>
+  <canvas id="mainCanvas"></canvas>
+  
+  <div id="login" hidden="hidden">
+    <p>
+      ><br>
+      > Welcome to<br>
+      > OpenWorld<br>
+      > v 0.0.1<br>
+      ><br>
+    </p>
+	  <form id="loginForm">
+      <label for="username">> Username:</label>
+      <input type="text" name="username" id="username" required></input>
+      <br>
+      <label for="password">> Password:</label>
+      <input type="password" name="password" id="password" required></input>
+      <br>
+      > <button type="submit">Login</button>
+    </form>
+    <p id="loginCancel">
+      > Logging in ...<br>
+      ><br>
+      > <button type="button">Cancel</button>
+    </p>
+    <p id="loginError">
+      ><br>
+      > Error logging in<br>
+      > Please try again
+    </p>
+    <p id="loginMessage"></p>
+  </div>
+
+  <div id="connecting" hidden="hidden">
+    <p>
+      ><br>
+      > Login successful!<br>
+      ><br>
+      > Connecting to game server...<br>
+      ><br>
+      > <button type="button">Cancel</button>
+    </p>
+  </div>
+
+  <div id="loading" hidden="hidden">
+    <p>
+      ><br>
+      > Loading ...
+    </p>
+  </div>
+  
+  <script src="./js/main.js"></script>
+</body>
+</html>
