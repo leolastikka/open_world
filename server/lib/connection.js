@@ -65,6 +65,7 @@ class Connection
   {
     if (this.user) {
       this.game.onDisconnectedUser(this.user);
+      Connection._authController.removeUser(this.user); // temporary
     }
     console.log('close');
     console.log(event);

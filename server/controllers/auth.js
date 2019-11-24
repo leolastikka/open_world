@@ -51,5 +51,9 @@ module.exports = function(db) {
     return user;
   };
 
+  exports.removeUser = function(user) {
+    users = users.filter(u => u.id === user.id);
+  }
+
   return exports;
 };
