@@ -1,6 +1,10 @@
 # open_world
 Tile based open world multiplayer rpg
 
+Requirements:
+* nodejs v12.13.0 (probably works with older)
+* npm
+
 Deployment:
 
 ```
