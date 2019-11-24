@@ -4,9 +4,8 @@ Tile based open world multiplayer rpg
 Deployment:
 
 ```
-cd server
 npm install
-node index.js
+node ./server/index.js
 ```
 
 Game starts on `http://localhost`
