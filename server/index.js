@@ -9,10 +9,7 @@ const Connection = require('./lib/connection');
 
 const port = 80;
 const app = express();
-const server = http.Server({
-  key: fs.readFileSync(path.join(__dirname, '../dev/server.key')),
-  cert: fs.readFileSync(path.join(__dirname, '../dev/server.cert'))
-}, app);
+const server = http.Server(app);
 const wss = new WebSocket.Server({server: server});
 
 const game = new Game(null, wss);
