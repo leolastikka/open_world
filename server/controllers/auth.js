@@ -52,7 +52,7 @@ module.exports = function(db) {
   };
 
   exports.removeUser = function(user) {
-    users = users.filter(u => u.id === user.id);
+    users = users.filter(u => u.id !== user.id);
   }
 
   return exports;
