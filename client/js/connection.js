@@ -2,8 +2,9 @@ class Connection
 {
   constructor()
   {
-    this.baseUrl = 'http://localhost';
-    this.baseWSUrl = 'ws://localhost';
+    this.domain = 'localhost';
+    this.baseUrl = `http://${this.domain}`;
+    this.baseWSUrl = `ws://${this.domain}`;
     this.ws = null;
     this.token = null;
 
