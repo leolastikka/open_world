@@ -3,8 +3,8 @@ class Connection
   constructor()
   {
     this.domain = 'agile-chamber-85537.herokuapp.com';
-    this.baseUrl = `http://${this.domain}`;
-    this.baseWSUrl = `ws://${this.domain}`;
+    this.baseUrl = `https://${this.domain}`;
+    this.baseWSUrl = `wss://${this.domain}`;
     this.ws = null;
     this.token = null;
 
