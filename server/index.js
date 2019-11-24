@@ -7,7 +7,10 @@ const WebSocket = require('ws');
 const Game = require('./lib/game');
 const Connection = require('./lib/connection');
 
-const port = 80;
+const port = process.env.PORT;
+if (port == null || port == "") {
+  port = 80;
+}
 const app = express();
 const server = http.Server(app);
 const wss = new WebSocket.Server({server: server});

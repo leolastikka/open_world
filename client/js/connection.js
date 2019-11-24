@@ -2,7 +2,7 @@ class Connection
 {
   constructor()
   {
-    this.domain = 'localhost';
+    this.domain = 'agile-chamber-85537.herokuapp.com';
     this.baseUrl = `http://${this.domain}`;
     this.baseWSUrl = `ws://${this.domain}`;
     this.ws = null;
