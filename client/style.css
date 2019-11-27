@@ -1,17 +1,25 @@
+html {
+  height: 100%;
+  background-color: black;
+}
 body {
+  min-height: 100%;
   margin: 0;
   padding: 0;
   font-family: 'Courier New', Courier, monospace;
+  font-size: 1em;
 }
 #mainCanvas {
   z-index: 1;
   position: absolute;
 }
+#login, #login form, #loading, #connecting {
+  color: greenyellow;
+  background-color: #012009; /* dark green */
+}
 #login, #loading, #connecting {
   z-index: 2;
   position: absolute;
-  background-color: #012009; /* dark green */
-  color: greenyellow;
   height: 100%;
   width: 100%;
 }
@@ -26,6 +34,9 @@ body {
   padding: 0;
 }
 
+#options {
+  margin-right: 0;
+}
 /* ul {
   list-style: none;
   padding: 0px;
@@ -36,3 +47,19 @@ ul li:before
   content: '>';
   margin: 0 2em;    /* any design * /
 } */
+
+/* Large devices (desktops, 992px and up) */
+
+/* Medium devices (tablets, 768px and up) */
+@media (max-width: 768px) {}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (max-width: 576px) {
+  body {
+    font-size: 2em;
+  }
+  #login input, #login button {
+    font-size: 1em;
+    max-width: 100%;
+  }
+}

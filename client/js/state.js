@@ -185,7 +185,10 @@ class GameState extends State
     this.game.connection.ws.onclose = this.onWsClose;
     this.game.connection.ws.onerror = this.onWsClose;
     this.game.display.canvas.addEventListener('pointerdown', this.onClickCanvas);
+    this.game.display.canvas.addEventListener('touchstart', this.onClickCanvas);
     this.game.display.canvas.addEventListener('wheel', this.onWheel);
+
+    this.game.display.canvas.oncontextmenu = () => false; // disable default right click
 
     this.game.connection.ws.send(JSON.stringify({type:'ready'}));
   }
@@ -213,6 +216,16 @@ class GameState extends State
 
   onClickCanvas(event)
   {
+    /*
+    button 0 = left
+    button 1 = middle
+    button 2 = right
+    */
+    if(event.button !== 0)
+    {
+      return;
+    }
+
     let clickPos = new Vector2(event.clientX, event.clientY);
 
     let unitPos = this.game.display.screenToUnitPos(clickPos)
@@ -377,6 +390,7 @@ class GameState extends State
     console.log('GameState dispose');
     GameObjectManager.dispose();
     this.game.display.canvas.removeEventListener('pointerdown', this.onClickCanvas);
+    this.game.display.canvas.removeEventListener('touchstart', this.onClickCanvas);
     this.game.display.canvas.removeEventListener('wheel', this.onWheel);
   }
 }
