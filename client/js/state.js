@@ -359,6 +359,7 @@ class GameState extends State
     });
 
     this.loadingElement.setAttribute('hidden', 'hidden');
+    this.gui.show();
   }
 
   onMove(data)

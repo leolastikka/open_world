@@ -15,11 +15,19 @@ class GUI extends EventTarget
     this.zoomInButton = this.menuElement.querySelector('button[name="zoomIn"]');
     this.zoomOutButton = this.menuElement.querySelector('button[name="zoomOut"]');
 
-    this.element.removeAttribute('hidden');
-
     this.logoutButton.addEventListener('click', this.onClickLogout);
     this.zoomInButton.addEventListener('click', this.onZoomIn);
     this.zoomOutButton.addEventListener('click', this.onZoomOut);
+  }
+
+  show()
+  {
+    this.element.removeAttribute('hidden');
+  }
+
+  hide()
+  {
+    this.element.setAttribute('hidden', 'hidden');
   }
 
   onClickLogout(event)
