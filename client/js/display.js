@@ -36,20 +36,20 @@ class Display
 
   zoomIn()
   {
-    this.zoomLevel -= 0.1;
-    if (this.zoomLevel < this.maxInZoom)
+    this.zoomLevel += 0.1;
+    if (this.zoomLevel > this.maxOutZoom)
     {
-      this.zoomLevel = this.maxInZoom;
+      this.zoomLevel = this.maxOutZoom;
     }
     this.onResize();
   }
 
   zoomOut()
   {
-    this.zoomLevel += 0.1;
-    if (this.zoomLevel > this.maxOutZoom)
+    this.zoomLevel -= 0.1;
+    if (this.zoomLevel < this.maxInZoom)
     {
-      this.zoomLevel = this.maxOutZoom;
+      this.zoomLevel = this.maxInZoom;
     }
     this.onResize();
   }

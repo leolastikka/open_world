@@ -175,9 +175,12 @@ class GameState extends State
     this.loadingElement = document.getElementById('loading');
     this.loadingElement.removeAttribute('hidden');
 
+    this.gui = new GUI(this.game);
+
     this.onWsMessage = this.onWsMessage.bind(this);
     this.onWsClose = this.onWsClose.bind(this);
     this.onWsError = this.onWsError.bind(this);
+    this.onLogout = this.onLogout.bind(this);
     this.onClickCanvas = this.onClickCanvas.bind(this);
     this.onTouchCanvas = this.onTouchCanvas.bind(this);
     this.onWheel = this.onWheel.bind(this);
@@ -190,6 +193,8 @@ class GameState extends State
     this.game.display.canvas.addEventListener('wheel', this.onWheel);
 
     this.game.display.canvas.oncontextmenu = () => false; // disable default right click
+
+    this.gui.addEventListener('logout', this.onLogout);
 
     this.game.connection.ws.send(JSON.stringify({type:'ready'}));
   }
@@ -264,11 +269,11 @@ class GameState extends State
   {
     if (event.deltaY < 0)
     {
-      this.game.display.zoomOut();
+      this.game.display.zoomIn();
     }
     else if (event.deltaY > 0)
     {
-      this.game.display.zoomIn();
+      this.game.display.zoomOut();
     }
   }
 
@@ -400,10 +405,18 @@ class GameState extends State
     this.logoutCallback();
   }
 
+  onLogout()
+  {
+    this.game.connection.closeWs();
+    this.logoutCallback();
+  }
+
   dispose()
   {
     console.log('GameState dispose');
     GameObjectManager.dispose();
+    this.gui.dispose();
+
     this.game.display.canvas.removeEventListener('pointerdown', this.onClickCanvas);
     this.game.display.canvas.removeEventListener('touchstart', this.onTouchCanvas);
     this.game.display.canvas.removeEventListener('wheel', this.onWheel);
