@@ -40,6 +40,17 @@ class Vector2
     this.y /= scalar;
   }
 
+  equals(vector)
+  {
+    return this.x == vector.x && this.y == vector.y;
+  }
+
+  floorEquals(vector)
+  {
+    return Math.floor(this.x) == vector.x &&
+           Math.floor(this.y) == vector.y;
+  }
+
   static add(v1, v2)
   {
     return new Vector2(v1.x + v2.x, v1.y + v2.y);

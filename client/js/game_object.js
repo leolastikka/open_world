@@ -31,25 +31,25 @@ class GameObjectManager
     switch(type)
     {
       case 2: // walkable rock
-        this._add(new Tile(null, pos, new TileRenderer('#2e2e2e', 'black')));
+        this._add(new Tile(null, pos, new TileRenderer('#2e2e2e', 'black'), true));
         break;
       case 3: // walkable dirt
-        this._add(new Tile(null, pos, new TileRenderer('#383727', 'black')));
+        this._add(new Tile(null, pos, new TileRenderer('#383727', 'black'), true));
         break;
       case 4: // walkable grass
-        this._add(new Tile(null, pos, new TileRenderer('#0e3612', 'black')));
+        this._add(new Tile(null, pos, new TileRenderer('#0e3612', 'black'), true));
         break;
       case 5: // water
-        this._add(new Tile(null, pos, new TileRenderer('#0e8eb8', 'white')));
+        this._add(new Tile(null, pos, new TileRenderer('#0e8eb8', 'white'), false));
         break;
       case 6: // stone wall
-        this._add(new Tile(null, pos, new TileRenderer('#8e8e8e', 'white')));
+        this._add(new Tile(null, pos, new TileRenderer('#8e8e8e', 'white'), false));
         break;
       case 7: // stone object
-        this._add(new Tile(null, pos, new TileObjectRenderer('#8e8e8e')));
+        this._add(new Tile(null, pos, new TileObjectRenderer('#8e8e8e'), false));
         break;
       case 8: // tree object
-        this._add(new Tile(null, pos, new TileObjectRenderer('#1a5f20')));
+        this._add(new Tile(null, pos, new TileObjectRenderer('#1a5f20'), false));
         break;
     }
   }
@@ -83,6 +83,13 @@ class GameObjectManager
     return this._gameObjects.find(go => go.nid === nid);
   }
 
+  static getObjectsInPosition(pos)
+  {
+    return this._gameObjects.filter(go => {
+      return go.pos.floorEquals(pos);
+    });
+  }
+
   static dispose()
   {
     this._gameObjects = [];
@@ -106,6 +113,7 @@ class GameObject
   }
 
   update(game) {}
+  getActions() {}
 
   render(canvasContext, camera)
   {
@@ -134,9 +142,18 @@ class GameObject
 
 class Tile extends GameObject
 {
-  constructor(nid, pos, renderer)
+  constructor(nid, pos, renderer, isWalkable)
   {
     super(nid, pos, renderer);
+    this.isWalkable = isWalkable;
+  }
+
+  getActions()
+  {
+    if (this.isWalkable)
+    {
+      return ["Walk here"];
+    }
   }
 }
 
@@ -173,6 +190,10 @@ class Character extends GameObject
     }
   }
 
+  getActions()
+  {
+    return [`Interact with ${this.name}`];
+  }
   move()
   {
     if (!this.path)
