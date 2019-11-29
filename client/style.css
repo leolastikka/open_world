@@ -8,6 +8,7 @@ body {
   padding: 0;
   font-family: 'Courier New', Courier, monospace;
   font-size: 1em;
+  overflow: hidden;
 }
 #mainCanvas {
   z-index: 1;
@@ -37,7 +38,7 @@ body {
 }
 
 #menu {
-  width: 100%;
+  width: calc(100% - 0.4em);
   border-bottom: 1px solid yellowgreen;
   padding: 0.2em;
 }
@@ -64,7 +65,7 @@ ul li:before
 /* Small devices (landscape phones, 576px and up) */
 @media (max-width: 576px) {
   body {
-    font-size: 1.5em;
+    font-size: 1.25em;
   }
   #login input, #login button {
     font-size: 1em;
