@@ -181,20 +181,14 @@ class GameState extends State
     this.onWsClose = this.onWsClose.bind(this);
     this.onWsError = this.onWsError.bind(this);
     this.onLogout = this.onLogout.bind(this);
-    this.onClickCanvas = this.onClickCanvas.bind(this);
-    this.onTouchCanvas = this.onTouchCanvas.bind(this);
-    this.onWheel = this.onWheel.bind(this);
+    this.onClick = this.onClick.bind(this);
 
     this.game.connection.ws.onmessage = this.onWsMessage;
     this.game.connection.ws.onclose = this.onWsClose;
     this.game.connection.ws.onerror = this.onWsClose;
-    this.game.display.canvas.addEventListener('pointerdown', this.onClickCanvas);
-    this.game.display.canvas.addEventListener('touchstart', this.onTouchCanvas);
-    this.game.display.canvas.addEventListener('wheel', this.onWheel);
-
-    this.game.display.canvas.oncontextmenu = () => false; // disable default right click
 
     this.gui.addEventListener('logout', this.onLogout);
+    this.gui.addEventListener('click', this.onClick);
 
     this.game.connection.ws.send(JSON.stringify({type:'ready'}));
   }
@@ -220,27 +214,8 @@ class GameState extends State
     });
   }
 
-  onTouchCanvas(event)
+  onClick(event)
   {
-    console.log(event);
-
-    let touch = event.touches[0];
-
-    this.sendMove(touch.clientX, touch.clientY);
-  }
-
-  onClickCanvas(event)
-  {
-    /*
-    button 0 = left
-    button 1 = middle
-    button 2 = right
-    */
-    if(event.button !== 0)
-    {
-      return;
-    }
-
     this.sendMove(event.clientX, event.clientY);
   }
 
@@ -263,18 +238,6 @@ class GameState extends State
       type: 'move',
       target: unitPos
     });
-  }
-
-  onWheel(event)
-  {
-    if (event.deltaY < 0)
-    {
-      this.game.display.zoomIn();
-    }
-    else if (event.deltaY > 0)
-    {
-      this.game.display.zoomOut();
-    }
   }
 
   sendWsAction(data)
