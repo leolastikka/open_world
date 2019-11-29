@@ -57,10 +57,10 @@ class Display
   isInViewport(worldPos)
   {
     let diff = Vector2.sub(worldPos, this.pos);
-    return ((diff.x > -this.unitWidth &&
-        diff.x < this.unitWidth) ||
-        (diff.y > -this.unitHeight &&
-        diff.y < this.unitHeight));
+    return (diff.x > -this.unitWidth * 0.55 &&
+        diff.x < this.unitWidth * 0.55 &&
+        diff.y > -this.unitHeight * 0.55 &&
+        diff.y < this.unitHeight * 0.55);
   }
 
   getRenderPos(worldPos)
