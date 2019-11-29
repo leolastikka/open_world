@@ -249,7 +249,7 @@ class GameState extends State
     let clickPos = new Vector2(x, y);
 
     let unitPos = this.game.display.screenToUnitPos(clickPos)
-    unitPos.add(new Vector2(0.5, 1));
+    unitPos.add(new Vector2(0.5, 0.5));
     unitPos = new Vector2(Math.floor(unitPos.x), Math.floor(unitPos.y));
 
     if (unitPos.x < 0 || unitPos.x > this.mapSize ||
