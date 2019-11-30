@@ -40,15 +40,10 @@ class Vector2
     this.y /= scalar;
   }
 
-  equals(vector)
+  isInRange(vector, range)
   {
-    return this.x == vector.x && this.y == vector.y;
-  }
-
-  floorEquals(vector)
-  {
-    return Math.floor(this.x) == vector.x &&
-           Math.floor(this.y) == vector.y;
+    return Math.abs(vector.x - this.x) < range &&
+           Math.abs(vector.y - this.y) < range;
   }
 
   static add(v1, v2)

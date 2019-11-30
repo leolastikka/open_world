@@ -55,21 +55,25 @@ button:hover {
   color: yellowgreen;
   background: #012009; /* dark green */
   border: 1px solid yellowgreen;
-}
-#dropdownMenu ul {
   list-style: none;
   padding: 0px;
   margin: 0;
+  white-space: nowrap;
 }
-#dropdownMenu ul li:hover {
+#dropdownMenu li:hover {
   color: #012009; /* dark green */
   background: yellowgreen;
   cursor: pointer;
 }
-#dropdownMenu ul li:before
+#dropdownMenu li:before
 {
   content: '>';
   margin: 0 0.25em;
+}
+#dropdownMenu li:after
+{
+  content: ' ';
+  margin:0.25em;
 }
 
 /* Large devices (desktops, 992px and up) */

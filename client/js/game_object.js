@@ -83,10 +83,10 @@ class GameObjectManager
     return this._gameObjects.find(go => go.nid === nid);
   }
 
-  static getObjectsInPosition(pos)
+  static getObjectsNearPosition(pos, range)
   {
     return this._gameObjects.filter(go => {
-      return go.pos.floorEquals(pos);
+      return go.pos.isInRange(pos, range);
     });
   }
 
