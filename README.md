@@ -14,4 +14,4 @@ node ./server/index.js
 
 Game starts on `http://localhost`
 
-Live demo at https://agile-chamber-85537.herokuapp.com/
+Live demo at https://open-world-game.herokuapp.com/
