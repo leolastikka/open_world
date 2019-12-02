@@ -84,11 +84,14 @@ class GUI extends EventTarget
   {
     if (this.touchTimer)
     {
-      let e = new Event('click');
-      let touch = this.touchEvent.touches[0];
-      e.clientX = touch.clientX;
-      e.clientY = touch.clientY;
-      this.dispatchEvent(e);
+      if (this.dropdownMenuElement.hasAttribute('hidden')) // don't move if menu was opened
+      {
+        let e = new Event('click');
+        let touch = this.touchEvent.touches[0];
+        e.clientX = touch.clientX;
+        e.clientY = touch.clientY;
+        this.dispatchEvent(e);
+      }
 
       this.touchTimer = clearTimeout(this.touchTimer);
     }
