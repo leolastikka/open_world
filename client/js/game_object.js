@@ -46,10 +46,16 @@ class GameObjectManager
         this._add(new Tile(null, pos, new TileRenderer('#8e8e8e', 'white'), false));
         break;
       case 7: // stone object
-        this._add(new Tile(null, pos, new TileObjectRenderer('#8e8e8e'), false));
+        this._add(new Tile(null, pos, new TileTriangleRenderer('#8e8e8e'), false));
         break;
       case 8: // tree object
-        this._add(new Tile(null, pos, new TileObjectRenderer('#1a5f20'), false));
+        this._add(new Tile(null, pos, new TileTriangleRenderer('#1a5f20'), false));
+        break;
+      case 9: // box object
+        this._add(new Container(null, pos, new TileBoxRenderer('#706d40'), 'Crate'));
+        break;
+      case 10: // terminal object
+        this._add(new Interactable(null, pos, new TileBoxRenderer('#16e700'), 'Terminal'));
         break;
     }
   }
@@ -183,6 +189,9 @@ class Character extends GameObject
       case 'moving':
         this.move();
         break;
+      case 'attacking':
+        this.attack();
+        break;
     }
     if (this._isOwned)
     {
@@ -194,6 +203,7 @@ class Character extends GameObject
   {
     return [`Interact with ${this.name}`];
   }
+
   move()
   {
     if (!this.path)
@@ -202,15 +212,8 @@ class Character extends GameObject
       return;
     }
 
-    // console.log('path inside move:');
-    // this.path.forEach(element => {
-    //   console.log(element);
-    // });
-
     let nextPos = this.path[0];
     let movementDistance = this.speed * Time.deltaTime;
-
-    //console.log(`moving from (${this.pos.x},${this.pos.y}) to (${nextPos.x},${nextPos.y})`);
 
     while(nextPos)
     {
@@ -252,5 +255,38 @@ class Character extends GameObject
         }
       }
     }
+  }
+
+  attack()
+  {
+
+  }
+}
+
+class Container extends GameObject
+{
+  constructor(nid, pos, renderer, name)
+  {
+    super(nid, pos, renderer);
+    this.name = name;
+  }
+
+  getActions()
+  {
+    return [`Interact with ${this.name}`];
+  }
+}
+
+class Interactable extends GameObject
+{
+  constructor(nid, pos, renderer, name)
+  {
+    super(nid, pos, renderer);
+    this.name = name;
+  }
+
+  getActions()
+  {
+    return [`Interact with ${this.name}`];
   }
 }
