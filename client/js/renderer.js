@@ -91,10 +91,10 @@ class TileBoxRenderer extends Renderer
     canvasContext.beginPath();
     canvasContext.fillStyle = this.color;
     canvasContext.fillRect(
-      data.pos.x - data.size / 2 +5,
-      data.pos.y - data.size / 2 +5,
-      data.size -10,
-      data.size -10);
+      data.pos.x - data.size / 2 + data.size / 4,
+      data.pos.y - data.size / 2 + data.size / 4,
+      data.size - data.size / 2,
+      data.size - data.size / 2);
     canvasContext.fill();
   }
 }
