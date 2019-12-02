@@ -73,6 +73,13 @@ class GUI extends EventTarget
 
   onTouchStart(event)
   {
+    if (event.target === this.element)
+    {
+      this.closeDropdownMenu();
+    }
+    else{
+      return;
+    }
     this.touchEvent = event;
     if (!this.touchTimer)
     {
