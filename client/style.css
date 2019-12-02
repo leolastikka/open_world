@@ -40,6 +40,10 @@ button:hover {
   cursor: pointer;
 }
 
+#gui {
+  user-select: none;
+  -moz-user-select: none;
+}
 #menu {
   width: calc(100% - 0.4em);
   border-bottom: 1px solid yellowgreen;
