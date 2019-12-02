@@ -6,7 +6,7 @@ class GUI extends EventTarget
 
     this.game = game;
     this.touchTimer = null;
-    this.touch = null;
+    this.touchEvent = null;
     this.longTouchTime = 250; // ms
 
     this.onClickLogout = this.onClickLogout.bind(this);
@@ -17,6 +17,7 @@ class GUI extends EventTarget
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.onLongTouch = this.onLongTouch.bind(this);
     this.onWheel = this.onWheel.bind(this);
+    this.closeDropdownMenu = this.closeDropdownMenu.bind(this);
 
     this.element = document.getElementById('gui');
     this.menuElement = document.getElementById('menu');
@@ -51,7 +52,13 @@ class GUI extends EventTarget
   {
     if (event.button === 0) // left click
     {
-      this.dropdownMenuElement.setAttribute('hidden', 'hidden');
+      if (event.target === this.element)
+      {
+        this.closeDropdownMenu();
+      }
+      else{
+        return;
+      }
 
       let e = new Event('click');
       e.clientX = event.clientX;
@@ -66,7 +73,7 @@ class GUI extends EventTarget
 
   onTouchStart(event)
   {
-    this.touch = event.touches[0];
+    this.touchEvent = event;
     if (!this.touchTimer)
     {
       this.touchTimer = setTimeout(this.onLongTouch, this.longTouchTime);
@@ -78,18 +85,20 @@ class GUI extends EventTarget
     if (this.touchTimer)
     {
       let e = new Event('click');
-      e.clientX = this.touch.clientX;
-      e.clientY = this.touch.clientY;
+      let touch = this.touchEvent.touches[0];
+      e.clientX = touch.clientX;
+      e.clientY = touch.clientY;
       this.dispatchEvent(e);
 
       this.touchTimer = clearTimeout(this.touchTimer);
     }
-    this.touch = null;
+    this.touchEvent = null;
   }
 
   onLongTouch()
   {
-    this.openDropdownMenu(this.touch.clientX, this.touch.clientY);
+    let touch = this.touchEvent.touches[0];
+    this.openDropdownMenu(touch.clientX, touch.clientY);
   }
 
   onWheel(event)
@@ -117,7 +126,7 @@ class GUI extends EventTarget
     unitPos = new Vector2(Math.floor(unitPos.x), Math.floor(unitPos.y));
 
     let actions = ["Cancel"];
-    let clickedObjects = GameObjectManager.getObjectsNearPosition(unitPos, 0.5);
+    let clickedObjects = GameObjectManager.getObjectsNearPosition(unitPos, 1);
     clickedObjects.forEach(go => {
       actions.unshift.apply(actions, go.getActions());
     });
@@ -126,6 +135,12 @@ class GUI extends EventTarget
     actions.forEach(a => {
       let listItem = document.createElement('li');
       listItem.innerHTML = a;
+      listItem.addEventListener('click', (event) => {
+        let originalUnitPos = Vector2.clone(unitPos);
+        let action = a;
+        console.log(`clicked ${action}`);
+      });
+      listItem.addEventListener('click', this.closeDropdownMenu);
       this.dropdownMenuElement.appendChild(listItem);
     });
 
@@ -141,6 +156,12 @@ class GUI extends EventTarget
     }
     this.dropdownMenuElement.style.left = `${menuPos.x}px`;
     this.dropdownMenuElement.style.top = `${menuPos.y}px`;
+  }
+
+  closeDropdownMenu()
+  {
+    this.dropdownMenuElement.innerHTML = '';
+    this.dropdownMenuElement.setAttribute('hidden', 'hidden');
   }
 
   onZoomIn()
