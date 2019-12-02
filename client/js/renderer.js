@@ -21,7 +21,7 @@ class TileRenderer extends Renderer
     this.color = color;
     this.borderColor = borderColor;
   }
-  
+
   render(canvasContext, data)
   {
     canvasContext.beginPath();
@@ -42,7 +42,7 @@ class TileRenderer extends Renderer
   }
 }
 
-class TileObjectRenderer extends Renderer
+class TileTriangleRenderer extends Renderer
 {
   constructor(color)
   {
@@ -78,6 +78,27 @@ class TileObjectRenderer extends Renderer
   }
 }
 
+class TileBoxRenderer extends Renderer
+{
+  constructor(color)
+  {
+    super();
+    this.color = color;
+  }
+
+  render(canvasContext, data)
+  {
+    canvasContext.beginPath();
+    canvasContext.fillStyle = this.color;
+    canvasContext.fillRect(
+      data.pos.x - data.size / 2 +5,
+      data.pos.y - data.size / 2 +5,
+      data.size -10,
+      data.size -10);
+    canvasContext.fill();
+  }
+}
+
 class CharacterRenderer extends Renderer
 {
   constructor(color)
@@ -85,7 +106,7 @@ class CharacterRenderer extends Renderer
     super();
     this.color = color;
   }
-  
+
   render(canvasContext, data)
   {
     canvasContext.beginPath();
