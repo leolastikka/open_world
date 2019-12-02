@@ -135,14 +135,11 @@ class GUI extends EventTarget
     });
 
     this.dropdownMenuElement.innerHTML = '';
+    let tmpSelf = this;
     actions.forEach(a => {
       let listItem = document.createElement('li');
       listItem.innerHTML = a;
-      listItem.addEventListener('click', (event) => {
-        let originalUnitPos = Vector2.clone(unitPos);
-        let action = a;
-        console.log(`clicked ${action}`);
-      });
+      listItem.addEventListener('click', this.clickDropdownMenuItem.bind(this, clickPos, a));
       listItem.addEventListener('click', this.closeDropdownMenu);
       this.dropdownMenuElement.appendChild(listItem);
     });
@@ -159,6 +156,18 @@ class GUI extends EventTarget
     }
     this.dropdownMenuElement.style.left = `${menuPos.x}px`;
     this.dropdownMenuElement.style.top = `${menuPos.y}px`;
+  }
+
+  clickDropdownMenuItem(clickPos, action, event)
+  {
+    if (action === 'Walk here')
+    {
+      let e = new Event('click');
+      e.clientX = clickPos.x;
+      e.clientY = clickPos.y;
+      this.dispatchEvent(e);
+    }
+    console.log(`clicked ${action}`);
   }
 
   closeDropdownMenu()
