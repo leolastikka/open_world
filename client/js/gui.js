@@ -142,7 +142,6 @@ class GUI extends EventTarget
     });
 
     this.dropdownMenuElement.innerHTML = '';
-    let tmpSelf = this;
     actions.forEach(a => {
       let listItem = document.createElement('li');
       listItem.innerHTML = a;
