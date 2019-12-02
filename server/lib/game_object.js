@@ -17,6 +17,8 @@ class GameObject
   }
 
   update(game) {}
+  getActions() {}
+  getInteractPositions() {}
   destroy()
   {
     this._isDestroyed = true;
@@ -147,6 +149,11 @@ class Character extends GameObject
     }
   }
 
+  attack()
+  {
+
+  }
+
   update()
   {
     switch(this.state)
@@ -156,6 +163,13 @@ class Character extends GameObject
         break;
       case 'moving':
         this.move();
+        break;
+      case 'following':
+        break;
+      case 'interacting':
+        break;
+      case 'attacking':
+        this.attack();
         break;
     }
   }
