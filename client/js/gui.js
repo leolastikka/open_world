@@ -115,11 +115,11 @@ class GUI extends EventTarget
   {
     if (event.deltaY < 0)
     {
-      this.game.display.zoomIn();
+      this.onZoomIn();
     }
     else if (event.deltaY > 0)
     {
-      this.game.display.zoomOut();
+      this.onZoomOut();
     }
   }
 
@@ -178,17 +178,19 @@ class GUI extends EventTarget
 
   closeDropdownMenu()
   {
-    this.dropdownMenuElement.innerHTML = '';
     this.dropdownMenuElement.setAttribute('hidden', 'hidden');
+    this.dropdownMenuElement.innerHTML = '';
   }
 
   onZoomIn()
   {
+    this.closeDropdownMenu();
     this.game.display.zoomIn();
   }
 
   onZoomOut()
   {
+    this.closeDropdownMenu();
    this.game.display.zoomOut(); 
   }
 
