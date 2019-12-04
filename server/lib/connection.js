@@ -85,6 +85,12 @@ class Connection
       console.log('error: ', e);
     });
   }
+
+  static sendToUser(userId, data)
+  {
+    let user = this._game.users.find(u => u.id === userId);
+    user.ws.send(JSON.stringify(data));
+  }
   
   static broadcast(data)
   {

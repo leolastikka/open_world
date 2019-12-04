@@ -188,7 +188,7 @@ class Character extends GameObject
   _doInteraction()
   {
     let interactable = GameObjectManager.getByNID(this.targetNID);
-    Connection.broadcast({
+    Connection.sendToUser(this.userId, {
       type: 'dialog',
       text: `Interacting with ${interactable.name}`
     });
