@@ -212,7 +212,11 @@ class Character extends GameObject
 
   getActions()
   {
-    return [new InteractAction(`Interact with ${this.name}`, this.nid)];
+    if (!this._isOwned)
+    {
+      return [new InteractAction(`Interact with ${this.name}`, this.nid)];
+    }
+    return [];
   }
 
   move()
