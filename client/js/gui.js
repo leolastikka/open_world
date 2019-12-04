@@ -38,7 +38,7 @@ class GUI extends EventTarget
     this.zoomOutButton.addEventListener('click', this.onZoomOut);
     this.dialogCloseButton.addEventListener('click', this.closeDialog);
 
-    this.element.addEventListener('pointerdown', this.onClick);
+    this.element.addEventListener('mousedown', this.onClick);
     this.element.addEventListener('pointermove', this.onPointerMove);
     this.element.addEventListener('touchstart', this.onTouchStart);
     this.element.addEventListener('touchend', this.onTouchEnd);
@@ -251,7 +251,7 @@ class GUI extends EventTarget
     this.zoomOutButton.removeEventListener('click', this.onZoomOut);
     this.dialogCloseButton.removeEventListener('click', this.closeDialog);
 
-    this.element.removeEventListener('pointerdown', this.onClick);
+    this.element.removeEventListener('mousedown', this.onClick);
     this.element.removeEventListener('pointermove', this.onPointerMove);
     this.element.removeEventListener('touchstart', this.onTouchStart);
     this.element.removeEventListener('touchend', this.onTouchEnd);
