@@ -9,7 +9,6 @@ class LoginState extends State
 {
   constructor(game, onLoginCallback, message=undefined)
   {
-    console.log('new LoginState');
     super();
 
     this.game = game;
@@ -51,7 +50,6 @@ class LoginState extends State
 
   login()
   {
-    console.log('login()');
     if (this.isLoggingIn) {
       return false;
     }
@@ -86,13 +84,11 @@ class LoginState extends State
 
   succeedLogin(response)
   {
-    console.log('succeedLogin()');
     this.onLoginCallback();
   }
 
   failLogin(response)
   {
-    console.log('failLogin()');
     this.loginError.removeAttribute('hidden');
     this.loginForm.removeAttribute('hidden');
     this.loginCancel.setAttribute('hidden', 'hidden');
@@ -101,7 +97,6 @@ class LoginState extends State
 
   cancelLogin()
   {
-    console.log('cancelLogin');
     this.loginRequest.abort();
     this.loginForm.removeAttribute('hidden');
     this.loginCancel.setAttribute('hidden', 'hidden');
@@ -110,7 +105,6 @@ class LoginState extends State
 
   dispose()
   {
-    console.log('LoginState dispose');
     this.loginForm.removeEventListener('submit', this.login);
     this.loginCancelButton.removeEventListener('click', this.cancelLogin);
     this.loginElement.setAttribute('hidden', 'hidden');
@@ -121,7 +115,6 @@ class ConnectState extends State
 {
   constructor(game, succesCallback, failCallback)
   {
-    console.log('new ConnectState');
     super();
 
     this.game = game;
@@ -151,7 +144,6 @@ class ConnectState extends State
 
   dispose()
   {
-    console.log('ConnectState dispose');
     this.connectCancelButton.removeEventListener('click', this.cancelConnect);
     this.connectingElement.setAttribute('hidden', 'hidden');
   }
@@ -161,7 +153,6 @@ class GameState extends State
 {
   constructor(game, logoutCallback)
   {
-    console.log('new GameState');
     super();
     GameObjectManager.init();
     Time.init();
@@ -219,12 +210,6 @@ class GameState extends State
   onClick(event)
   {
     let unitPos = event.unitPos;
-    // if (unitPos.x < 0 || unitPos.x > this.mapSize ||
-    //   unitPos.y < 0 || unitPos.y > this.mapSize)
-    // {
-    //   // click out of bounds
-    //   return;
-    // }
 
     let actions = [];
     let clickedObjects = GameObjectManager.getObjectsNearPosition(unitPos, 1);
@@ -268,9 +253,7 @@ class GameState extends State
 
   onWsMessage(msg)
   {
-    //console.log('onWsMessage()');
     let data = JSON.parse(msg.data);
-    //console.log(data);
     switch(data.type){
       case 'player':
         this.onPlayer(data);
@@ -389,19 +372,16 @@ class GameState extends State
 
   onDialog(data)
   {
-    console.log('onDialog, data: ', data);
     this.gui.openDialog(data.text);
   }
 
   onWsClose(event)
   {
-    console.log(event)
     this.logoutCallback();
   }
 
   onWsError(event)
   {
-    console.log(event);
     this.logoutCallback();
   }
 
@@ -413,7 +393,6 @@ class GameState extends State
 
   dispose()
   {
-    console.log('GameState dispose');
     GameObjectManager.dispose();
 
     this.gui.removeEventListener('logout', this.onLogout);
