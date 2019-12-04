@@ -79,6 +79,20 @@ button:hover {
   content: ' ';
   margin:0.25em;
 }
+#dialog
+{
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  margin: 10%;
+  width: 80%;
+  height: 80%;
+  text-align: center;
+  color: yellowgreen;
+  background-color: rgba(1, 32, 9, 0.75); /* dark green transparent */
+  border: 1px solid yellowgreen;
+}
 
 /* Large devices (desktops, 992px and up) */
 

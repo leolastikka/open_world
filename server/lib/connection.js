@@ -76,8 +76,6 @@ class Connection
 
   static onConnection(ws, req)
   {
-    console.log('onConnection()');
-
     let connection = new Connection(ws, this._game);
 
     ws.on('message', connection.onMessage);

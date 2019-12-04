@@ -18,6 +18,7 @@ class GUI extends EventTarget
     this.onLongTouch = this.onLongTouch.bind(this);
     this.onWheel = this.onWheel.bind(this);
     this.closeDropdownMenu = this.closeDropdownMenu.bind(this);
+    this.closeDialog = this.closeDialog.bind(this);
 
     this.element = document.getElementById('gui');
     this.menuElement = document.getElementById('menu');
@@ -25,10 +26,13 @@ class GUI extends EventTarget
     this.zoomInButton = this.menuElement.querySelector('button[name="zoomIn"]');
     this.zoomOutButton = this.menuElement.querySelector('button[name="zoomOut"]');
     this.dropdownMenuElement = document.getElementById('dropdownMenu');
+    this.dialogElement = document.getElementById('dialog');
+    this.dialogCloseButton = this.dialogElement.querySelector('button');
 
     this.logoutButton.addEventListener('click', this.onClickLogout);
     this.zoomInButton.addEventListener('click', this.onZoomIn);
     this.zoomOutButton.addEventListener('click', this.onZoomOut);
+    this.dialogCloseButton.addEventListener('click', this.closeDialog);
 
     this.element.addEventListener('pointerdown', this.onClick);
     this.element.addEventListener('touchstart', this.onTouchStart);
@@ -185,6 +189,17 @@ class GUI extends EventTarget
     this.dropdownMenuElement.innerHTML = '';
   }
 
+  openDialog(text)
+  {
+    this.dialogElement.querySelector('p[name="content"]').innerHTML = text;
+    this.dialogElement.removeAttribute('hidden');
+  }
+
+  closeDialog()
+  {
+    this.dialogElement.setAttribute('hidden', 'hidden');
+  }
+
   onZoomIn()
   {
     this.closeDropdownMenu();
@@ -204,9 +219,11 @@ class GUI extends EventTarget
     this.logoutButton.removeEventListener('click', this.onClickLogout);
     this.zoomInButton.removeEventListener('click', this.onZoomIn);
     this.zoomOutButton.removeEventListener('click', this.onZoomOut);
+    this.dialogCloseButton.removeEventListener('click', this.closeDialog);
 
     this.element.removeEventListener('pointerdown', this.onClick);
-    this.element.removeEventListener('touchstart', this.onTouch);
+    this.element.removeEventListener('touchstart', this.onTouchStart);
+    this.element.removeEventListener('touchend', this.onTouchEnd);
     this.element.removeEventListener('wheel', this.onWheel);
   }
 }

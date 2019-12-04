@@ -267,6 +267,9 @@ class GameState extends State
       case 'move':
         this.onMove(data);
         break;
+      case 'dialog':
+        this.onDialog(data);
+        break;
     }
   }
 
@@ -334,6 +337,7 @@ class GameState extends State
 
   onMove(data)
   {
+    console.log('onMove, data: ',data);
     let go = GameObjectManager.getByNID(data.nid);
     go.speed = data.speed;
     go.pos = Vector2.fromObject(data.pos);
@@ -362,6 +366,12 @@ class GameState extends State
   {
     let go = GameObjectManager.getByNID(data.nid);
     go.destroy();
+  }
+
+  onDialog(data)
+  {
+    console.log('onDialog, data: ', data);
+    this.gui.openDialog(data.text);
   }
 
   onWsClose(event)

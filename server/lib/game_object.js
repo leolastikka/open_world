@@ -39,8 +39,11 @@ class Character extends GameObject
     this.speed = 2;
     this.path = null;
     this.nextPath = null;
+    this.targetNID = null;
 
     this.state = 'idle';
+
+    this._doInteraction = this._doInteraction.bind(this);
   }
 
   moveTo(targetPos)
@@ -78,11 +81,44 @@ class Character extends GameObject
     return path;
   }
 
-  move(game)
+  interactWith(targetNID, path)
+  {
+    this.targetNID = targetNID;
+    this.state = 'interacting';
+
+    if (path.length === 0) // if already next to target
+    {
+      this._doInteraction();
+    }
+    else // if there is a path before target
+    {
+      if (this.path) // if already has a path
+      {
+        if (!this.nextPath) // if no next path
+        {
+          this.path = [this.path[0]]; // reduce current path to only next node
+        }
+        this.nextPath = path;
+      }
+      else { // if no path
+        this.path = path;
+
+        Connection.broadcast({
+          type: 'move',
+          nid: this.nid,
+          pos: this.decimalPos,
+          path: path,
+          speed: this.speed
+        });
+      }
+    }
+  }
+
+  _move(nextState, nextStateCallback)
   {
     if (!this.path)
     {
-      this.state = 'idle';
+      this.state = nextState;
       return;
     }
 
@@ -127,8 +163,12 @@ class Character extends GameObject
             });
           }
           else {
-            this.state = 'idle';
             this.path = null;
+            this.state = nextState;
+            if (nextStateCallback)
+            {
+              nextStateCallback();
+            }
             return;
           }
         }
@@ -140,7 +180,24 @@ class Character extends GameObject
     }
   }
 
-  idle()
+  _interact()
+  {
+    this._move('interacting', this._doInteraction);
+  }
+
+  _doInteraction()
+  {
+    let interactable = GameObjectManager.getByNID(this.targetNID);
+    Connection.broadcast({
+      type: 'dialog',
+      text: `Interacting with ${interactable.name}`
+    });
+
+    this.state = 'idle';
+    this.targetNID = null;
+  }
+
+  _idle()
   {
     if (this.positions && this.positions.length)
     {
@@ -149,7 +206,7 @@ class Character extends GameObject
     }
   }
 
-  attack()
+  _attack()
   {
 
   }
@@ -159,17 +216,18 @@ class Character extends GameObject
     switch(this.state)
     {
       case 'idle':
-        this.idle();
+        this._idle();
         break;
       case 'moving':
-        this.move();
+        this._move('idle');
         break;
       case 'following':
         break;
       case 'interacting':
+        this._interact();
         break;
       case 'attacking':
-        this.attack();
+        this._attack();
         break;
     }
   }

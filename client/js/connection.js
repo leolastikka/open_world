@@ -24,7 +24,6 @@ class Connection
           let response = JSON.parse(request.responseText);
           if (response.success === 1) {
             this.token = response.token;
-            console.log(this.token);
             successCallback(response);
           }
           else {

@@ -197,7 +197,7 @@ class Game
     });
     if (shortestPath)
     {
-      character.moveTo(shortestPath[shortestPath.length - 1]);
+      character.interactWith(data.target, shortestPath);
     }
   }
 
