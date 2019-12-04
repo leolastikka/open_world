@@ -39,9 +39,24 @@ class Navigator
     return path;
   }
 
+  static setWalkableAt(pos, walkable=true)
+  {
+    this.grid.setWalkableAt(pos.x, pos.y, walkable);
+  }
+
+  static getNeighbors(pos)
+  {
+    let node = this.grid.getNodeAt(pos.x, pos.y);
+    let neightbors = this.grid.getNeighbors(node, PF.DiagonalMovement.Never);
+    let result = [];
+    neightbors.forEach(n => result.push(new Vector2(n.x, n.y)));
+    return result;
+  }
+
   static _isValidPos(pos)
   {
-    return (pos.x >= 0 && pos.x <= this.area.size) &&
+    return pos &&
+           (pos.x >= 0 && pos.x <= this.area.size) &&
            (pos.y >= 0 && pos.y <= this.area.size);
   }
 }

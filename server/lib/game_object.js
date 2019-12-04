@@ -14,11 +14,11 @@ class GameObject
     this.name = name;
     this.type = 'none';
     this.user = null;
+    this.interactPositions = [];
   }
 
   update(game) {}
   getActions() {}
-  getInteractPositions() {}
   destroy()
   {
     this._isDestroyed = true;
@@ -208,6 +208,25 @@ class Enemy extends Character
   }
 }
 
+class Interactable extends GameObject
+{
+  constructor(pos, name, id)
+  {
+    super(pos, name);
+    this.id = id;
+    this.type = 'interactable';
+  }
+}
+
+class Container extends Interactable
+{
+  constructor(pos, name, id)
+  {
+    super(pos, name, id);
+    this.type = 'container';
+  }
+}
+
 class GameObjectManager
 {
   static init()
@@ -246,6 +265,30 @@ class GameObjectManager
     let enemy = new Enemy(pos, name, id);
     this._gameObjects.push(enemy);
     return enemy;
+  }
+  
+  static createContainer(pos, name, id)
+  {
+    let container = new Container(pos, name, id);
+    this._gameObjects.push(container);
+    return container;
+  }
+
+  static createInteractable(pos, name, id)
+  {
+    let interactable = new Interactable(pos, name, id);
+    this._gameObjects.push(interactable);
+    return interactable;
+  }
+
+  static calculateNeighbors()
+  {
+    this._gameObjects.forEach(go => {
+      if (go instanceof Interactable)
+      {
+        go.interactPositions = Navigator.getNeighbors(go.pos);
+      }
+    });
   }
 
   static update()

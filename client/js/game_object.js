@@ -51,12 +51,6 @@ class GameObjectManager
       case 8: // tree object
         this._add(new Tile(null, pos, new TileTriangleRenderer('#1a5f20'), false));
         break;
-      case 9: // box object
-        this._add(new Container(null, pos, new TileBoxRenderer('#706d40'), 'Crate'));
-        break;
-      case 10: // terminal object
-        this._add(new Interactable(null, pos, new TileBoxRenderer('#16e700'), 'Terminal'));
-        break;
     }
   }
 
@@ -82,6 +76,22 @@ class GameObjectManager
     let enemy = new Character(data.nid, pos, new CharacterRenderer('red'), data.name);
     this._add(enemy, false);
     return enemy;
+  }
+
+  static createContainer(data)
+  {
+    let pos = new Vector2(data.pos.x, data.pos.y);
+    let container = new Container(data.nid, pos, new TileBoxRenderer('#706d40'), data.name);
+    this._add(container, false);
+    return container;
+  }
+
+  static createInteractable(data)
+  {
+    let pos = new Vector2(data.pos.x, data.pos.y);
+    let interactable = new Interactable(data.nid, pos, new TileBoxRenderer('#16e700'), data.name);
+    this._add(interactable, false);
+    return interactable;
   }
 
   static getByNID(nid)
@@ -158,7 +168,7 @@ class Tile extends GameObject
   {
     if (this.isWalkable)
     {
-      return ["Walk here"];
+      return [new WalkAction("Walk here", Vector2.clone(this.pos))];
     }
   }
 }
@@ -201,7 +211,7 @@ class Character extends GameObject
 
   getActions()
   {
-    return [`Interact with ${this.name}`];
+    return [new InteractAction(`Interact with ${this.name}`, this.nid)];
   }
 
   move()
@@ -273,7 +283,7 @@ class Container extends GameObject
 
   getActions()
   {
-    return [`Interact with ${this.name}`];
+    return [new InteractAction(`Interact with ${this.name}`, this.nid)];
   }
 }
 
@@ -287,6 +297,6 @@ class Interactable extends GameObject
 
   getActions()
   {
-    return [`Interact with ${this.name}`];
+    return [new InteractAction(`Interact with ${this.name}`, this.nid)];
   }
 }

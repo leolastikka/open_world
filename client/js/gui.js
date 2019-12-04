@@ -61,8 +61,7 @@ class GUI extends EventTarget
       }
 
       let e = new Event('click');
-      e.clientX = event.clientX;
-      e.clientY = event.clientY;
+      e.unitPos = this.game.display.screenToUnitPosFloor(new Vector2(event.clientX, event.clientY));
       this.dispatchEvent(e);
     }
     else if (event.button === 2) // right click
@@ -95,8 +94,7 @@ class GUI extends EventTarget
       {
         let e = new Event('click');
         let touch = this.touchEvent.touches[0];
-        e.clientX = touch.clientX;
-        e.clientY = touch.clientY;
+        e.unitPos = this.game.display.screenToUnitPosFloor(new Vector2(touch.clientX, touch.clientY));
         this.dispatchEvent(e);
       }
 
@@ -135,7 +133,7 @@ class GUI extends EventTarget
     unitPos.add(new Vector2(0.5, 0.5));
     unitPos = new Vector2(Math.floor(unitPos.x), Math.floor(unitPos.y));
 
-    let actions = ["Cancel"];
+    let actions = [new Action("Cancel")];
     let clickedObjects = GameObjectManager.getObjectsNearPosition(unitPos, 1);
     clickedObjects.forEach(go => {
       actions.unshift.apply(actions, go.getActions());
@@ -144,8 +142,8 @@ class GUI extends EventTarget
     this.dropdownMenuElement.innerHTML = '';
     actions.forEach(a => {
       let listItem = document.createElement('li');
-      listItem.innerHTML = a;
-      listItem.addEventListener('click', this.clickDropdownMenuItem.bind(this, clickPos, a));
+      listItem.innerHTML = a.text;
+      listItem.addEventListener('click', this.clickDropdownMenuItem.bind(this, a));
       listItem.addEventListener('click', this.closeDropdownMenu);
       this.dropdownMenuElement.appendChild(listItem);
     });
@@ -164,16 +162,21 @@ class GUI extends EventTarget
     this.dropdownMenuElement.style.top = `${menuPos.y}px`;
   }
 
-  clickDropdownMenuItem(clickPos, action, event)
+  clickDropdownMenuItem(action, event)
   {
-    if (action === 'Walk here')
+    if (action instanceof WalkAction)
     {
       let e = new Event('click');
-      e.clientX = clickPos.x;
-      e.clientY = clickPos.y;
+      e.unitPos = action.unitPos;
       this.dispatchEvent(e);
     }
-    console.log(`clicked ${action}`);
+    else if (action instanceof InteractAction)
+    {
+      let e = new Event('interact');
+      e.nid = action.nid;
+      this.dispatchEvent(e);
+    }
+    console.log(`clicked "${action.text}"`);
   }
 
   closeDropdownMenu()

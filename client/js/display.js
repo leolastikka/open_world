@@ -76,4 +76,13 @@ class Display
     screenUnitPos = Vector2.div(screenUnitPos, this.pixelsPerUnit);
     return Vector2.add(screenUnitPos, this.pos);
   }
+
+  screenToUnitPosFloor(screenPos)
+  {
+    let screenUnitPos = Vector2.sub(screenPos, new Vector2(this.width/2.0, this.height/2.0));
+    screenUnitPos.div(this.pixelsPerUnit);
+    screenUnitPos.add(this.pos);
+    screenUnitPos.add(new Vector2(0.5, 0.5));
+    return new Vector2(Math.floor(screenUnitPos.x), Math.floor(screenUnitPos.y));
+  }
 }

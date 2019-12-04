@@ -3,11 +3,11 @@ const Vector2 = require('./math').Vector2;
 
 class Area
 {
-  constructor(size, tiles, entities)
+  constructor(size, tiles, objects)
   {
     this.size = size;
     this.tiles = tiles;
-    this.entities = entities;
+    this.objects = objects;
   }
 }
 
@@ -18,7 +18,7 @@ class AreaManager
 
   }
 
-  static getAreaForEntity()
+  static getAreaForObject()
   {
 
   }

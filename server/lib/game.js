@@ -53,6 +53,7 @@ class Game
     let tiles = [];
 
     let tilesLayer = mapJson.layers.find(layer => layer.name === 'tiles');
+    let objectsLayer = mapJson.layers.find(layer => layer.name === 'objects');
     let charactersLayer = mapJson.layers.find(layer => layer.name === 'characters');
     let pathsLayer = mapJson.layers.find(layer => layer.name === 'paths');
 
@@ -60,6 +61,31 @@ class Game
     for(let i = 0; i < tilesLayer.data.length; i += tilesLayer.width) {
       tiles.push(tilesLayer.data.slice(i, i + tilesLayer.width));
     }
+
+    this.area = new Area(mapSize, tiles, GameObjectManager._gameObjects);
+    Navigator.init(this.area);
+
+    // handle objects
+    objectsLayer.objects.forEach(obj => {
+      if (obj.type === 'container')
+      {
+        let pos = new Vector2(
+          Math.floor(obj.x / tileSize),
+          Math.floor(obj.y / tileSize)
+        );
+        GameObjectManager.createContainer(pos, obj.name, obj.id);
+        Navigator.setWalkableAt(pos, false);
+      }
+      else if (obj.type === 'terminal')
+      {
+        let pos = new Vector2(
+          Math.floor(obj.x / tileSize),
+          Math.floor(obj.y / tileSize)
+        );
+        GameObjectManager.createInteractable(pos, obj.name, obj.id);
+        Navigator.setWalkableAt(pos, false);
+      }
+    });
 
     // handle characters
     charactersLayer.objects.forEach(obj => {
@@ -96,9 +122,7 @@ class Game
       character.positions = positions;
     });
 
-    this.area = new Area(mapSize, tiles, GameObjectManager._gameObjects);
-
-    Navigator.init(this.area);
+    GameObjectManager.calculateNeighbors();
   }
 
   // WebSocket functions
@@ -128,7 +152,7 @@ class Game
     user.ws.send(JSON.stringify({
       type: 'mapData',
       tiles: user.area.tiles,
-      entities: user.area.entities
+      objects: user.area.objects
     }));
 
     user.ws.send(JSON.stringify({
@@ -149,13 +173,41 @@ class Game
     }
   }
 
+  onInteract(user, data)
+  {
+    let character = user.character;
+    let target = GameObjectManager.getByNID(data.target);
+
+    let startPos = character.path ? character.path[0] : character.pos;
+
+    let paths = [];
+    target.interactPositions.forEach(pos => {
+      paths.push(Navigator.findPath(startPos, pos));
+    });
+    let shortestPath = null;
+    paths.forEach(path => {
+      if (!shortestPath)
+      {
+        shortestPath = path;
+      }
+      else if (path.length < shortestPath.length)
+      {
+        shortestPath = path;
+      }
+    });
+    if (shortestPath)
+    {
+      character.moveTo(shortestPath[shortestPath.length - 1]);
+    }
+  }
+
   onDisconnectedUser(user)
   {
     this.users.splice(this.users.findIndex((u) => {
       return u.id === user.id;
     }), 1);
 
-    this.area.entities.splice(this.area.entities.findIndex(e => {
+    this.area.objects.splice(this.area.objects.findIndex(e => {
       return e.username === user.username;
     }));
 

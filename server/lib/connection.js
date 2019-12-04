@@ -55,6 +55,9 @@ class Connection
         case 'move':
           this.game.onMove(this.user, data);
           break;
+        case 'interact':
+          this.game.onInteract(this.user, data);
+          break;
         default:
           this.ws.close();
       }

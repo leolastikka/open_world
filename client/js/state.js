@@ -182,6 +182,7 @@ class GameState extends State
     this.onWsError = this.onWsError.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onClick = this.onClick.bind(this);
+    this.onInteract = this.onInteract.bind(this);
 
     this.game.connection.ws.onmessage = this.onWsMessage;
     this.game.connection.ws.onclose = this.onWsClose;
@@ -189,6 +190,7 @@ class GameState extends State
 
     this.gui.addEventListener('logout', this.onLogout);
     this.gui.addEventListener('click', this.onClick);
+    this.gui.addEventListener('interact', this.onInteract);
 
     this.game.connection.ws.send(JSON.stringify({type:'ready'}));
   }
@@ -216,19 +218,9 @@ class GameState extends State
 
   onClick(event)
   {
-    this.sendMove(event.clientX, event.clientY);
-  }
-
-  sendMove(x, y)
-  {
-    let clickPos = new Vector2(x, y);
-
-    let unitPos = this.game.display.screenToUnitPos(clickPos)
-    unitPos.add(new Vector2(0.5, 0.5));
-    unitPos = new Vector2(Math.floor(unitPos.x), Math.floor(unitPos.y));
-
+    let unitPos = event.unitPos;
     if (unitPos.x < 0 || unitPos.x > this.mapSize ||
-        unitPos.y < 0 || unitPos.y > this.mapSize)
+      unitPos.y < 0 || unitPos.y > this.mapSize)
     {
       // click out of bounds
       return;
@@ -237,6 +229,15 @@ class GameState extends State
     this.sendWsAction({
       type: 'move',
       target: unitPos
+    });
+  }
+
+  onInteract(event)
+  {
+    let nid = event.nid;
+    this.sendWsAction({
+      type: 'interact',
+      target: nid
     });
   }
 
@@ -282,31 +283,37 @@ class GameState extends State
       }
     }
 
-    let entities = data.entities;
-    for(let i=0; i<entities.length; i++)
+    let objects = data.objects;
+    for(let i=0; i<objects.length; i++)
     {
-      let entity = entities[i];
+      let obj = objects[i];
       let created = null;
-      if (entity.type === 'player')
+      switch(obj.type)
       {
-        created = GameObjectManager.createPlayer(entity);
-      }
-      else if (entity.type === 'npc')
-      {
-        created = GameObjectManager.createNPC(entity);
-      }
-      else if (entity.type === 'enemy')
-      {
-        created = GameObjectManager.createEnemy(entity);
+        case 'player':
+          created = GameObjectManager.createPlayer(obj);
+          break;
+        case 'npc':
+          created = GameObjectManager.createNPC(obj);
+          break;
+        case 'enemy':
+          created = GameObjectManager.createEnemy(obj);
+          break;
+        case 'container':
+          created = GameObjectManager.createContainer(obj);
+          break;
+        case 'interactable':
+          created = GameObjectManager.createInteractable(obj);
+          break;
       }
 
-      if(created && entity.path) // if entity is moving
+      if(created && obj.path) // if object is moving
       {
         this.onMove({
-          nid: entity.nid,
-          speed: entity.speed,
-          pos: entity.decimalPos,
-          path: entity.path
+          nid: obj.nid,
+          speed: obj.speed,
+          pos: obj.decimalPos,
+          path: obj.path
         });
       }
     }
