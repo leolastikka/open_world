@@ -19,6 +19,7 @@ class GUI extends EventTarget
     this.onWheel = this.onWheel.bind(this);
     this.closeDropdownMenu = this.closeDropdownMenu.bind(this);
     this.closeDialog = this.closeDialog.bind(this);
+    this.onPointerMove = this.onPointerMove.bind(this);
 
     this.element = document.getElementById('gui');
     this.menuElement = document.getElementById('menu');
@@ -28,6 +29,9 @@ class GUI extends EventTarget
     this.dropdownMenuElement = document.getElementById('dropdownMenu');
     this.dialogElement = document.getElementById('dialog');
     this.dialogCloseButton = this.dialogElement.querySelector('button');
+    this.statusElement = document.getElementById('status');
+    this.statusSuggestion = this.statusElement.querySelector('p[name="suggestion"]');
+    this.statusCurrent = this.statusElement.querySelector('p[name="current"]');
 
     this.logoutButton.addEventListener('click', this.onClickLogout);
     this.zoomInButton.addEventListener('click', this.onZoomIn);
@@ -35,6 +39,7 @@ class GUI extends EventTarget
     this.dialogCloseButton.addEventListener('click', this.closeDialog);
 
     this.element.addEventListener('pointerdown', this.onClick);
+    this.element.addEventListener('pointermove', this.onPointerMove);
     this.element.addEventListener('touchstart', this.onTouchStart);
     this.element.addEventListener('touchend', this.onTouchEnd);
     this.element.addEventListener('wheel', this.onWheel);
@@ -71,6 +76,26 @@ class GUI extends EventTarget
     else if (event.button === 2) // right click
     {
       this.openDropdownMenu(event.clientX, event.clientY);
+    }
+  }
+
+  onPointerMove(event)
+  {
+    let unitPos = this.game.display.screenToUnitPosFloor(new Vector2(event.clientX, event.clientY));
+
+    let actions = [];
+    let clickedObjects = GameObjectManager.getObjectsNearPosition(unitPos, 1);
+    clickedObjects.forEach(go => {
+      actions.unshift.apply(actions, go.getActions());
+    });
+
+    if (actions.length === 0)
+    {
+      this.statusSuggestion.innerHTML = '';
+    }
+    else
+    {
+      this.statusSuggestion.innerHTML = `> Do action: ${actions[0].text}`;
     }
   }
 
@@ -137,7 +162,7 @@ class GUI extends EventTarget
     unitPos.add(new Vector2(0.5, 0.5));
     unitPos = new Vector2(Math.floor(unitPos.x), Math.floor(unitPos.y));
 
-    let actions = [new Action("Cancel")];
+    let actions = [new Action('Cancel')];
     let clickedObjects = GameObjectManager.getObjectsNearPosition(unitPos, 1);
     clickedObjects.forEach(go => {
       actions.unshift.apply(actions, go.getActions());
@@ -200,6 +225,11 @@ class GUI extends EventTarget
     this.dialogElement.setAttribute('hidden', 'hidden');
   }
 
+  setCurrentStatus(text)
+  {
+    this.statusCurrent.innerHTML = `> Current status: ${text}`;
+  }
+
   onZoomIn()
   {
     this.closeDropdownMenu();
@@ -222,6 +252,7 @@ class GUI extends EventTarget
     this.dialogCloseButton.removeEventListener('click', this.closeDialog);
 
     this.element.removeEventListener('pointerdown', this.onClick);
+    this.element.removeEventListener('pointermove', this.onPointerMove);
     this.element.removeEventListener('touchstart', this.onTouchStart);
     this.element.removeEventListener('touchend', this.onTouchEnd);
     this.element.removeEventListener('wheel', this.onWheel);

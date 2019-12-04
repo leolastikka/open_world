@@ -206,6 +206,7 @@ class Character extends GameObject
     if (this._isOwned)
     {
       game.display.pos = Vector2.clone(this.pos);
+      game.state.gui.setCurrentStatus(this.state);
     }
   }
 

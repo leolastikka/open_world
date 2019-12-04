@@ -219,17 +219,37 @@ class GameState extends State
   onClick(event)
   {
     let unitPos = event.unitPos;
-    if (unitPos.x < 0 || unitPos.x > this.mapSize ||
-      unitPos.y < 0 || unitPos.y > this.mapSize)
-    {
-      // click out of bounds
-      return;
-    }
+    // if (unitPos.x < 0 || unitPos.x > this.mapSize ||
+    //   unitPos.y < 0 || unitPos.y > this.mapSize)
+    // {
+    //   // click out of bounds
+    //   return;
+    // }
 
-    this.sendWsAction({
-      type: 'move',
-      target: unitPos
+    let actions = [];
+    let clickedObjects = GameObjectManager.getObjectsNearPosition(unitPos, 1);
+    clickedObjects.forEach(go => {
+      actions.unshift.apply(actions, go.getActions());
     });
+
+    if (actions.length !== 0)
+    {
+      let primaryAction = actions[0];
+      if (primaryAction instanceof WalkAction)
+      {
+        this.sendWsAction({
+          type: 'move',
+          target: unitPos
+        });
+      }
+      else if (primaryAction instanceof InteractAction)
+      {
+        this.sendWsAction({
+          type: 'interact',
+          target: primaryAction.nid
+        });
+      }
+    }
   }
 
   onInteract(event)
@@ -337,7 +357,6 @@ class GameState extends State
 
   onMove(data)
   {
-    console.log('onMove, data: ',data);
     let go = GameObjectManager.getByNID(data.nid);
     go.speed = data.speed;
     go.pos = Vector2.fromObject(data.pos);
@@ -396,10 +415,11 @@ class GameState extends State
   {
     console.log('GameState dispose');
     GameObjectManager.dispose();
-    this.gui.dispose();
 
-    this.game.display.canvas.removeEventListener('pointerdown', this.onClickCanvas);
-    this.game.display.canvas.removeEventListener('touchstart', this.onTouchCanvas);
-    this.game.display.canvas.removeEventListener('wheel', this.onWheel);
+    this.gui.removeEventListener('logout', this.onLogout);
+    this.gui.removeEventListener('click', this.onClick);
+    this.gui.removeEventListener('interact', this.onInteract);
+
+    this.gui.dispose();
   }
 }

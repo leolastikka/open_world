@@ -84,7 +84,7 @@ button:hover {
   position: absolute;
   left: 0;
   top: 0;
-  z-index: 4;
+  z-index: 5;
   margin: 10%;
   width: 80%;
   height: 80%;
@@ -92,6 +92,19 @@ button:hover {
   color: yellowgreen;
   background-color: rgba(1, 32, 9, 0.75); /* dark green transparent */
   border: 1px solid yellowgreen;
+}
+#status
+{
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  top: 3em;
+  color: yellowgreen;
+  font-size: 0.75em;
+}
+#status p
+{
+  margin: 0;
 }
 
 /* Large devices (desktops, 992px and up) */
