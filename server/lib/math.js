@@ -69,6 +69,11 @@ class Vector2
   {
     return new Vector2(vector.x, vector.y);
   }
+
+  static equals(v1, v2)
+  {
+    return v1.x === v2.x && v1.y === v2.y;
+  }
 }
 
 module.exports.Vector2 = Vector2;

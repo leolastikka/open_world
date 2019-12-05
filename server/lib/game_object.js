@@ -14,11 +14,16 @@ class GameObject
     this.name = name;
     this.type = 'none';
     this.user = null;
-    this.interactPositions = [];
   }
 
   update(game) {}
   getActions() {}
+
+  getInteractPositions()
+  {
+    return Navigator.getNeighbors(this.pos);
+  }
+
   destroy()
   {
     this._isDestroyed = true;
@@ -64,6 +69,12 @@ class Character extends GameObject
         this.path = [this.path[0]]; // reduce current path to only next node
       }
       this.nextPath = path;
+
+      if (this.state === 'interacting') // if moving to interaction
+      {
+        this.state = 'moving';
+        this.interaction = null;
+      }
     }
     else { // if no path
       this.state = 'moving';
@@ -83,7 +94,7 @@ class Character extends GameObject
 
   interactWith(targetNID, path)
   {
-    this.targetNID = targetNID;
+    this.interaction = new Interaction(GameObjectManager.getByNID(targetNID));
     this.state = 'interacting';
 
     if (path.length === 0) // if already next to target
@@ -182,19 +193,55 @@ class Character extends GameObject
 
   _interact()
   {
-    this._move('interacting', this._doInteraction);
+    let target = this.interaction.target;
+    let targetPos = target.decimalPos ? target.decimalPos : target.pos; // static objects don't have decimalPos
+    let diff = Vector2.sub(targetPos, this.pos);
+    if (diff.length < this.interaction.range) // if inside interaction range
+    {
+      this._doInteraction();
+
+      if (this.path) // if still have path left, end it
+      {
+        this.path = [this.path[0]];
+        this.state = 'moving';
+        Connection.broadcast({
+          type: 'move',
+          nid: this.nid,
+          pos: this.decimalPos,
+          path: this.path,
+          speed: this.speed
+        });
+      }
+    }
+    else // if have to move closer
+    {
+      if (this.interaction.positionUpdated) // if need to calculate new path
+      {
+        let startPos = this.path ? this.path[0] : this.pos;
+        let newPath = Navigator.findShortestPath(startPos, this.interaction.target.getInteractPositions());
+        this.interactWith(this.interaction.target.nid, newPath);
+      }
+      else // if continue using old path
+      {
+        this._move('interacting', this._doInteraction);
+      }
+
+      if (this.interaction) // update interaction if needed
+      {
+        this.interaction.update();
+      }
+    }
   }
 
   _doInteraction()
   {
-    let interactable = GameObjectManager.getByNID(this.targetNID);
     Connection.sendToUser(this.userId, {
       type: 'dialog',
-      text: `Interacting with ${interactable.name}`
+      text: `Interacting with ${this.interaction.target.name}`
     });
 
     this.state = 'idle';
-    this.targetNID = null;
+    this.interaction = null;
   }
 
   _idle()
@@ -339,16 +386,6 @@ class GameObjectManager
     return interactable;
   }
 
-  static calculateNeighbors()
-  {
-    this._gameObjects.forEach(go => {
-      if (go instanceof Interactable)
-      {
-        go.interactPositions = Navigator.getNeighbors(go.pos);
-      }
-    });
-  }
-
   static update()
   {
     this._gameObjects.forEach(go => {
@@ -374,3 +411,24 @@ class GameObjectManager
 module.exports.GameObjectManager = GameObjectManager;
 module.exports.Player = Player;
 module.exports.NPC = NPC;
+
+class Interaction
+{
+  constructor(target, range=1)
+  {
+    this.target = target;
+    this.range = range;
+
+    this._lastTargetPosition = this.target.pos;
+  }
+
+  update()
+  {
+    this._lastTargetPosition = this.target.pos;
+  }
+
+  get positionUpdated()
+  {
+    return !Vector2.equals(this.target.pos, this._lastTargetPosition);
+  }
+}

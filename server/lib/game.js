@@ -121,8 +121,6 @@ class Game
       let character = GameObjectManager.getByID(idProperty.value);
       character.positions = positions;
     });
-
-    GameObjectManager.calculateNeighbors();
   }
 
   // WebSocket functions
@@ -180,21 +178,7 @@ class Game
 
     let startPos = character.path ? character.path[0] : character.pos;
 
-    let paths = [];
-    target.interactPositions.forEach(pos => {
-      paths.push(Navigator.findPath(startPos, pos));
-    });
-    let shortestPath = null;
-    paths.forEach(path => {
-      if (!shortestPath)
-      {
-        shortestPath = path;
-      }
-      else if (path.length < shortestPath.length)
-      {
-        shortestPath = path;
-      }
-    });
+    let shortestPath = Navigator.findShortestPath(startPos, target.getInteractPositions());
     if (shortestPath)
     {
       character.interactWith(data.target, shortestPath);

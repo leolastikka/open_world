@@ -45,6 +45,8 @@ class GUI extends EventTarget
     this.element.addEventListener('wheel', this.onWheel);
 
     this.element.oncontextmenu = () => false; // disable default right click
+    this.closeDialog();
+    this.closeDropdownMenu();
   }
 
   show()

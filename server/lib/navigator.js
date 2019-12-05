@@ -39,6 +39,34 @@ class Navigator
     return path;
   }
 
+  static findShortestPath(startPos, endPositions)
+  {
+    let resultPath = null;
+
+    if (!this._isValidPos(startPos))
+    {
+      return resultPath;
+    }
+
+    let paths = [];
+    endPositions.forEach(pos => {
+      paths.push(Navigator.findPath(startPos, pos));
+    });
+
+    paths.forEach(path => {
+      if (!resultPath)
+      {
+        resultPath = path;
+      }
+      else if (path.length < resultPath.length)
+      {
+        resultPath = path;
+      }
+    });
+
+    return resultPath;
+  }
+
   static setWalkableAt(pos, walkable=true)
   {
     this.grid.setWalkableAt(pos.x, pos.y, walkable);
