@@ -203,13 +203,13 @@ class Game
 
   onDisconnectedUser(user)
   {
-    this.users.splice(this.users.findIndex((u) => {
+    this.users.splice(this.users.findIndex(u => {
       return u.id === user.id;
     }), 1);
 
-    this.area.objects.splice(this.area.objects.findIndex(e => {
-      return e.username === user.username;
-    }));
+    this.area.objects.splice(this.area.objects.findIndex(obj => {
+      return obj.userId === user.id;
+    }), 1);
 
     Connection.broadcast({
       type: 'remove',
