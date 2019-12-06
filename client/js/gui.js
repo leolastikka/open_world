@@ -29,9 +29,9 @@ class GUI extends EventTarget
     this.dropdownMenuElement = document.getElementById('dropdownMenu');
     this.dialogElement = document.getElementById('dialog');
     this.dialogCloseButton = this.dialogElement.querySelector('button');
-    this.statusElement = document.getElementById('status');
-    this.statusSuggestion = this.statusElement.querySelector('p[name="suggestion"]');
-    this.statusCurrent = this.statusElement.querySelector('p[name="current"]');
+    this.actionElement = document.getElementById('action');
+    this.actionSuggestion = this.actionElement.querySelector('p[name="suggestion"]');
+    this.actionLast = this.actionElement.querySelector('p[name="last"]');
 
     this.logoutButton.addEventListener('click', this.onClickLogout);
     this.zoomInButton.addEventListener('click', this.onZoomIn);
@@ -93,11 +93,11 @@ class GUI extends EventTarget
 
     if (actions.length === 0)
     {
-      this.statusSuggestion.innerHTML = '';
+      this.actionSuggestion.innerHTML = '';
     }
     else
     {
-      this.statusSuggestion.innerHTML = `> Do action: ${actions[0].text}`;
+      this.actionSuggestion.innerHTML = `> Do action: ${actions[0].text}`;
     }
   }
 
@@ -205,6 +205,7 @@ class GUI extends EventTarget
     {
       let e = new Event('interact');
       e.nid = action.nid;
+      e.action = action;
       this.dispatchEvent(e);
     }
     console.log(`clicked "${action.text}"`);
@@ -227,9 +228,9 @@ class GUI extends EventTarget
     this.dialogElement.setAttribute('hidden', 'hidden');
   }
 
-  setCurrentStatus(text)
+  setLastAction(text)
   {
-    this.statusCurrent.innerHTML = `> Current status: ${text}`;
+    this.actionLast.innerHTML = `> Last action: ${text}`;
   }
 
   onZoomIn()

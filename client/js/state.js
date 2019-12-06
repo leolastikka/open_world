@@ -234,6 +234,7 @@ class GameState extends State
           target: primaryAction.nid
         });
       }
+      this.gui.setLastAction(primaryAction.text);
     }
   }
 
@@ -244,6 +245,7 @@ class GameState extends State
       type: 'interact',
       target: nid
     });
+    this.gui.setLastAction(event.action.text);
   }
 
   sendWsAction(data)
