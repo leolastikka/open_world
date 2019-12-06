@@ -208,7 +208,6 @@ class GUI extends EventTarget
       e.action = action;
       this.dispatchEvent(e);
     }
-    console.log(`clicked "${action.text}"`);
   }
 
   closeDropdownMenu()

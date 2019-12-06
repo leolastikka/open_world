@@ -14,9 +14,7 @@ class Game
 
   start()
   {
-    console.log('Game start');
     this.state = new LoginState(this, this.loginSuccess);
-
     window.requestAnimationFrame(() => this.update());
   }
 
