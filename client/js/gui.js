@@ -47,6 +47,8 @@ class GUI extends EventTarget
     this.element.oncontextmenu = () => false; // disable default right click
     this.closeDialog();
     this.closeDropdownMenu();
+    this.actionSuggestion.innerHTML = '';
+    this.actionLast.innerHTML = '';
   }
 
   show()
