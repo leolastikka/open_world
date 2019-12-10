@@ -283,11 +283,12 @@ class GameState extends State
     this.mapSize = data.tiles.length;
 
     let tiles = data.tiles;
+    let walkable = data.walkable;
     for(let i=0; i<tiles.length; i++)
     {
       for(let j=0; j<tiles[i].length; j++){
         let pos = new Vector2(j, i);
-        GameObjectManager.createTile(pos, tiles[i][j]);
+        GameObjectManager.createTile(pos, tiles[i][j], walkable[i][j]);
       }
     }
 

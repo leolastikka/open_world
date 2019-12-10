@@ -81,6 +81,21 @@ class Navigator
     return result;
   }
 
+  static getWalkabilityData()
+  {
+    let result = [];
+    for (let i=0; i<this.area.size; i++)
+    {
+      let row = [];
+      for (let j=0; j<this.area.size; j++)
+      {
+        row[j] = this.grid.getNodeAt(j, i).walkable ? 1 : 0;
+      }
+      result.push(row);
+    }
+    return result;
+  }
+
   static _isValidPos(pos)
   {
     return pos &&

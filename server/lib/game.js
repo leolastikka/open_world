@@ -150,6 +150,7 @@ class Game
     user.ws.send(JSON.stringify({
       type: 'mapData',
       tiles: user.area.tiles,
+      walkable: Navigator.getWalkabilityData(),
       objects: user.area.objects
     }));
 

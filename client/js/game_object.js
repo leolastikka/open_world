@@ -26,30 +26,30 @@ class GameObjectManager
     }
   }
 
-  static createTile(pos, type)
+  static createTile(pos, type, isWalkable)
   {
     switch(type)
     {
       case 2: // walkable rock
-        this._add(new Tile(null, pos, new TileRenderer('#2e2e2e', 'black'), true));
+        this._add(new Tile(null, pos, new TileRenderer('#2e2e2e', 'black'), isWalkable));
         break;
       case 3: // walkable dirt
-        this._add(new Tile(null, pos, new TileRenderer('#383727', 'black'), true));
+        this._add(new Tile(null, pos, new TileRenderer('#383727', 'black'), isWalkable));
         break;
       case 4: // walkable grass
-        this._add(new Tile(null, pos, new TileRenderer('#0e3612', 'black'), true));
+        this._add(new Tile(null, pos, new TileRenderer('#0e3612', 'black'), isWalkable));
         break;
       case 5: // water
-        this._add(new Tile(null, pos, new TileRenderer('#0e8eb8', 'white'), false));
+        this._add(new Tile(null, pos, new TileRenderer('#0e8eb8', 'white'), isWalkable));
         break;
       case 6: // stone wall
-        this._add(new Tile(null, pos, new TileRenderer('#8e8e8e', 'white'), false));
+        this._add(new Tile(null, pos, new TileRenderer('#8e8e8e', 'white'), isWalkable));
         break;
       case 7: // stone object
-        this._add(new Tile(null, pos, new TileTriangleRenderer('#8e8e8e'), false));
+        this._add(new Tile(null, pos, new TileTriangleRenderer('#8e8e8e'), isWalkable));
         break;
       case 8: // tree object
-        this._add(new Tile(null, pos, new TileTriangleRenderer('#1a5f20'), false));
+        this._add(new Tile(null, pos, new TileTriangleRenderer('#1a5f20'), isWalkable));
         break;
     }
   }
