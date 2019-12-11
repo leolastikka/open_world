@@ -7,6 +7,7 @@ const Connection = require('./connection');
 const FS = require('fs');
 const Path = require('path');
 const _ = require('lodash');
+const Actions = require('./action');
 
 class Game
 {
@@ -160,30 +161,22 @@ class Game
     }));
   }
 
-  onMove(user, data)
+  onAction(user, data)
   {
     let character = user.character;
-    let path = character.moveTo(data.target);
-
-    if (!path) 
+    let action = null;
+    switch(data.action)
     {
-      //user.ws.close();
-      return;
+      case 'move':
+        action = new Actions.MoveAction(Vector2.fromObject(data.target));
+        break;
+      case 'interact':
+        action = new Actions.InteractAction(GameObjectManager.getByNID(data.target), 1);
+        break;
+      default:
+        user.ws.close();
     }
-  }
-
-  onInteract(user, data)
-  {
-    let character = user.character;
-    let target = GameObjectManager.getByNID(data.target);
-
-    let startPos = character.path ? character.path[0] : character.pos;
-
-    let shortestPath = Navigator.findShortestPath(startPos, target.getInteractPositions());
-    if (shortestPath)
-    {
-      character.interactWith(data.target, shortestPath);
-    }
+    character.startAction(action);
   }
 
   onDisconnectedUser(user)

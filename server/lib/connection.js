@@ -52,11 +52,8 @@ class Connection
         case 'ready':
           this.game.onReady(this.user);
           break;
-        case 'move':
-          this.game.onMove(this.user, data);
-          break;
-        case 'interact':
-          this.game.onInteract(this.user, data);
+        case 'action':
+          this.game.onAction(this.user, data);
           break;
         default:
           this.ws.close();

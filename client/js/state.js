@@ -223,14 +223,16 @@ class GameState extends State
       if (primaryAction instanceof WalkAction)
       {
         this.sendWsAction({
-          type: 'move',
+          type: 'action',
+          action: 'move',
           target: unitPos
         });
       }
       else if (primaryAction instanceof InteractAction)
       {
         this.sendWsAction({
-          type: 'interact',
+          type: 'action',
+          action: 'interact',
           target: primaryAction.nid
         });
       }
@@ -242,7 +244,8 @@ class GameState extends State
   {
     let nid = event.nid;
     this.sendWsAction({
-      type: 'interact',
+      type: 'action',
+      action: 'interact',
       target: nid
     });
     this.gui.setLastAction(event.action.text);

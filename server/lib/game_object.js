@@ -3,6 +3,7 @@ const Vector2 = require('./math').Vector2;
 const Time = require('./time');
 const Navigator = require('./navigator');
 const Connection = require('./connection');
+const Actions = require('./action');
 
 class GameObject
 {
@@ -10,53 +11,61 @@ class GameObject
   {
     this._isDestroyed = false;
     this.nid = GameObjectManager._getNewNID();
-    this.pos = pos;
+    this.pos = pos; // position in tile grid
+    this.decimalPos = this.pos; // position when moving between tiles
     this.name = name;
     this.type = 'none';
     this.user = null;
-  }
 
-  update(game) {}
-  getActions() {}
-
-  getInteractPositions()
-  {
-    return Navigator.getNeighbors(this.pos);
-  }
-
-  destroy()
-  {
-    this._isDestroyed = true;
-    GameObjectManager._gameObjectDestroyed = true;
-  }
-}
-
-class Character extends GameObject
-{
-  constructor(pos, name)
-  {
-    super(pos, name);
-    this.pos = pos; // position in tile grid
-    this.decimalPos = this.pos; // position when moving between tiles
-
-    this.type = 'character';
-
-    this.speed = 2;
+    this.speed = 0;
     this.path = null;
     this.nextPath = null;
-    this.targetNID = null;
 
-    this.state = 'idle';
-
-    this._doInteraction = this._doInteraction.bind(this);
+    this.action = null;
+    this._targetOfActions = [];
   }
 
-  moveTo(targetPos)
+  getActions()
+  {
+    return [];
+  }
+
+  startAction(action)
+  {
+    if (action instanceof Actions.MoveAction)
+    {
+      if (this.action instanceof Actions.MoveAction &&
+          this.action.targetPos.equals(action.targetPos)) // if already doing same action
+      {
+        return;
+      }
+
+      // start new action
+      this.action = action;
+      this._startMoveAction();
+    }
+    else if (action instanceof Actions.InteractAction)
+    {
+      if (this.action instanceof Actions.InteractAction &&
+          this.action.targetObject.nid === this.action.targetObject.nid) // if already doing same action
+      {
+        return;
+      }
+      else if (this.action instanceof Actions.InteractAction) // end previous action if needed
+      {
+        this.action.finish(Actions.InterruptCause.InterruptByUser);
+      }
+
+      // start new action
+      this.action = action;
+      this._startInteractAction();
+    }
+  }
+
+  _startMoveAction()
   {
     let startPos = this.path ? this.path[0] : this.pos; // if on path, start next path from next node
-    //console.log(`move from (${startPos.x},${startPos.y}) to (${targetPos.x},${targetPos.y})`);
-    
-    let path = Navigator.findPath(startPos, targetPos);
+    let path = Navigator.findPath(startPos, this.action.targetPos);
     if (Array.isArray(path) && path.length === 0)
     {
       return null;
@@ -69,15 +78,8 @@ class Character extends GameObject
         this.path = [this.path[0]]; // reduce current path to only next node
       }
       this.nextPath = path;
-
-      if (this.state === 'interacting') // if moving to interaction
-      {
-        this.state = 'moving';
-        this.interaction = null;
-      }
     }
     else { // if no path
-      this.state = 'moving';
       this.path = path;
 
       Connection.broadcast({
@@ -88,48 +90,87 @@ class Character extends GameObject
         speed: this.speed
       });
     }
-
-    return path;
   }
 
-  interactWith(targetNID, path)
+  _startInteractAction()
   {
-    this.interaction = new Interaction(GameObjectManager.getByNID(targetNID));
-    this.state = 'interacting';
-
-    if (path.length === 0) // if already next to target
+    let diff = Vector2.sub(this.action.targetObject.decimalPos, this.pos);
+    if (diff.length < this.action.range) // if inside interaction range
     {
-      this._doInteraction();
+      this._doActionInRange();
     }
-    else // if there is a path before target
+    else // if need to move
     {
+      let startPos = this.path ? this.path[0] : this.pos;
+      let shortestPath = Navigator.findShortestPath(startPos, this.action.targetObject.getInteractPositions());
+
       if (this.path) // if already has a path
       {
         if (!this.nextPath) // if no next path
         {
           this.path = [this.path[0]]; // reduce current path to only next node
         }
-        this.nextPath = path;
+        this.nextPath = shortestPath;
       }
       else { // if no path
-        this.path = path;
+        this.path = shortestPath;
 
         Connection.broadcast({
           type: 'move',
           nid: this.nid,
           pos: this.decimalPos,
-          path: path,
+          path: shortestPath,
           speed: this.speed
         });
       }
     }
   }
 
-  _move(nextState, nextStateCallback)
+  _doActionInRange()
+  {
+    if (this.action instanceof Actions.MoveAction)
+    {
+      this.action.finish();
+      this.action = null;
+    }
+    else if (this.action instanceof Actions.InteractAction)
+    {
+      Connection.sendToUser(this.userId, {
+        type: 'dialog',
+        text: `Interacting with ${this.action.targetObject.name}`
+      });
+  
+      this.action.finish();
+      this.action = null;
+    }
+  }
+
+  update()
+  {
+    if (!this.action)
+    {
+      this._updateIdle();
+    }
+    else
+    {
+      if (this.action instanceof Actions.MoveAction)
+      {
+        this._updateMove();
+      }
+      else if (this.action instanceof Actions.InteractAction)
+      {
+        this._updateInteractAction();
+      }
+    }
+  }
+
+  _updateIdle() {}
+
+  _updateMove()
   {
     if (!this.path)
     {
-      this.state = nextState;
+      this._doActionInRange();
       return;
     }
 
@@ -175,11 +216,7 @@ class Character extends GameObject
           }
           else {
             this.path = null;
-            this.state = nextState;
-            if (nextStateCallback)
-            {
-              nextStateCallback();
-            }
+            this._doActionInRange();
             return;
           }
         }
@@ -191,14 +228,14 @@ class Character extends GameObject
     }
   }
 
-  _interact()
+  _updateInteractAction()
   {
-    let target = this.interaction.target;
+    let target = this.action.targetObject;
     let targetPos = target.decimalPos ? target.decimalPos : target.pos; // static objects don't have decimalPos
     let diff = Vector2.sub(targetPos, this.pos);
-    if (diff.length < this.interaction.range) // if inside interaction range
+    if (diff.length < this.action.range) // if inside interaction range
     {
-      this._doInteraction();
+      this._doActionInRange();
 
       if (this.path) // if still have path left, end it
       {
@@ -215,68 +252,55 @@ class Character extends GameObject
     }
     else // if have to move closer
     {
-      if (this.interaction.positionUpdated) // if need to calculate new path
+      if (this.action.positionUpdated) // if need to calculate new path
       {
-        let startPos = this.path ? this.path[0] : this.pos;
-        let newPath = Navigator.findShortestPath(startPos, this.interaction.target.getInteractPositions());
-        this.interactWith(this.interaction.target.nid, newPath);
+        this.startAction(new Actions.InteractAction(this.action.targetObject, 1));
       }
       else // if continue using old path
       {
-        this._move('interacting', this._doInteraction);
-      }
-
-      if (this.interaction) // update interaction if needed
-      {
-        this.interaction.update();
+        this._updateMove();
       }
     }
-  }
 
-  _doInteraction()
-  {
-    Connection.sendToUser(this.userId, {
-      type: 'dialog',
-      text: `Interacting with ${this.interaction.target.name}`
-    });
-
-    this.state = 'idle';
-    this.interaction = null;
-  }
-
-  _idle()
-  {
-    if (this.positions && this.positions.length)
+    if (this.action) // update interaction if needed
     {
-      let newPos = this.positions[Math.floor(Math.random() * (this.positions.length - 1))];
-      this.moveTo(newPos);
+      this.action.updatePosition();
     }
   }
 
-  _attack()
+  startAsActionTarget(action)
   {
-
+    this._targetOfActions.push(action);
   }
 
-  update()
+  _endAsActionTarget(action)
   {
-    switch(this.state)
-    {
-      case 'idle':
-        this._idle();
-        break;
-      case 'moving':
-        this._move('idle');
-        break;
-      case 'following':
-        break;
-      case 'interacting':
-        this._interact();
-        break;
-      case 'attacking':
-        this._attack();
-        break;
-    }
+    this._targetOfActions  = this._targetOfActions.filter(a => a !== action);
+  }
+
+  getInteractPositions()
+  {
+    return Navigator.getNeighbors(this.pos);
+  }
+
+  destroy()
+  {
+    this._isDestroyed = true;
+    GameObjectManager._gameObjectDestroyed = true;
+    this._targetOfActions.forEach(action => {
+      action.interrupt(Actions.InterruptCause.TargetRemoved);
+    })
+  }
+}
+
+class Character extends GameObject
+{
+  constructor(pos, name)
+  {
+    super(pos, name);
+    this.type = 'character';
+
+    this.speed = 2;
   }
 }
 
@@ -298,9 +322,18 @@ class NPC extends Character
     this.type = 'npc';
     this.speed = 1;
   }
+
+  _updateIdle()
+  {
+    if (this.positions && this.positions.length)
+    {
+      let newPos = this.positions[Math.floor(Math.random() * (this.positions.length - 1))];
+      this.startAction(new Actions.MoveAction(newPos));
+    }
+  }
 }
 
-class Enemy extends Character
+class Enemy extends NPC
 {
   constructor(pos, name, id)
   {
@@ -411,24 +444,3 @@ class GameObjectManager
 module.exports.GameObjectManager = GameObjectManager;
 module.exports.Player = Player;
 module.exports.NPC = NPC;
-
-class Interaction
-{
-  constructor(target, range=1)
-  {
-    this.target = target;
-    this.range = range;
-
-    this._lastTargetPosition = this.target.pos;
-  }
-
-  update()
-  {
-    this._lastTargetPosition = this.target.pos;
-  }
-
-  get positionUpdated()
-  {
-    return !Vector2.equals(this.target.pos, this._lastTargetPosition);
-  }
-}
