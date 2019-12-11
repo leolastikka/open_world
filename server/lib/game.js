@@ -140,7 +140,7 @@ class Game
 
     Connection.broadcastToOthers(user.ws, {
       type: 'add',
-      obj: player
+      obj: this._filterObject(player)
     });
 
     console.log('logged users count: ', this.users.length);
@@ -152,12 +152,12 @@ class Game
       type: 'mapData',
       tiles: user.area.tiles,
       walkable: Navigator.getWalkabilityData(),
-      objects: user.area.objects
+      objects: user.area.objects.map(o => this._filterObject(o))
     }));
 
     user.ws.send(JSON.stringify({
       type: 'player',
-      player: user.character
+      player: this._filterObject(user.character)
     }));
   }
 
@@ -175,6 +175,7 @@ class Game
         break;
       default:
         user.ws.close();
+        return;
     }
     character.startAction(action);
   }
@@ -196,6 +197,18 @@ class Game
 
     console.log('logged users count: ', this.users.length);
   };
+
+  _filterObject(obj)
+  {
+    return _.pick(obj, [
+      'nid',
+      'type',
+      'name',
+      'pos',
+      'decimalPos',
+      'path'
+    ]);
+  }
 }
 
 module.exports = Game;

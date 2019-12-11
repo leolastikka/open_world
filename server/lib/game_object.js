@@ -47,7 +47,7 @@ class GameObject
     else if (action instanceof Actions.InteractAction)
     {
       if (this.action instanceof Actions.InteractAction &&
-          this.action.targetObject.nid === this.action.targetObject.nid) // if already doing same action
+          this.action.targetObject.nid === action.targetObject.nid) // if already doing same action
       {
         return;
       }
@@ -95,7 +95,7 @@ class GameObject
   _startInteractAction()
   {
     let diff = Vector2.sub(this.action.targetObject.decimalPos, this.pos);
-    if (diff.length < this.action.range) // if inside interaction range
+    if (diff.length <= this.action.range) // if inside interaction range
     {
       this._doActionInRange();
     }
@@ -233,7 +233,7 @@ class GameObject
     let target = this.action.targetObject;
     let targetPos = target.decimalPos ? target.decimalPos : target.pos; // static objects don't have decimalPos
     let diff = Vector2.sub(targetPos, this.pos);
-    if (diff.length < this.action.range) // if inside interaction range
+    if (diff.length <= this.action.range) // if inside interaction range
     {
       this._doActionInRange();
 

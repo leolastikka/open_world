@@ -41,23 +41,23 @@ class InteractAction extends Action
     this.targetObject = targetObject;
     this.range = range;
 
-    this._lastTargetPosition = this.targetObject.pos;
+    this._lastTargetPosition = Vector2.clone(this.targetObject.pos);
   }
 
   updatePosition()
   {
-    this._lastTargetPosition = this.targetObject.pos;
+    this._lastTargetPosition = Vector2.clone(this.targetObject.pos);
   }
 
   get positionUpdated()
   {
-    return !Vector2.equals(this.targetObject.pos, this._lastTargetPosition);
+    return !this.targetObject.pos.equals(this._lastTargetPosition);
   }
 
   finish(interruptCause)
   {
     super.finish(interruptCause);
-    this.targetObject._endAsActionTarget(this);
+    //this.targetObject._endAsActionTarget(this);
   }
 }
 
