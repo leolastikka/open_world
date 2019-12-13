@@ -85,10 +85,36 @@ class AttackAction extends InteractAction
   }
 }
 
+class DialogController
+{
+
+}
+
+class CombatController
+{
+  constructor()
+  {
+
+  }
+
+  startAttack(action)
+  {
+
+  }
+
+  startAsTarget(action)
+  {
+
+  }
+}
+
 module.exports.InterruptCause = InterruptCause;
-module.exports.Action = Action;
+
 module.exports.MoveAction = MoveAction;
 module.exports.InteractAction = InteractAction;
 module.exports.TalkAction = TalkAction;
 module.exports.TradeAction = TradeAction;
 module.exports.AttackAction = AttackAction;
+
+module.exports.DialogController = DialogController;
+module.exports.CombatController = CombatController;

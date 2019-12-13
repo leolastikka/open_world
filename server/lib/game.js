@@ -1,5 +1,6 @@
 const Area = require('./area').Area;
 const Vector2 = require('./math').Vector2;
+const GameObjects = require('./game_object');
 const GameObjectManager = require('./game_object').GameObjectManager;
 const Navigator = require('./navigator');
 const Time = require('./time');
@@ -27,10 +28,10 @@ class Game
 
   start(onStartedCallback)
   {
+    Time.init();
     GameObjectManager.init();
     this.loadArea();
 
-    Time.init();
     this.update();
     setTimeout(this.update, this.serverFrameTime);
 
@@ -96,7 +97,8 @@ class Game
           Math.floor(obj.x / tileSize),
           Math.floor(obj.y / tileSize)
         );
-        GameObjectManager.createNPC(pos, obj.name, obj.id);
+        let tmpl = GameObjectManager.createTemplate(GameObjects.Type.NPC, obj.name, obj.id, pos);
+        GameObjectManager.createSpawner(pos, `${obj.name} spawner`, tmpl, 2);
       }
       else if (obj.type === 'enemy')
       {
@@ -104,7 +106,8 @@ class Game
           Math.floor(obj.x / tileSize),
           Math.floor(obj.y / tileSize)
         );
-        GameObjectManager.createEnemy(pos, obj.name, obj.id);
+        let tmpl = GameObjectManager.createTemplate(GameObjects.Type.Enemy, obj.name, obj.id, pos);
+        GameObjectManager.createSpawner(pos, `${obj.name} spawner`, tmpl, 2);
       }
     });
         
@@ -119,8 +122,8 @@ class Game
       });
 
       let idProperty = _.find(path.properties, {name: 'for'});
-      let character = GameObjectManager.getByID(idProperty.value);
-      character.positions = positions;
+      let tmpl = GameObjectManager.getTemplateByID(idProperty.value);
+      tmpl._positions = positions;
     });
   }
 
@@ -140,7 +143,7 @@ class Game
 
     Connection.broadcastToOthers(user.ws, {
       type: 'add',
-      obj: this._filterObject(player)
+      obj: player
     });
 
     console.log('logged users count: ', this.users.length);
@@ -152,12 +155,12 @@ class Game
       type: 'mapData',
       tiles: user.area.tiles,
       walkable: Navigator.getWalkabilityData(),
-      objects: user.area.objects.map(o => this._filterObject(o))
+      objects: user.area.publicObjects
     }));
 
     user.ws.send(JSON.stringify({
       type: 'player',
-      player: this._filterObject(user.character)
+      player: user.character
     }));
   }
 
@@ -197,18 +200,6 @@ class Game
 
     console.log('logged users count: ', this.users.length);
   };
-
-  _filterObject(obj)
-  {
-    return _.pick(obj, [
-      'nid',
-      'type',
-      'name',
-      'pos',
-      'decimalPos',
-      'path'
-    ]);
-  }
 }
 
 module.exports = Game;

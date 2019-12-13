@@ -9,6 +9,11 @@ class Area
     this.tiles = tiles;
     this.objects = objects;
   }
+
+  get publicObjects()
+  {
+    return this.objects.filter(obj => obj._isPublic);
+  }
 }
 
 class AreaManager

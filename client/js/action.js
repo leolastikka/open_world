@@ -23,3 +23,8 @@ class InteractAction extends Action
     this.nid = nid;
   }
 }
+
+class AttackAction extends Action
+{
+
+}

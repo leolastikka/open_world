@@ -5,16 +5,38 @@ const Navigator = require('./navigator');
 const Connection = require('./connection');
 const Actions = require('./action');
 
+const Type = Object.freeze({
+  None: 'none',
+  Player: 'player',
+  NPC: 'npc',
+  Enemy: 'enemy',
+  Interactable: 'interactable',
+  Container: 'container'
+});
+
+class GameObjectTemplate
+{
+  constructor(type, name, id, pos)
+  {
+    this.type = type;
+    this.name = name;
+    this.id = id;
+    this.pos = pos;
+  }
+}
+
 class GameObject
 {
   constructor(pos, name)
   {
     this._isDestroyed = false;
+    this._isPublic = true;
+
     this.nid = GameObjectManager._getNewNID();
-    this.pos = pos; // position in tile grid
-    this.decimalPos = this.pos; // position when moving between tiles
+    this.pos = Vector2.clone(pos); // position in tile grid
+    this.decimalPos = Vector2.clone(this.pos); // position when moving between tiles
     this.name = name;
-    this.type = 'none';
+    this.type = Type.None;
     this.user = null;
 
     this.speed = 0;
@@ -25,7 +47,7 @@ class GameObject
     this._targetOfActions = [];
   }
 
-  getActions()
+  get actions()
   {
     return [];
   }
@@ -283,13 +305,28 @@ class GameObject
     return Navigator.getNeighbors(this.pos);
   }
 
+  toString()
+  {
+    return JSON.stringify({
+      nid: this.nid,
+      type: this.type,
+      name: this.name,
+      pos: this.pos,
+      decimalPos: this.decimalPos,
+      path: this.path,
+      actions: this.actions
+    });
+  }
+
   destroy()
   {
     this._isDestroyed = true;
     GameObjectManager._gameObjectDestroyed = true;
-    this._targetOfActions.forEach(action => {
-      action.interrupt(Actions.InterruptCause.TargetRemoved);
-    })
+
+    Connection.broadcast({
+      type: 'remove',
+      nid: this.nid
+    });
   }
 }
 
@@ -298,8 +335,6 @@ class Character extends GameObject
   constructor(pos, name)
   {
     super(pos, name);
-    this.type = 'character';
-
     this.speed = 2;
   }
 }
@@ -325,10 +360,20 @@ class NPC extends Character
 
   _updateIdle()
   {
-    if (this.positions && this.positions.length)
+    if (this._positions && this._positions.length)
     {
-      let newPos = this.positions[Math.floor(Math.random() * (this.positions.length - 1))];
+      let newPos = this._positions[Math.floor(Math.random() * (this._positions.length - 1))];
       this.startAction(new Actions.MoveAction(newPos));
+    }
+  }
+
+  destroy()
+  {
+    super.destroy();
+
+    if (this._spawnerNID)
+    {
+      GameObjectManager.getByNID(this._spawnerNID).startCooldown();
     }
   }
 }
@@ -365,11 +410,57 @@ class Container extends Interactable
   }
 }
 
+class Spawner extends GameObject
+{
+  constructor(pos, name, gameObjectTemplate, cooldownTime)
+  {
+    super(pos, name);
+    this._isPublic = false;
+
+    this.gameObjectTemplate = gameObjectTemplate;
+    this.cooldownTime = cooldownTime;
+    this._nextSpawnTime = Time.totalTime;
+    this._spawnedGameObject = null;
+  }
+
+  update()
+  {
+    if (!this._spawnedGameObject && Time.totalTime >= this._nextSpawnTime)
+    {
+      let tmpl = this.gameObjectTemplate;
+      let created = null;
+      switch (tmpl.type)
+      {
+        case 'npc':
+          created = GameObjectManager.createNPC(tmpl.pos, tmpl.name, tmpl.id);
+          break;
+        case 'enemy':
+          created = GameObjectManager.createEnemy(tmpl.pos, tmpl.name, tmpl.id);
+          break;
+      }
+      created._spawnerNID = this.nid;
+      this._spawnedGameObject = created;
+
+      if (tmpl._positions)
+      {
+        created._positions = tmpl._positions;
+      }
+    }
+  }
+
+  startCooldown()
+  {
+    this._spawnedGameObject = null;
+    this._nextSpawnTime = Time.totalTime + this.cooldownTime;
+  }
+}
+
 class GameObjectManager
 {
   static init()
   {
     this._gameObjects = [];
+    this._templates = [];
     this._gameObjectDestroyed = false;
     this._currentNID = 0;
   }
@@ -382,6 +473,25 @@ class GameObjectManager
   static getByID(id)
   {
     return this._gameObjects.find(go => go.id === id);
+  }
+
+  static getTemplateByID(id)
+  {
+    return this._templates.find(tmpl => tmpl.id === id);
+  }
+
+  static createTemplate(type, name, id, pos)
+  {
+    let tmpl = new GameObjectTemplate(type, name, id, pos);
+    this._templates.push(tmpl);
+    return tmpl;
+  }
+
+  static createSpawner(pos, name, gameObjectTemplate, cooldownTime)
+  {
+    let spawner = new Spawner(pos, name, gameObjectTemplate, cooldownTime);
+    this._gameObjects.push(spawner);
+    return spawner;
   }
 
   static createPlayer(pos, name)
@@ -441,6 +551,9 @@ class GameObjectManager
   }
 }
 
+module.exports.Type = Type;
+
 module.exports.GameObjectManager = GameObjectManager;
+
+module.exports.Spawner = Spawner;
 module.exports.Player = Player;
-module.exports.NPC = NPC;
