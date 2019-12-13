@@ -197,19 +197,9 @@ class GUI extends EventTarget
 
   clickDropdownMenuItem(action, event)
   {
-    if (action instanceof WalkAction)
-    {
-      let e = new Event('click');
-      e.unitPos = action.unitPos;
-      this.dispatchEvent(e);
-    }
-    else if (action instanceof InteractAction)
-    {
-      let e = new Event('interact');
-      e.nid = action.nid;
-      e.action = action;
-      this.dispatchEvent(e);
-    }
+    let e = new Event('action');
+    e.action = action;
+    this.dispatchEvent(e);
   }
 
   closeDropdownMenu()

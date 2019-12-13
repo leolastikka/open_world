@@ -173,7 +173,7 @@ class GameState extends State
     this.onWsError = this.onWsError.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onClick = this.onClick.bind(this);
-    this.onInteract = this.onInteract.bind(this);
+    this.onAction = this.onAction.bind(this);
 
     this.game.connection.ws.onmessage = this.onWsMessage;
     this.game.connection.ws.onclose = this.onWsClose;
@@ -181,7 +181,7 @@ class GameState extends State
 
     this.gui.addEventListener('logout', this.onLogout);
     this.gui.addEventListener('click', this.onClick);
-    this.gui.addEventListener('interact', this.onInteract);
+    this.gui.addEventListener('action', this.onAction);
 
     this.game.connection.ws.send(JSON.stringify({type:'ready'}));
   }
@@ -219,35 +219,48 @@ class GameState extends State
 
     if (actions.length !== 0)
     {
-      let primaryAction = actions[0];
-      if (primaryAction instanceof WalkAction)
-      {
-        this.sendWsAction({
-          type: 'action',
-          action: 'move',
-          target: unitPos
-        });
-      }
-      else if (primaryAction instanceof InteractAction)
-      {
-        this.sendWsAction({
-          type: 'action',
-          action: 'interact',
-          target: primaryAction.nid
-        });
-      }
-      this.gui.setLastAction(primaryAction.text);
+      let e = new Event('action');
+      e.action = actions[0];
+      this.onAction(e);
     }
   }
 
-  onInteract(event)
+  onAction(event)
   {
-    let nid = event.nid;
-    this.sendWsAction({
+    let action = event.action;
+
+    if (action instanceof WalkAction)
+    {
+      this.sendWsAction({
       type: 'action',
-      action: 'interact',
-      target: nid
+      action: 'move',
+      target: action.unitPos
     });
+    }
+    else if (action instanceof InteractAction)
+    {
+      this.sendWsAction({
+        type: 'action',
+        action: 'interact',
+        target: action.nid
+      });
+    }
+    else if (action instanceof TalkAction)
+    {
+      this.sendWsAction({
+        type: 'action',
+        action: 'talk',
+        target: action.nid
+      });
+    }
+    else if (action instanceof AttackAction)
+    {
+      this.sendWsAction({
+        type: 'action',
+        action: 'attack',
+        target: action.nid
+      });
+    }
     this.gui.setLastAction(event.action.text);
   }
 
@@ -403,7 +416,7 @@ class GameState extends State
 
     this.gui.removeEventListener('logout', this.onLogout);
     this.gui.removeEventListener('click', this.onClick);
-    this.gui.removeEventListener('interact', this.onInteract);
+    this.gui.removeEventListener('action', this.onAction);
 
     this.gui.dispose();
   }

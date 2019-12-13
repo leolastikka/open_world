@@ -305,9 +305,9 @@ class GameObject
     return Navigator.getNeighbors(this.pos);
   }
 
-  toString()
+  toJSON()
   {
-    return JSON.stringify({
+    return {
       nid: this.nid,
       type: this.type,
       name: this.name,
@@ -315,7 +315,7 @@ class GameObject
       decimalPos: this.decimalPos,
       path: this.path,
       actions: this.actions
-    });
+    };
   }
 
   destroy()
@@ -346,6 +346,11 @@ class Player extends Character
     super(pos, name);
     this.type = 'player';
   }
+
+  get actions()
+  {
+    return [];
+  }
 }
 
 class NPC extends Character
@@ -365,6 +370,11 @@ class NPC extends Character
       let newPos = this._positions[Math.floor(Math.random() * (this._positions.length - 1))];
       this.startAction(new Actions.MoveAction(newPos));
     }
+  }
+
+  get actions()
+  {
+    return ['talk'];
   }
 
   destroy()
@@ -389,6 +399,11 @@ class Enemy extends NPC
 
     this.nextMoveTime = Time.totalTime;
   }
+
+  get actions()
+  {
+    return ['attack'];
+  }
 }
 
 class Interactable extends GameObject
@@ -399,6 +414,11 @@ class Interactable extends GameObject
     this.id = id;
     this.type = 'interactable';
   }
+
+  get actions()
+  {
+    return ['interact'];
+  }
 }
 
 class Container extends Interactable
@@ -407,6 +427,11 @@ class Container extends Interactable
   {
     super(pos, name, id);
     this.type = 'container';
+  }
+
+  get actions()
+  {
+    return ['interact'];
   }
 }
 

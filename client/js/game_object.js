@@ -57,7 +57,7 @@ class GameObjectManager
   static createPlayer(data)
   {
     let pos = new Vector2(data.pos.x, data.pos.y);
-    let player = new Character(data.nid, pos, new CharacterRenderer('white'), data.name);
+    let player = new Character(data.nid, pos, new CharacterRenderer('white'), data.name, data.actions);
     this._add(player);
     return player;
   }
@@ -65,7 +65,7 @@ class GameObjectManager
   static createNPC(data)
   {
     let pos = new Vector2(data.pos.x, data.pos.y);
-    let npc = new Character(data.nid, pos, new CharacterRenderer('yellow'), data.name);
+    let npc = new Character(data.nid, pos, new CharacterRenderer('yellow'), data.name, data.actions);
     this._add(npc, false);
     return npc;
   }
@@ -73,7 +73,7 @@ class GameObjectManager
   static createEnemy(data)
   {
     let pos = new Vector2(data.pos.x, data.pos.y);
-    let enemy = new Character(data.nid, pos, new CharacterRenderer('red'), data.name);
+    let enemy = new Character(data.nid, pos, new CharacterRenderer('red'), data.name, data.actions);
     this._add(enemy, false);
     return enemy;
   }
@@ -81,7 +81,7 @@ class GameObjectManager
   static createContainer(data)
   {
     let pos = new Vector2(data.pos.x, data.pos.y);
-    let container = new Container(data.nid, pos, new TileBoxRenderer('#706d40'), data.name);
+    let container = new Container(data.nid, pos, new TileBoxRenderer('#706d40'), data.name, data.actions);
     this._add(container, false);
     return container;
   }
@@ -89,7 +89,7 @@ class GameObjectManager
   static createInteractable(data)
   {
     let pos = new Vector2(data.pos.x, data.pos.y);
-    let interactable = new Interactable(data.nid, pos, new TileBoxRenderer('#16e700'), data.name);
+    let interactable = new Interactable(data.nid, pos, new TileBoxRenderer('#16e700'), data.name, data.actions);
     this._add(interactable, false);
     return interactable;
   }
@@ -168,14 +168,14 @@ class Tile extends GameObject
   {
     if (this.isWalkable)
     {
-      return [new WalkAction("Walk here", Vector2.clone(this.pos))];
+      return [new WalkAction("Walk to", Vector2.clone(this.pos))];
     }
   }
 }
 
 class Character extends GameObject
 {
-  constructor(nid, pos, renderer, name)
+  constructor(nid, pos, renderer, name, actions)
   {
     super(nid, pos, renderer);
     this.name = name;
@@ -184,6 +184,7 @@ class Character extends GameObject
     this.path = null;
     this.nextPath = null;
     this.speed = null;
+    this.actions = actions;
   }
 
   setPath(path)
@@ -211,11 +212,18 @@ class Character extends GameObject
 
   getActions()
   {
-    if (!this._isOwned)
-    {
-      return [new InteractAction(`Interact with ${this.name}`, this.nid)];
-    }
-    return [];
+    let actions = [];
+    this.actions.forEach(a => {
+      if (a === 'talk')
+      {
+        actions.push(new TalkAction(`Talk to ${this.name}`, this.nid));
+      }
+      else if (a === 'attack')
+      {
+        actions.push(new AttackAction(`Attack ${this.name}`, this.nid));
+      }
+    });
+    return actions;
   }
 
   move()
@@ -279,10 +287,11 @@ class Character extends GameObject
 
 class Container extends GameObject
 {
-  constructor(nid, pos, renderer, name)
+  constructor(nid, pos, renderer, name, actions)
   {
     super(nid, pos, renderer);
     this.name = name;
+    this.actions = actions;
   }
 
   getActions()
@@ -293,10 +302,11 @@ class Container extends GameObject
 
 class Interactable extends GameObject
 {
-  constructor(nid, pos, renderer, name)
+  constructor(nid, pos, renderer, name, actions)
   {
     super(nid, pos, renderer);
     this.name = name;
+    this.actions = actions;
   }
 
   getActions()

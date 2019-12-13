@@ -24,7 +24,20 @@ class InteractAction extends Action
   }
 }
 
+class TalkAction extends Action
+{
+  constructor(text, nid)
+  {
+    super(text);
+    this.nid = nid;
+  }
+}
+
 class AttackAction extends Action
 {
-
+  constructor(text, nid)
+  {
+    super(text);
+    this.nid = nid;
+  }
 }
