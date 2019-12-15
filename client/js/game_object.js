@@ -148,9 +148,17 @@ class GameObject
     {
       let pos = camera.getRenderPos(this.pos);
       pos.add(new Vector2(0, -camera.pixelsPerUnit));
+
+      let hpPos = camera.getRenderPos(this.pos);
+      hpPos.add(new Vector2(0, -camera.pixelsPerUnit * 0.25));
+
       this.renderer.renderGUI(canvasContext, {
         pos: pos,
-        text: this.name
+        text: this.name,
+        inCombat: this._inCombat,
+        hp: this._hp,
+        hpPos: hpPos,
+        size: camera.pixelsPerUnit
       });
     }
   }
@@ -180,11 +188,14 @@ class Character extends GameObject
     super(nid, pos, renderer);
     this.name = name;
     this._isOwned = false;
-    this.state = 'idle';
+    this.state = 'none';
     this.path = null;
     this.nextPath = null;
     this.speed = null;
     this.actions = actions;
+
+    this._inCombat = false;
+    this._hp = null;
   }
 
   setPath(path)

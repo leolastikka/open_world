@@ -120,6 +120,27 @@ class CharacterRenderer extends Renderer
     canvasContext.font = "1em 'Courier New'";
     canvasContext.fillStyle = 'yellowgreen';
     canvasContext.textAlign = 'center';
-    canvasContext.fillText(data.text, data.pos.x, data.pos.y); 
+    canvasContext.fillText(data.text, data.pos.x, data.pos.y);
+
+    if (data.inCombat)
+    {
+      canvasContext.beginPath();
+      canvasContext.fillStyle = 'red';
+      canvasContext.fillRect(
+        data.hpPos.x - data.size / 2,
+        data.hpPos.y - data.size / 2,
+        data.size,
+        data.size / 5);
+      canvasContext.fill();
+
+      canvasContext.beginPath();
+      canvasContext.fillStyle = 'yellowgreen';
+      canvasContext.fillRect(
+        data.hpPos.x - data.size / 2,
+        data.hpPos.y - data.size / 2,
+        data.size * (data.hp / 10),
+        data.size / 5);
+      canvasContext.fill();
+    }
   }
 }

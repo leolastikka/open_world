@@ -61,6 +61,10 @@ class GameObject
       {
         return;
       }
+      else if (this.action instanceof Actions.InteractAction)
+      {
+        this.action.finish(Actions.InterruptCause.InterruptByUser)
+      }
 
       // start new action
       this.action = action;
@@ -384,7 +388,7 @@ class Player extends Character
     super(pos, name);
     this.type = 'player';
     this.speed = 2;
-    this.combatController = new Actions.CombatController(this, 4);
+    this.combatController = new Actions.CombatController(this, 3);
   }
 
   get actions()

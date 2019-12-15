@@ -69,6 +69,12 @@ class InteractAction extends Action
     super.finish(interruptCause);
     // remove this action from target
     this.targetObject._targetOfActions = this.targetObject._targetOfActions.filter(a => a !== this);
+
+    Connection.broadcast({
+      type: 'status',
+      nid: this.ownerObject.nid,
+      inCombat: false
+    });
   }
 }
 
@@ -119,6 +125,13 @@ class CombatController
   startAttack(attackAction)
   {
     this._action = attackAction;
+    
+    Connection.broadcast({
+      type: 'status',
+      nid: this.ownerObject.nid,
+      inCombat: true,
+      hp: this.hp
+    });
   }
 
   attack()
@@ -149,6 +162,7 @@ class CombatController
     Connection.broadcast({
       type: 'status',
       nid: this.ownerObject.nid,
+      inCombat: true,
       hp: this.hp
     });
 

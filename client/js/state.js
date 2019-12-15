@@ -341,7 +341,12 @@ class GameState extends State
 
   onStatus(data)
   {
-    console.log(data);
+    let go = GameObjectManager.getByNID(data.nid);
+    go._inCombat = data.inCombat;
+    if (data.hp)
+    {
+      go._hp = data.hp;
+    }
   }
 
   onPlayer(data)
