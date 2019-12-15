@@ -232,17 +232,9 @@ class GameState extends State
     if (action instanceof WalkAction)
     {
       this.sendWsAction({
-      type: 'action',
-      action: 'move',
-      target: action.unitPos
-    });
-    }
-    else if (action instanceof InteractAction)
-    {
-      this.sendWsAction({
         type: 'action',
-        action: 'interact',
-        target: action.nid
+        action: 'move',
+        target: action.unitPos
       });
     }
     else if (action instanceof TalkAction)
@@ -278,6 +270,9 @@ class GameState extends State
         break;
       case 'mapData':
         this.onMapData(data);
+        break;
+      case 'status':
+        this.onStatus(data);
         break;
       case 'add':
         this.onAdd(data);
@@ -344,6 +339,11 @@ class GameState extends State
     }
   }
 
+  onStatus(data)
+  {
+    console.log(data);
+  }
+
   onPlayer(data)
   {
     GameObjectManager._gameObjects.forEach(go => {
@@ -379,6 +379,9 @@ class GameState extends State
         break;
       case 'npc':
         GameObjectManager.createNPC(data.obj);
+        break;
+      case 'enemy':
+        GameObjectManager.createEnemy(data.obj);
         break;
     }
   }

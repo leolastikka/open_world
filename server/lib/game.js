@@ -173,8 +173,11 @@ class Game
       case 'move':
         action = new Actions.MoveAction(Vector2.fromObject(data.target));
         break;
-      case 'interact':
-        action = new Actions.InteractAction(GameObjectManager.getByNID(data.target), 1);
+      case 'talk':
+        action = new Actions.TalkAction(character, GameObjectManager.getByNID(data.target), 1);
+        break;
+      case 'attack':
+        action = new Actions.AttackAction(character, GameObjectManager.getByNID(data.target), 1);
         break;
       default:
         user.ws.close();

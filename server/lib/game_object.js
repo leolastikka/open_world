@@ -30,7 +30,7 @@ class GameObject
   constructor(pos, name)
   {
     this._isDestroyed = false;
-    this._isPublic = true;
+    this._isPublic = true; // is sent to client
 
     this.nid = GameObjectManager._getNewNID();
     this.pos = Vector2.clone(pos); // position in tile grid
@@ -66,9 +66,9 @@ class GameObject
       this.action = action;
       this._startMoveAction();
     }
-    else if (action instanceof Actions.InteractAction)
+    else if (action instanceof Actions.TalkAction)
     {
-      if (this.action instanceof Actions.InteractAction &&
+      if (this.action instanceof Actions.TalkAction &&
           this.action.targetObject.nid === action.targetObject.nid) // if already doing same action
       {
         return;
@@ -82,6 +82,37 @@ class GameObject
       this.action = action;
       this._startInteractAction();
     }
+    else if (action instanceof Actions.AttackAction)
+    {
+      if (this.action instanceof Actions.AttackAction &&
+          this.action.targetObject.nid === action.targetObject.nid) // if already doing same action
+      {
+        return;
+      }
+      else if (this.action instanceof Actions.InteractAction) // end previous action if needed
+      {
+        this.action.finish(Actions.InterruptCause.InterruptByUser);
+      }
+      else if (this.action instanceof Actions.MoveAction)
+      {
+        this.action.finish(Actions.InterruptCause.HigherPriorityOverride);
+      }
+
+      this.action = action;
+      this.combatController.startAttack(action);
+      this._startInteractAction();
+    }
+  }
+
+  /** Returns true if this is not a target of the same action already */
+  _startAsTargetOfAction(action)
+  {
+    if (!this._targetOfActions.find(a => a === action))
+    {
+      this._targetOfActions.push(action);
+      return true;
+    }
+    return false;
   }
 
   _startMoveAction()
@@ -116,7 +147,7 @@ class GameObject
 
   _startInteractAction()
   {
-    let diff = Vector2.sub(this.action.targetObject.decimalPos, this.pos);
+    let diff = Vector2.sub(this.action.targetObject.decimalPos, this.decimalPos);
     if (diff.length <= this.action.range) // if inside interaction range
     {
       this._doActionInRange();
@@ -155,15 +186,23 @@ class GameObject
       this.action.finish();
       this.action = null;
     }
-    else if (this.action instanceof Actions.InteractAction)
+    else if (this.action instanceof Actions.TalkAction)
     {
       Connection.sendToUser(this.userId, {
         type: 'dialog',
-        text: `Interacting with ${this.action.targetObject.name}`
+        text: `Talking with ${this.action.targetObject.name}`
       });
   
       this.action.finish();
       this.action = null;
+    }
+    else if (this.action instanceof Actions.AttackAction)
+    {
+      this.combatController.attack();
+      if (this.action.isFinished)
+      {
+        this.action = null;
+      }
     }
   }
 
@@ -252,31 +291,36 @@ class GameObject
 
   _updateInteractAction()
   {
-    let target = this.action.targetObject;
-    let targetPos = target.decimalPos ? target.decimalPos : target.pos; // static objects don't have decimalPos
-    let diff = Vector2.sub(targetPos, this.pos);
+    let diff = Vector2.sub(this.action.targetObject.decimalPos, this.decimalPos);
     if (diff.length <= this.action.range) // if inside interaction range
     {
       this._doActionInRange();
 
-      if (this.path) // if still have path left, end it
-      {
-        this.path = [this.path[0]];
-        this.state = 'moving';
-        Connection.broadcast({
-          type: 'move',
-          nid: this.nid,
-          pos: this.decimalPos,
-          path: this.path,
-          speed: this.speed
-        });
-      }
+      // if (this.path) // if still have path left, end it
+      // {
+      //   this.path = [this.path[0]];
+      //   this.state = 'moving';
+      //   Connection.broadcast({
+      //     type: 'move',
+      //     nid: this.nid,
+      //     pos: this.decimalPos,
+      //     path: this.path,
+      //     speed: this.speed
+      //   });
+      // }
     }
     else // if have to move closer
     {
       if (this.action.positionUpdated) // if need to calculate new path
       {
-        this.startAction(new Actions.InteractAction(this.action.targetObject, 1));
+        if (this.action instanceof Actions.TalkAction)
+        {
+          this.startAction(new Actions.TalkAction(this, this.action.targetObject, 1));
+        }
+        else if (this.action instanceof Actions.AttackAction)
+        {
+          this.startAction(new Actions.AttackAction(this, this.action.targetObject, 1));
+        }
       }
       else // if continue using old path
       {
@@ -288,16 +332,6 @@ class GameObject
     {
       this.action.updatePosition();
     }
-  }
-
-  startAsActionTarget(action)
-  {
-    this._targetOfActions.push(action);
-  }
-
-  _endAsActionTarget(action)
-  {
-    this._targetOfActions  = this._targetOfActions.filter(a => a !== action);
   }
 
   getInteractPositions()
@@ -323,6 +357,11 @@ class GameObject
     this._isDestroyed = true;
     GameObjectManager._gameObjectDestroyed = true;
 
+    this._targetOfActions.forEach(action => {
+      action.finish();
+    });
+    this._targetOfActions = [];
+
     Connection.broadcast({
       type: 'remove',
       nid: this.nid
@@ -335,7 +374,6 @@ class Character extends GameObject
   constructor(pos, name)
   {
     super(pos, name);
-    this.speed = 2;
   }
 }
 
@@ -345,6 +383,8 @@ class Player extends Character
   {
     super(pos, name);
     this.type = 'player';
+    this.speed = 2;
+    this.combatController = new Actions.CombatController(this, 4);
   }
 
   get actions()
@@ -361,6 +401,7 @@ class NPC extends Character
     this.id = id;
     this.type = 'npc';
     this.speed = 1;
+    this.combatController = new Actions.CombatController(this, 1);
   }
 
   _updateIdle()
@@ -417,7 +458,7 @@ class Interactable extends GameObject
 
   get actions()
   {
-    return ['interact'];
+    return ['talk'];
   }
 }
 
@@ -431,7 +472,7 @@ class Container extends Interactable
 
   get actions()
   {
-    return ['interact'];
+    return ['talk'];
   }
 }
 
@@ -470,6 +511,11 @@ class Spawner extends GameObject
       {
         created._positions = tmpl._positions;
       }
+
+      Connection.broadcast({
+        type: 'add',
+        obj: created
+      });
     }
   }
 
@@ -566,7 +612,8 @@ class GameObjectManager
   {
     if (this._gameObjectDestroyed)
     {
-      this._gameObjects  = this._gameObjects.filter(go => go._isDestroyed);
+      this._gameObjects = this._gameObjects.filter(go => !go._isDestroyed);
+      this._gameObjectDestroyed = false;
     }
   }
 

@@ -296,7 +296,7 @@ class Container extends GameObject
 
   getActions()
   {
-    return [new InteractAction(`Interact with ${this.name}`, this.nid)];
+    return [new TalkAction(`Interact with ${this.name}`, this.nid)];
   }
 }
 

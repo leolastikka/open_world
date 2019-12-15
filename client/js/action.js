@@ -24,7 +24,7 @@ class InteractAction extends Action
   }
 }
 
-class TalkAction extends Action
+class TalkAction extends InteractAction
 {
   constructor(text, nid)
   {
@@ -33,7 +33,7 @@ class TalkAction extends Action
   }
 }
 
-class AttackAction extends Action
+class AttackAction extends InteractAction
 {
   constructor(text, nid)
   {
