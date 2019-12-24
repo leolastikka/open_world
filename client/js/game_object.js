@@ -4,6 +4,7 @@ class GameObjectManager
   {
     this._gameObjects = [];
     this._gameObjectRemoved = false;
+    console.log('GameObjectManager.init');
   }
 
   static _add(gameObject)
@@ -108,7 +109,9 @@ class GameObjectManager
 
   static dispose()
   {
+    this._gameObjects.forEach(go => go.destroy());
     this._gameObjects = [];
+    console.log('GameObjectManager.dispose');
   }
 }
 

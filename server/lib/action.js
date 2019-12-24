@@ -68,13 +68,18 @@ class InteractAction extends Action
   {
     super.finish(interruptCause);
     // remove this action from target
-    this.targetObject._targetOfActions = this.targetObject._targetOfActions.filter(a => a !== this);
+    this.targetObject._targetOfObjects = this.targetObject._targetOfObjects.filter(obj => obj !== this.ownerObject);
+    this.targetObject = null;
 
-    Connection.broadcast({
-      type: 'status',
-      nid: this.ownerObject.nid,
-      inCombat: false
-    });
+    if (!this.ownerObject._isDestroyed) {
+      Connection.broadcast({
+        type: 'status',
+        nid: this.ownerObject.nid,
+        inCombat: false
+      });
+    }
+
+    this.ownerObject = null;
   }
 }
 
@@ -122,10 +127,8 @@ class CombatController
     this._attackIntervalTime = 1;
   }
 
-  startAttack(attackAction)
+  startAttack()
   {
-    this._action = attackAction;
-    
     Connection.broadcast({
       type: 'status',
       nid: this.ownerObject.nid,
@@ -136,21 +139,21 @@ class CombatController
 
   attack()
   {
-    if (this._action.targetObject._startAsTargetOfAction(this._action)) // if this is first actual attack
+    if (this.ownerObject.action.targetObject._startAsTargetOfObject(this.ownerObject)) // if this is first actual attack
     {
       // start combat for target too
-      this._action.targetObject.startAction(
-        new AttackAction(this._action.targetObject, this.ownerObject, 1)
+      this.ownerObject.action.targetObject.startAction(
+        new AttackAction(this.ownerObject.action.targetObject, this.ownerObject, 1)
       );
     }
     if (Time.totalTime >= this._nextAttackTime)
     {
-      this._action.targetObject.combatController._doDamage(this.damage);
+      this.ownerObject.action.targetObject.combatController.doDamage(this.damage);
       this._nextAttackTime = Time.totalTime + this._attackIntervalTime;
     }
   }
 
-  _doDamage(damage)
+  doDamage(damage)
   {
     this.hp -= damage;
 
@@ -159,6 +162,10 @@ class CombatController
       this.hp = 0;
     }
 
+    if (this.ownerObject._isDestroyed)
+    {
+      throw new Error(`trying to destroy destroyed object with nid: ${this.ownerObject.nid}`)
+    }
     Connection.broadcast({
       type: 'status',
       nid: this.ownerObject.nid,
@@ -170,6 +177,11 @@ class CombatController
     {
       this.ownerObject.destroy();
     }
+  }
+
+  dispose()
+  {
+    this.ownerObject = null;
   }
 }
 

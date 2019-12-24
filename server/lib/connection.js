@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const WebSocket = require('ws');
+const GameObjectManager = require('./game_object').GameObjectManager;
 
 class Connection
 {
@@ -17,6 +18,7 @@ class Connection
     this.ws = ws;
     this.game = game;
     this.user = null;
+    this.playerObject = null;
 
     this.onMessage = this.onMessage.bind(this);
     this.onClose = this.onClose.bind(this);
@@ -38,7 +40,7 @@ class Connection
       let authenticatedUser = Connection._authController.authenticateWebSocket(this.ws, data);
       if (authenticatedUser) {
         this.user = authenticatedUser;
-        this.game.onConnectedUser(this.user);
+        this.game.onConnectedUser(this);
 
         this.ws.isAuthenticated = true;
         this.ws.send(JSON.stringify({success:1}));
@@ -63,10 +65,28 @@ class Connection
 
   onClose(event)
   {
-    if (this.user) {
+    if (this.user)
+    {
       this.game.onDisconnectedUser(this.user);
       Connection._authController.removeUser(this.user); // temporary
+
+      if (this.user.character)
+      {
+        this.user.character.destroy();
+        this.user.character = null;
+      }
+      this.user = null;
     }
+    if (this.ws)
+    {
+      this.ws.close();
+      this.ws = null;
+    }
+  }
+
+  respawnPlayer()
+  {
+    this.game.respawnPlayer(this);
   }
 
   static onConnection(ws, req)
@@ -83,12 +103,16 @@ class Connection
 
   static sendToUser(userId, data)
   {
+    let nid = data.obj ? data.obj.nid : data.nid;
+    console.log(`Connection.sendTouser type: ${data.type}, nid: ${nid}`);
     let user = this._game.users.find(u => u.id === userId);
     user.ws.send(JSON.stringify(data));
   }
   
   static broadcast(data)
   {
+    let nid = data.obj ? data.obj.nid : data.nid;
+    console.log(`Connection.broadcast type: ${data.type}, nid: ${nid}`);
     Connection._wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(data));
@@ -98,11 +122,18 @@ class Connection
 
   static broadcastToOthers(ws, data)
   {
+    let nid = data.obj ? data.obj.nid : data.nid;
+    console.log(`Connection.broadcastToOthers type: ${data.type}, nid: ${nid}`);
     Connection._wss.clients.forEach((client) => {
       if (client !== ws && client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(data));
       }
     });
+  }
+
+  static logUserCount()
+  {
+    console.log(`Logged users: ${this._wss.clients.size}`);
   }
 }
 

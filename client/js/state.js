@@ -303,6 +303,11 @@ class GameState extends State
       }
     }
 
+    
+    let objNIDs = [];
+    data.objects.forEach(obj => objNIDs.push(obj.nid));
+    console.log('objects: ', objNIDs);
+
     let objects = data.objects;
     for(let i=0; i<objects.length; i++)
     {
@@ -341,6 +346,7 @@ class GameState extends State
 
   onStatus(data)
   {
+    console.log(`onStatus nid: ${data.nid}`);
     let go = GameObjectManager.getByNID(data.nid);
     go._inCombat = data.inCombat;
     if (data.hp)
@@ -351,6 +357,7 @@ class GameState extends State
 
   onPlayer(data)
   {
+    console.log(`onPlayer ${data.player.name} nid: ${data.player.nid}`);
     GameObjectManager._gameObjects.forEach(go => {
       if (go.nid === data.player.nid)
       {
@@ -364,7 +371,9 @@ class GameState extends State
 
   onMove(data)
   {
+    console.log(`onMove nid: ${data.nid}`);
     let go = GameObjectManager.getByNID(data.nid);
+    console.log(`- onMove object: ${go.name}`);
     go.speed = data.speed;
     go.pos = Vector2.fromObject(data.pos);
     
@@ -377,6 +386,7 @@ class GameState extends State
 
   onAdd(data)
   {
+    console.log(`onAdd ${data.obj.type} ${data.obj.name} nid: ${data.obj.nid}`);
     switch(data.obj.type)
     {
       case 'player':
@@ -393,6 +403,7 @@ class GameState extends State
 
   onRemove(data)
   {
+    console.log(`onRemove nid: ${data.nid}`);
     let go = GameObjectManager.getByNID(data.nid);
     go.destroy();
   }

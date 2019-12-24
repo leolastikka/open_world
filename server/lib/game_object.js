@@ -44,7 +44,7 @@ class GameObject
     this.nextPath = null;
 
     this.action = null;
-    this._targetOfActions = [];
+    this._targetOfObjects = [];
   }
 
   get actions()
@@ -103,20 +103,26 @@ class GameObject
       }
 
       this.action = action;
-      this.combatController.startAttack(action);
+      this.combatController.startAttack();
       this._startInteractAction();
     }
   }
 
-  /** Returns true if this is not a target of the same action already */
-  _startAsTargetOfAction(action)
+  /** Returns true if this is not a target of the same object already */
+  _startAsTargetOfObject(object)
   {
-    if (!this._targetOfActions.find(a => a === action))
+    if (!this._targetOfObjects.find(obj => obj === object))
     {
-      this._targetOfActions.push(action);
+      this._targetOfObjects.push(object);
       return true;
     }
     return false;
+  }
+
+  finishAction()
+  {
+    this.action.finish();
+    this.action = null;
   }
 
   _startMoveAction()
@@ -192,16 +198,17 @@ class GameObject
     }
     else if (this.action instanceof Actions.TalkAction)
     {
-      Connection.sendToUser(this.userId, {
+      this._connection.user.ws.send(JSON.stringify({
         type: 'dialog',
         text: `Talking with ${this.action.targetObject.name}`
-      });
+      }));
   
       this.action.finish();
       this.action = null;
     }
     else if (this.action instanceof Actions.AttackAction)
     {
+      //if (this._isDestroyed) throw new Error(`Trying to do attack by nid: ${this.nid}`);
       this.combatController.attack();
       if (this.action.isFinished)
       {
@@ -295,6 +302,10 @@ class GameObject
 
   _updateInteractAction()
   {
+    if (!this.action.targetObject)
+    {
+      console.log(this.action);
+    }
     let diff = Vector2.sub(this.action.targetObject.decimalPos, this.decimalPos);
     if (diff.length <= this.action.range) // if inside interaction range
     {
@@ -358,13 +369,29 @@ class GameObject
 
   destroy()
   {
+    if (this._isDestroyed)
+    {
+      return;
+    }
+
+    console.log(`Destroying object with nid: ${this.nid}`);
+
     this._isDestroyed = true;
     GameObjectManager._gameObjectDestroyed = true;
+  }
 
-    this._targetOfActions.forEach(action => {
-      action.finish();
+  _dispose()
+  {
+    if (this.combatController)
+    {
+      this.combatController.dispose()
+      this.combatController = null;
+    }
+
+    this._targetOfObjects.forEach(obj => {
+      obj.finishAction();
     });
-    this._targetOfActions = [];
+    this._targetOfObjects = [];
 
     Connection.broadcast({
       type: 'remove',
@@ -383,10 +410,13 @@ class Character extends GameObject
 
 class Player extends Character
 {
-  constructor(pos, name)
+  constructor(pos, name, connection)
   {
     super(pos, name);
     this.type = 'player';
+    this._connection = connection;
+    this._isRespawning = false;
+
     this.speed = 2;
     this.combatController = new Actions.CombatController(this, 3);
   }
@@ -394,6 +424,17 @@ class Player extends Character
   get actions()
   {
     return [];
+  }
+
+  _dispose()
+  {
+    super._dispose();
+
+    if (this._connection.ws && !this._isRespawning)
+    {
+      this._isRespawning = true;
+      this._connection.respawnPlayer();
+    }
   }
 }
 
@@ -422,9 +463,9 @@ class NPC extends Character
     return ['talk'];
   }
 
-  destroy()
+  _dispose()
   {
-    super.destroy();
+    super._dispose();
 
     if (this._spawnerNID)
     {
@@ -540,6 +581,11 @@ class GameObjectManager
     this._currentNID = 0;
   }
 
+  static getPublicObjects()
+  {
+    return this._gameObjects.filter(obj => obj._isPublic);
+  }
+
   static getByNID(nid)
   {
     return this._gameObjects.find(go => go.nid === nid);
@@ -569,9 +615,9 @@ class GameObjectManager
     return spawner;
   }
 
-  static createPlayer(pos, name)
+  static createPlayer(pos, name, connection)
   {
-    let player = new Player(pos, name);
+    let player = new Player(pos, name, connection);
     this._gameObjects.push(player);
     return player;
   }
@@ -616,7 +662,15 @@ class GameObjectManager
   {
     if (this._gameObjectDestroyed)
     {
-      this._gameObjects = this._gameObjects.filter(go => !go._isDestroyed);
+      this._gameObjects = this._gameObjects.filter(go => {
+        if (!go._isDestroyed)
+        {
+          return true; 
+        }
+
+        go._dispose();
+        return false;
+      });
       this._gameObjectDestroyed = false;
     }
   }

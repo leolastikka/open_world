@@ -19,7 +19,6 @@ class Game
 
     this.update = this.update.bind(this);
 
-    this.users = [];
     this.area = null;
     this.pathfinder = null;
 
@@ -128,35 +127,26 @@ class Game
   }
 
   // WebSocket functions
-  onConnectedUser(user)
+  onConnectedUser(connection)
   {
-    this.users.push(user);
-
-    let x = 10;
-    let y = 6;
-
-    let pos = new Vector2(x, y);
-    let player = GameObjectManager.createPlayer(pos, user.username);
-    user.area = this.area;
-    user.character = player;
-    player.userId = user.id;
-
-    Connection.broadcastToOthers(user.ws, {
-      type: 'add',
-      obj: player
-    });
-
-    console.log('logged users count: ', this.users.length);
+    console.log('Game.onConnectedUser');
+    this.spawnPlayer(connection);
+    Connection.logUserCount();
   }
 
   onReady(user)
   {
+    console.log('Game.onReady');
     user.ws.send(JSON.stringify({
       type: 'mapData',
       tiles: user.area.tiles,
       walkable: Navigator.getWalkabilityData(),
-      objects: user.area.publicObjects
+      objects: GameObjectManager.getPublicObjects()
     }));
+
+    let objNIDs = [];
+    user.area.publicObjects.forEach(obj => objNIDs.push(obj.nid));
+    console.log('sent objects: ', objNIDs);
 
     user.ws.send(JSON.stringify({
       type: 'player',
@@ -167,6 +157,9 @@ class Game
   onAction(user, data)
   {
     let character = user.character;
+    console.log('onAction');
+    console.log('data: ', data);
+    console.log('user character: ', user.character.nid);
     let action = null;
     switch(data.action)
     {
@@ -188,21 +181,56 @@ class Game
 
   onDisconnectedUser(user)
   {
-    this.users.splice(this.users.findIndex(u => {
-      return u.id === user.id;
-    }), 1);
-
-    this.area.objects.splice(this.area.objects.findIndex(obj => {
-      return obj.userId === user.id;
-    }), 1);
-
     Connection.broadcast({
       type: 'remove',
       nid: user.character.nid
     });
 
-    console.log('logged users count: ', this.users.length);
-  };
+    Connection.logUserCount();
+  }
+
+  spawnPlayer(connection)
+  {
+    let x = 10;
+    let y = 6;
+
+    let pos = new Vector2(x, y);
+    let player = GameObjectManager.createPlayer(pos, connection.user.username, connection);
+    connection.user.area = this.area;
+    connection.user.character = player;
+
+    Connection.broadcastToOthers(connection.user.ws, {
+      type: 'add',
+      obj: player
+    });
+  }
+
+  respawnPlayer(connection)
+  {
+    //connection.user.character.destroy();
+    connection.user.character = null;
+
+    let x = 10;
+    let y = 6;
+
+    let pos = new Vector2(x, y);
+    let player = GameObjectManager.createPlayer(pos, connection.user.username, connection);
+    connection.user.area = this.area;
+    connection.user.character = player;
+
+    Connection.broadcast({
+      type: 'add',
+      obj: player
+    });
+
+    connection.user.ws.send(JSON.stringify({
+      type: 'player',
+      player: connection.user.character
+    }));
+
+    let char = connection.user.character;
+    console.log(`Respawn ${char.name} with nid ${char.nid}`);
+  }
 }
 
 module.exports = Game;

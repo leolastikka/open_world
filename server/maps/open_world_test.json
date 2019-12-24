@@ -403,6 +403,18 @@
                  "width":0,
                  "x":248.25,
                  "y":248.75
+                }, 
+                {
+                 "height":0,
+                 "id":22,
+                 "name":"Target Dummy",
+                 "point":true,
+                 "rotation":0,
+                 "type":"enemy",
+                 "visible":true,
+                 "width":0,
+                 "x":199.25,
+                 "y":88.75
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -411,7 +423,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":22,
+ "nextobjectid":23,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.2.4",
