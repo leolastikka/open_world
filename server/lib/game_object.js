@@ -121,6 +121,7 @@ class GameObject
 
   finishAction()
   {
+    console.log(`${this.name} finishes ${this.action.constructor.name}`);
     this.action.finish();
     this.action = null;
   }
@@ -165,7 +166,7 @@ class GameObject
     else // if need to move
     {
       let startPos = this.path ? this.path[0] : this.pos;
-      let shortestPath = Navigator.findShortestPath(startPos, this.action.targetObject.getInteractPositions());
+      let shortestPath = Navigator.findShortestPath(Vector2.clone(startPos), this.action.targetObject.getInteractPositions());
 
       if (this.path) // if already has a path
       {
@@ -208,7 +209,6 @@ class GameObject
     }
     else if (this.action instanceof Actions.AttackAction)
     {
-      //if (this._isDestroyed) throw new Error(`Trying to do attack by nid: ${this.nid}`);
       this.combatController.attack();
       if (this.action.isFinished)
       {
@@ -263,79 +263,67 @@ class GameObject
         this.decimalPos.add(norm);
         return;
       }
-      else // if next node is reached
+
+      // if next node is reached
+      movementDistance -= distance;
+      this.pos = Vector2.clone(nextPos); // move to next pos in tile grid
+      this.decimalPos = Vector2.clone(this.pos);
+
+      this.path.shift(); // remove first element
+      if (this.path.length === 0) // if destination reached
       {
-        movementDistance -= distance;
-        this.pos = Vector2.clone(nextPos); // move to next pos in tile grid
-        this.decimalPos = Vector2.clone(this.pos);
-
-        this.path.shift(); // remove first element
-        if (this.path.length === 0) // if destination reached
+        if (this.nextPath) // continue to next path if possible
         {
-          if (this.nextPath) // continue to next path if possible
-          {
-            this.path = this.nextPath;
-            this.nextPath = null;
-            nextPos = this.path[0];
-
-            Connection.broadcast({
-              type: 'move',
-              nid: this.nid,
-              pos: this.decimalPos,
-              path: this.path,
-              speed: this.speed
-            });
-          }
-          else {
-            this.path = null;
-            this._doActionInRange();
-            return;
-          }
-        }
-        else // if path continues
-        {
+          this.path = this.nextPath;
+          this.nextPath = null;
           nextPos = this.path[0];
+
+          Connection.broadcast({
+            type: 'move',
+            nid: this.nid,
+            pos: this.decimalPos,
+            path: this.path,
+            speed: this.speed
+          });
         }
+        else {
+          this.path = null;
+          this._doActionInRange();
+          return;
+        }
+      }
+      else // if path continues
+      {
+        nextPos = this.path[0];
       }
     }
   }
 
   _updateInteractAction()
   {
-    if (!this.action.targetObject)
-    {
-      console.log(this.action);
-    }
     let diff = Vector2.sub(this.action.targetObject.decimalPos, this.decimalPos);
     if (diff.length <= this.action.range) // if inside interaction range
     {
       this._doActionInRange();
 
-      // if (this.path) // if still have path left, end it
-      // {
-      //   this.path = [this.path[0]];
-      //   this.state = 'moving';
-      //   Connection.broadcast({
-      //     type: 'move',
-      //     nid: this.nid,
-      //     pos: this.decimalPos,
-      //     path: this.path,
-      //     speed: this.speed
-      //   });
-      // }
+      if (this.path.length > 1) // if still have path left, end it
+      {
+        this.path = [this.path[0]];
+        this.state = 'moving';
+        Connection.broadcast({
+          type: 'move',
+          nid: this.nid,
+          pos: this.decimalPos,
+          path: this.path,
+          speed: this.speed
+        });
+      }
     }
     else // if have to move closer
     {
       if (this.action.positionUpdated) // if need to calculate new path
       {
-        if (this.action instanceof Actions.TalkAction)
-        {
-          this.startAction(new Actions.TalkAction(this, this.action.targetObject, 1));
-        }
-        else if (this.action instanceof Actions.AttackAction)
-        {
-          this.startAction(new Actions.AttackAction(this, this.action.targetObject, 1));
-        }
+        this._startInteractAction();
       }
       else // if continue using old path
       {

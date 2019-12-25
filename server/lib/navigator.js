@@ -75,8 +75,8 @@ class Navigator
   static getNeighbors(pos)
   {
     let node = this.grid.getNodeAt(pos.x, pos.y);
-    let neightbors = this.grid.getNeighbors(node, PF.DiagonalMovement.Never);
-    return neightbors.map(point => new Vector2(point.x, point.y));
+    let neighbors = this.grid.getNeighbors(node, PF.DiagonalMovement.Never);
+    return neighbors.map(point => new Vector2(point.x, point.y));
   }
 
   static getWalkabilityData()

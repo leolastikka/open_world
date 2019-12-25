@@ -265,30 +265,29 @@ class Character extends GameObject
         this.pos.add(norm);
         return;
       }
-      else // if next node is reached
-      {
-        movementDistance -= distance;
-        this.pos = Vector2.clone(nextPos);
 
-        this.path.shift(); // remove first element
-        if (this.path.length === 0) // if destination reached
+      // if next node is reached
+      movementDistance -= distance;
+      this.pos = Vector2.clone(nextPos);
+
+      this.path.shift(); // remove first element
+      if (this.path.length === 0) // if destination reached
+      {
+        if (this.nextPath) // continue to next path if possible
         {
-          if (this.nextPath) // continue to next path if possible
-          {
-            this.path = this.nextPath;
-            this.nextPath = null;
-            nextPos = Vector2.clone(this.path[0]);
-          }
-          else {
-            this.state = 'idle';
-            this.path = null;
-            return;
-          }
-        }
-        else // if path continues
-        {
+          this.path = this.nextPath;
+          this.nextPath = null;
           nextPos = Vector2.clone(this.path[0]);
         }
+        else {
+          this.state = 'idle';
+          this.path = null;
+          return;
+        }
+      }
+      else // if path continues
+      {
+        nextPos = Vector2.clone(this.path[0]);
       }
     }
   }
