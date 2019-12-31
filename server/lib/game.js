@@ -20,7 +20,6 @@ class Game
     this.update = this.update.bind(this);
 
     this.area = null;
-    this.pathfinder = null;
 
     this.frameTime = 100; // ms
   }
@@ -129,24 +128,18 @@ class Game
   // WebSocket functions
   onConnectedUser(connection)
   {
-    console.log('Game.onConnectedUser');
     this.spawnPlayer(connection);
     Connection.logUserCount();
   }
 
   onReady(user)
   {
-    console.log('Game.onReady');
     user.ws.send(JSON.stringify({
       type: 'mapData',
       tiles: user.area.tiles,
       walkable: Navigator.getWalkabilityData(),
       objects: GameObjectManager.getPublicObjects()
     }));
-
-    let objNIDs = [];
-    user.area.publicObjects.forEach(obj => objNIDs.push(obj.nid));
-    console.log('sent objects: ', objNIDs);
 
     user.ws.send(JSON.stringify({
       type: 'player',
@@ -157,9 +150,6 @@ class Game
   onAction(user, data)
   {
     let character = user.character;
-    console.log('onAction');
-    console.log('data: ', data);
-    console.log('user character: ', user.character.nid);
     let action = null;
     switch(data.action)
     {
@@ -207,29 +197,29 @@ class Game
 
   respawnPlayer(connection)
   {
-    //connection.user.character.destroy();
-    connection.user.character = null;
+    setTimeout(() => {
+      connection.user.character = null;
 
-    let x = 10;
-    let y = 6;
+      let x = 10;
+      let y = 6;
 
-    let pos = new Vector2(x, y);
-    let player = GameObjectManager.createPlayer(pos, connection.user.username, connection);
-    connection.user.area = this.area;
-    connection.user.character = player;
+      let pos = new Vector2(x, y);
+      let player = GameObjectManager.createPlayer(pos, connection.user.username, connection);
+      connection.user.area = this.area;
+      connection.user.character = player;
 
-    Connection.broadcast({
-      type: 'add',
-      obj: player
-    });
+      Connection.broadcast({
+        type: 'add',
+        obj: player
+      });
 
-    connection.user.ws.send(JSON.stringify({
-      type: 'player',
-      player: connection.user.character
-    }));
+      connection.user.ws.send(JSON.stringify({
+        type: 'player',
+        player: player
+      }));
 
-    let char = connection.user.character;
-    console.log(`Respawn ${char.name} with nid ${char.nid}`);
+      console.log(`Respawn Player "${player.name}" with nid ${player.nid}`);
+    }, 1000);
   }
 }
 

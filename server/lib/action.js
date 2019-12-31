@@ -121,8 +121,6 @@ class CombatController
     this.hp = 10;
     this.damage = damage;
 
-    this._action = null;
-
     this._nextAttackTime = Time.totalTime;
     this._attackIntervalTime = 1;
   }

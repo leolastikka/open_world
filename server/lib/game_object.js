@@ -91,10 +91,12 @@ class GameObject
       if (this.action instanceof Actions.AttackAction &&
           this.action.targetObject.nid === action.targetObject.nid) // if already doing same action
       {
+        console.log(`${this.name} is already attacking `);
         return;
       }
       else if (this.action instanceof Actions.InteractAction) // end previous action if needed
       {
+        console.log(`finishing ${this.action.constructor.name} for ${this.name}`);
         this.action.finish(Actions.InterruptCause.InterruptByUser);
       }
       else if (this.action instanceof Actions.MoveAction)
@@ -102,6 +104,7 @@ class GameObject
         this.action.finish(Actions.InterruptCause.HigherPriorityOverride);
       }
 
+      console.log(`starting ${action.constructor.name} for ${this.name}`);
       this.action = action;
       this.combatController.startAttack();
       this._startInteractAction();
@@ -165,9 +168,14 @@ class GameObject
     }
     else // if need to move
     {
-      let startPos = this.path ? this.path[0] : this.pos;
+      let startPos = (this.path && this.path.length) ? this.path[0] : this.pos;
       let shortestPath = Navigator.findShortestPath(Vector2.clone(startPos), this.action.targetObject.getInteractPositions());
-
+      if (!shortestPath || shortestPath.length === 0)
+      {
+        return;
+        console.log(shortestPath);
+        throw new Error('cannot reach target');
+      }
       if (this.path) // if already has a path
       {
         if (!this.nextPath) // if no next path
@@ -306,10 +314,9 @@ class GameObject
     {
       this._doActionInRange();
 
-      if (this.path.length > 1) // if still have path left, end it
+      if (this.path && this.path.length > 1) // if still have path left, end it
       {
         this.path = [this.path[0]];
-        this.state = 'moving';
         Connection.broadcast({
           type: 'move',
           nid: this.nid,
@@ -321,7 +328,7 @@ class GameObject
     }
     else // if have to move closer
     {
-      if (this.action.positionUpdated) // if need to calculate new path
+      if (this.action.positionUpdated || !this.path) // if need to calculate new path
       {
         this._startInteractAction();
       }
@@ -362,7 +369,7 @@ class GameObject
       return;
     }
 
-    console.log(`Destroying object with nid: ${this.nid}`);
+    console.log(`Destroying ${this.constructor.name} "${this.name}" with nid: ${this.nid}`);
 
     this._isDestroyed = true;
     GameObjectManager._gameObjectDestroyed = true;
@@ -370,6 +377,7 @@ class GameObject
 
   _dispose()
   {
+    console.log(`Calling _dispose for ${this.nid}`);
     if (this.combatController)
     {
       this.combatController.dispose()
@@ -422,6 +430,7 @@ class Player extends Character
     {
       this._isRespawning = true;
       this._connection.respawnPlayer();
+      this._connection = null;
     }
   }
 }
@@ -607,6 +616,8 @@ class GameObjectManager
   {
     let player = new Player(pos, name, connection);
     this._gameObjects.push(player);
+    console.log(`Created player "${player.name}" with nid ${player.nid}`);
+
     return player;
   }
 
@@ -621,6 +632,7 @@ class GameObjectManager
   {
     let enemy = new Enemy(pos, name, id);
     this._gameObjects.push(enemy);
+    console.log(`Created Enemy with nid ${enemy.nid}`);
     return enemy;
   }
   
@@ -666,6 +678,13 @@ class GameObjectManager
   static _getNewNID()
   {
     return this._currentNID++;
+  }
+
+  static _printPublicNIDs()
+  {
+    let objNIDs = [];
+    this.getPublicObjects().forEach(obj => objNIDs.push(obj.nid));
+    console.log(objNIDs);
   }
 }
 

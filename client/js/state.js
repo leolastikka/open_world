@@ -161,6 +161,8 @@ class GameState extends State
     this.logoutCallback = logoutCallback;
     this.isLoading = true;
 
+    this.playerObject = null;
+
     this.mapSize = null;
 
     this.loadingElement = document.getElementById('loading');
@@ -362,6 +364,7 @@ class GameState extends State
       if (go.nid === data.player.nid)
       {
         go._isOwned = true;
+        this.playerObject = go;
       }
     });
 
@@ -405,6 +408,15 @@ class GameState extends State
   {
     console.log(`onRemove nid: ${data.nid}`);
     let go = GameObjectManager.getByNID(data.nid);
+
+    if (go === this.playerObject)
+    {
+      this.loadingElement.removeAttribute('hidden');
+      this.gui.hide();
+
+      this.playerObject = null;
+    }
+
     go.destroy();
   }
 

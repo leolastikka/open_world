@@ -65,6 +65,12 @@ class Connection
 
   onClose(event)
   {
+    if (this.ws)
+    {
+      this.ws.close();
+      this.ws = null;
+    }
+
     if (this.user)
     {
       this.game.onDisconnectedUser(this.user);
@@ -77,11 +83,8 @@ class Connection
       }
       this.user = null;
     }
-    if (this.ws)
-    {
-      this.ws.close();
-      this.ws = null;
-    }
+
+    this.game = null;
   }
 
   respawnPlayer()
@@ -103,16 +106,12 @@ class Connection
 
   static sendToUser(userId, data)
   {
-    let nid = data.obj ? data.obj.nid : data.nid;
-    console.log(`Connection.sendTouser type: ${data.type}, nid: ${nid}`);
     let user = this._game.users.find(u => u.id === userId);
     user.ws.send(JSON.stringify(data));
   }
   
   static broadcast(data)
   {
-    let nid = data.obj ? data.obj.nid : data.nid;
-    console.log(`Connection.broadcast type: ${data.type}, nid: ${nid}`);
     Connection._wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(data));
@@ -122,8 +121,6 @@ class Connection
 
   static broadcastToOthers(ws, data)
   {
-    let nid = data.obj ? data.obj.nid : data.nid;
-    console.log(`Connection.broadcastToOthers type: ${data.type}, nid: ${nid}`);
     Connection._wss.clients.forEach((client) => {
       if (client !== ws && client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(data));
