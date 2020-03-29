@@ -4,6 +4,7 @@ const Time = require('./time');
 const Navigator = require('./navigator');
 const Connection = require('./connection');
 const Actions = require('./action');
+const Equipment = require('./item').Equipment;
 
 const Type = Object.freeze({
   None: 'none',
@@ -401,6 +402,7 @@ class Character extends GameObject
   constructor(pos, name)
   {
     super(pos, name);
+    this._equipment = new Equipment();
   }
 }
 

@@ -1,0 +1,16 @@
+[
+  {
+    "description": "Baton Guard",
+    "typeId": 1,
+    "equipment": {
+      "weapon": { "id": 1, "name": "Training Baton" },
+      "armor": { "id": 3, "name": "Training Armor" }
+    },
+    "bag": {
+      "size": 10,
+      "items": [
+        { "id": 5, "name": "Healing Kit" }
+      ]
+    }
+  }
+]

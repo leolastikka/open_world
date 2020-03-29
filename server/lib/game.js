@@ -46,7 +46,7 @@ class Game
   // Server logic functions
   loadArea()
   {
-    let mapJson = JSON.parse(FS.readFileSync(Path.join(__dirname, '../maps/open_world_test.json')));
+    let mapJson = JSON.parse(FS.readFileSync(Path.join(__dirname, '../resources/map_test.json')));
 
     let mapSize = mapJson.width;
     let tileSize = mapJson.tilewidth;
