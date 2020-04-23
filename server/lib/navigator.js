@@ -1,65 +1,54 @@
 const PF = require('pathfinding');
-const Vector2 = require('./math').Vector2;
+const { Vector2 } = require('./math');
 
-class Navigator
-{
-  static init(area)
-  {
-    this.area = area;
-    this.grid = new PF.Grid(area.size, area.size);
-    this.finder = new PF.AStarFinder({
+class Navigator {
+  constructor(area) {
+    this._area = area;
+    this._grid = new PF.Grid(area.size, area.size);
+    this._finder = new PF.AStarFinder({
       allowDiagonal: true,
       dontCrossCorners: true
     });
 
-    for (let i=0; i<area.tiles.length; i++)
-    {
-      for (let j=0; j<area.tiles[i].length; j++)
-      {
+    for (let i=0; i<area.tiles.length; i++) {
+      for (let j=0; j<area.tiles[i].length; j++) {
         let isWalkable = area.tiles[i][j] < 5;
-        this.grid.setWalkableAt(j, i, isWalkable);
+        this._grid.setWalkableAt(j, i, isWalkable);
       }
     }
   }
 
-  static findPath(startPos, endPos)
-  {
-    if (!this._isValidPos(startPos) || !this._isValidPos(endPos))
-    {
+  findPath = (startPos, endPos) => {
+    if (!this._isValidPos(startPos) || !this._isValidPos(endPos)) {
       return null;
     }
 
-    let grid = this.grid.clone();
+    let grid = this._grid.clone();
     let path = [];
-    let arr = this.finder.findPath(startPos.x, startPos.y, endPos.x, endPos.y, grid);
-    for (let i=1; i<arr.length; i++)
-    {
+    let arr = this._finder.findPath(startPos.x, startPos.y, endPos.x, endPos.y, grid);
+    for (let i=1; i<arr.length; i++) {
       path.push(new Vector2(arr[i][0], arr[i][1]));
     }
     return path;
   }
 
-  static findShortestPath(startPos, endPositions)
-  {
+  findShortestPath = (startPos, endPositions) => {
     let resultPath = null;
 
-    if (!this._isValidPos(startPos))
-    {
+    if (!this._isValidPos(startPos)) {
       return resultPath;
     }
 
     let paths = [];
     endPositions.forEach(pos => {
-      paths.push(Navigator.findPath(startPos, pos));
+      paths.push(this.findPath(startPos, pos));
     });
 
     paths.forEach(path => {
-      if (!resultPath)
-      {
+      if (!resultPath) {
         resultPath = path;
       }
-      else if (path.length < resultPath.length)
-      {
+      else if (path.length < resultPath.length) {
         resultPath = path;
       }
     });
@@ -67,39 +56,41 @@ class Navigator
     return resultPath;
   }
 
-  static setWalkableAt(pos, walkable=true)
-  {
-    this.grid.setWalkableAt(pos.x, pos.y, walkable);
+  setWalkableAt = (pos, walkable=true) => {
+    this._grid.setWalkableAt(pos.x, pos.y, walkable);
   }
 
-  static getNeighbors(pos)
-  {
-    let node = this.grid.getNodeAt(pos.x, pos.y);
-    let neighbors = this.grid.getNeighbors(node, PF.DiagonalMovement.Never);
+  getNeighbors = (pos) => {
+    let node = this._grid.getNodeAt(pos.x, pos.y);
+    let neighbors = this._grid.getNeighbors(node, PF.DiagonalMovement.Never);
     return neighbors.map(point => new Vector2(point.x, point.y));
   }
 
-  static getWalkabilityData()
-  {
+  getWalkabilityData = () => {
     let result = [];
-    for (let i=0; i<this.area.size; i++)
-    {
+    for (let i=0; i<this._area.size; i++) {
       let row = [];
-      for (let j=0; j<this.area.size; j++)
-      {
-        row[j] = this.grid.getNodeAt(j, i).walkable ? 1 : 0;
+      for (let j=0; j<this._area.size; j++) {
+        row[j] = this._grid.getNodeAt(j, i).walkable ? 1 : 0;
       }
       result.push(row);
     }
     return result;
   }
 
-  static _isValidPos(pos)
-  {
+  _isValidPos = (pos) => {
     return pos &&
-           (pos.x >= 0 && pos.x <= this.area.size) &&
-           (pos.y >= 0 && pos.y <= this.area.size);
+           (pos.x >= 0 && pos.x <= this._area.size) &&
+           (pos.y >= 0 && pos.y <= this._area.size);
+  }
+
+  dispose = () => {
+    this._area = null;
+    this._grid = null;
+    this._finder = null;
   }
 }
 
-module.exports = Navigator;
+module.exports = {
+  Navigator
+};

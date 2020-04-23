@@ -1,0 +1,38 @@
+[
+  {
+    "description": "Station Guard",
+    "type": "npc_station_guard",
+    "baseType": "npc",
+
+    "respawnTime": 15,
+    "speed": 1,
+
+    "equipment": {
+      "weapon": { "id": 1, "name": "Training Baton" },
+      "armor": { "id": 3, "name": "Training Armor" }
+    },
+    "items": [
+      { "id": "consumable_healing_kit" }
+    ]
+  },
+  {
+    "description": "Basic Crate",
+    "type": "container_crate",
+    "baseType": "container",
+    "items": [
+      { "id": "consumable_healing_kit" }
+    ]
+  },
+  {
+    "description": "Station Worker",
+    "type": "npc_station_worker",
+    "baseType": "npc",
+    
+    "speed": 1
+  },
+  {
+    "description": "Start Area Info Cleric",
+    "type": "npc_info",
+    "baseType": "npc"
+  }
+]

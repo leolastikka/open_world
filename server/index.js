@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const WebSocket = require('ws');
 const Game = require('./lib/game');
-const Connection = require('./lib/connection');
+const ConnectionManager = require('./lib/connection').ConnectionManager;
 
 let port = process.env.PORT;
 if (port == null || port == "") {
@@ -17,14 +17,14 @@ const wss = new WebSocket.Server({server: server});
 
 const game = new Game(null, wss);
 const authController = require('./controllers/auth')(null);
-Connection.init(null, game, wss, authController);
+ConnectionManager.init(null, game, wss, authController);
 
 app.use('/', express.static(path.join(__dirname, '../client')));
 
 app.use(bodyParser.json());
 app.post('/login', authController.login);
 
-wss.on('connection', Connection.onConnection);
+wss.on('connection', ConnectionManager.onConnection);
 
 game.start(() => {
   server.listen(port, function listen() {

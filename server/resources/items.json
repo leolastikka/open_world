@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "weapon_training_baton",
     "name": "Training Baton",
     "type": "weapon",
     "damage": 3,
@@ -8,7 +8,7 @@
     "range": 1
   },
   {
-    "id": 2,
+    "id": "weapon_training_pistol",
     "name": "Training Pistol",
     "type": "weapon",
     "weaponType": "ranged",
@@ -17,19 +17,19 @@
     "range": 4
   },
   {
-    "id": 3,
+    "id": "armor_training",
     "name": "Training Armor",
     "type": "armor",
     "defence": 1
   },
   {
-    "id": 4,
+    "id": "ammo_training",
     "name": "Training Ammo",
     "type": "ammo",
     "damage": 1
   },
   {
-    "id": 5,
+    "id": "consumable_healing_kit",
     "name": "Healing Kit",
     "type": "consumable",
     "heal": 5

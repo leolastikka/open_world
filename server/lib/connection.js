@@ -1,11 +1,8 @@
 const _ = require('lodash');
 const WebSocket = require('ws');
-const GameObjectManager = require('./game_object').GameObjectManager;
 
-class Connection
-{
-  static init(db, game, wss, authController)
-  {
+class ConnectionManager {
+  static init(db, game, wss, authController) {
     this._game = game;
     this._wss = wss;
     this._authController = authController;
@@ -13,19 +10,52 @@ class Connection
     this.onConnection = this.onConnection.bind(this);
   }
 
-  constructor(ws, game)
-  {
+  static onConnection(ws, req) {
+    let connection = new Connection(ws, this._game);
+
+    ws.on('message', connection.onMessage);
+    ws.on('close', connection.onClose);
+
+    ws.on('error', (e) => {
+      console.log('error: ', e);
+    });
+  }
+
+  static sendToUser(userId, data) {
+    let user = this._game.users.find(u => u.id === userId);
+    user.ws.send(JSON.stringify(data));
+  }
+  
+  static broadcast(data) {
+    ConnectionManager._wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(data));
+      }
+    });
+  }
+
+  static broadcastToOthers(ws, data) {
+    ConnectionManager._wss.clients.forEach((client) => {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(data));
+      }
+    });
+  }
+
+  static logUserCount() {
+    console.log(`Logged users: ${this._wss.clients.size}`);
+  }
+}
+
+class Connection {
+  constructor(ws, game) {
     this.ws = ws;
     this.game = game;
     this.user = null;
     this.playerObject = null;
-
-    this.onMessage = this.onMessage.bind(this);
-    this.onClose = this.onClose.bind(this);
   }
 
-  onMessage(msg)
-  {
+  onMessage = (msg) => {
     let data = null;
 
     try {
@@ -37,7 +67,7 @@ class Connection
     };
 
     if (!this.ws.isAuthenticated) {
-      let authenticatedUser = Connection._authController.authenticateWebSocket(this.ws, data);
+      let authenticatedUser = ConnectionManager._authController.authenticateWebSocket(this.ws, data);
       if (authenticatedUser) {
         this.user = authenticatedUser;
         this.game.onConnectedUser(this);
@@ -63,21 +93,17 @@ class Connection
     }
   }
 
-  onClose(event)
-  {
-    if (this.ws)
-    {
+  onClose = (event) => {
+    if (this.ws) {
       this.ws.close();
       this.ws = null;
     }
 
-    if (this.user)
-    {
+    if (this.user) {
       this.game.onDisconnectedUser(this.user);
-      Connection._authController.removeUser(this.user); // temporary
+      ConnectionManager._authController.removeUser(this.user); // temporary
 
-      if (this.user.character)
-      {
+      if (this.user.character) {
         this.user.character.destroy();
         this.user.character = null;
       }
@@ -87,51 +113,10 @@ class Connection
     this.game = null;
   }
 
-  respawnPlayer()
-  {
+  respawnPlayer = () => {
     this.game.respawnPlayer(this);
-  }
-
-  static onConnection(ws, req)
-  {
-    let connection = new Connection(ws, this._game);
-
-    ws.on('message', connection.onMessage);
-    ws.on('close', connection.onClose);
-
-    ws.on('error', (e) => {
-      console.log('error: ', e);
-    });
-  }
-
-  static sendToUser(userId, data)
-  {
-    let user = this._game.users.find(u => u.id === userId);
-    user.ws.send(JSON.stringify(data));
-  }
-  
-  static broadcast(data)
-  {
-    Connection._wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(data));
-      }
-    });
-  }
-
-  static broadcastToOthers(ws, data)
-  {
-    Connection._wss.clients.forEach((client) => {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(data));
-      }
-    });
-  }
-
-  static logUserCount()
-  {
-    console.log(`Logged users: ${this._wss.clients.size}`);
   }
 }
 
-module.exports = Connection;
+module.exports.Connection = Connection;
+module.exports.ConnectionManager = ConnectionManager;

@@ -111,7 +111,10 @@ class Equipment {
 
   toJSON() {
     return {
-
+      armor: this._armor,
+      weapon: this._weapon,
+      ammo: this._ammo,
+      bag: this._bag
     };
   }
 }
@@ -129,6 +132,13 @@ class Bag {
   get size() {
     return this._size;
   }
+
+  toJSON() {
+    return {
+      size: this._size,
+      items: this._items
+    };
+  }
 }
 
 class Item {
@@ -138,6 +148,17 @@ class Item {
     this._stackable = stackable;
     this._count = count;
   }
+
+  toJSON() {
+    return {
+      id: this._id,
+      count: this._count
+    };
+  }
+}
+
+class StackableItem extends Item {
+
 }
 
 class Weapon extends Item {
