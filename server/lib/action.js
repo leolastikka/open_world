@@ -1,66 +1,45 @@
-const Vector2 = require('./math').Vector2;
-const Time = require('./time');
+const { Vector2 } = require('./math');
+const { Time } = require('./time');
 const Connection = require('./connection');
-const GameObjectManger = require('./game_object').GameObjectManager;
 
-const InterruptCause = Object.freeze({
-  InterruptByUser: 1,
-  ActionDone: 2,
-  TargetRemoved: 3,
-  TargetBlocked: 4,
-  HigherPriorityOverride: 5
-});
-
-class Action
-{
-  constructor()
-  {
+class Action {
+  constructor() {
     this._finished = false;
-    this._interruptCause = null;
   }
 
-  update () {}
+  update = () => {}
 
-  finish(interruptCause = InterruptCause.ActionDone)
-  {
+  finish = () => {
     this._finished = true;
-    this._interruptCause = interruptCause;
   }
 
-  get isFinished()
-  {
+  get isFinished() {
     return this._finished;
   }
 }
 
-class MoveAction extends Action
-{
-  constructor(targetPos)
-  {
+class MoveAction extends Action {
+  constructor(targetPos) {
     super();
     this.targetPos = targetPos;
   }
 }
 
-class InteractAction extends Action
-{
-  constructor(ownerObject, targetObject, range)
-  {
+class InteractAction extends Action {
+  constructor(ownerEntity, targetEntity, range) {
     super();
-    this.ownerObject = ownerObject;
-    this.targetObject = targetObject;
+    this.ownerEntity = ownerEntity;
+    this.targetEntity = targetEntity;
     this.range = range;
 
-    this._lastTargetPosition = Vector2.clone(this.targetObject.pos);
+    this._lastTargetPosition = Vector2.clone(this.targetEntity.pos);
   }
 
-  updatePosition()
-  {
-    this._lastTargetPosition = Vector2.clone(this.targetObject.pos);
+  updatePosition() {
+    this._lastTargetPosition = Vector2.clone(this.targetEntity.pos);
   }
 
-  get positionUpdated()
-  {
+  get isPositionUpdated() {
     return !this.targetObject.pos.equals(this._lastTargetPosition);
   }
 
@@ -182,8 +161,6 @@ class CombatController
     this.ownerObject = null;
   }
 }
-
-module.exports.InterruptCause = InterruptCause;
 
 module.exports.MoveAction = MoveAction;
 module.exports.InteractAction = InteractAction;

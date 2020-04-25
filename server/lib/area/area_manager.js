@@ -3,10 +3,11 @@ const Path = require('path');
 const _ = require('lodash');
 const { Vector2 } = require('../math');
 const { Area } = require('./area');
+const { EntityManager } = require('../entity/entity_manager');
 
 class AreaManager {
   static init() {
-    this._areas = {};
+    this._areas = [];
     this._loadAreas();
   }
 
@@ -15,23 +16,23 @@ class AreaManager {
   }
 
   static _loadAreas() {
-    const mapsDir = '../../resources/maps';
-    let mapFiles = FS.readdirSync(Path.join(__dirname, mapsDir));
+    const areasDir = '../../resources/areas';
+    let areaFiles = FS.readdirSync(Path.join(__dirname, areasDir));
 
-    // create area for each map file
-    mapFiles.forEach(mapFile => {
-      let mapJson = JSON.parse(FS.readFileSync(Path.join(__dirname, `${mapsDir}/${mapFile}`)));
-      let mapName = mapFile.slice(0, -('.json'.length));
+    // create area for each area file
+    areaFiles.forEach(areaFile => {
+      let areaJson = JSON.parse(FS.readFileSync(Path.join(__dirname, `${areasDir}/${areaFile}`)));
+      let areaName = areaFile.slice(0, -('.json'.length));
 
-      let mapSize = mapJson.width;
-      let tileSize = mapJson.tilewidth;
+      let areaSize = areaJson.width;
+      let tileSize = areaJson.tilewidth;
       let tiles = [];
 
-      let tilesLayer = mapJson.layers.find(layer => layer.name === 'tiles');
-      let objectsLayer = mapJson.layers.find(layer => layer.name === 'objects');
-      let charactersLayer = mapJson.layers.find(layer => layer.name === 'characters');
-      let movementAreasLayer = mapJson.layers.find(layer => layer.name === 'movementAreas');
-      let linksLayer = mapJson.layers.find(layer => layer.name === 'links');
+      let tilesLayer = areaJson.layers.find(layer => layer.name === 'tiles');
+      let objectsLayer = areaJson.layers.find(layer => layer.name === 'objects');
+      let charactersLayer = areaJson.layers.find(layer => layer.name === 'characters');
+      let movementAreasLayer = areaJson.layers.find(layer => layer.name === 'movementAreas');
+      let linksLayer = areaJson.layers.find(layer => layer.name === 'links');
 
       // handle tiles
       for(let i = 0; i < tilesLayer.data.length; i += tilesLayer.width) {
@@ -39,7 +40,7 @@ class AreaManager {
       }
 
       // create new area
-      let area = new Area(mapSize, tiles);
+      let area = new Area(areaName, areaSize, tiles);
 
       
       // Gather all data to temp objects that needs to be linked by editor id
@@ -68,7 +69,7 @@ class AreaManager {
             Math.floor(obj.x / tileSize),
             Math.floor(obj.y / tileSize)
           );
-          let typeData = EntityManager.getByEntityId(obj.type);
+          let typeData = EntityManager.getDataByType(obj.type);
           area.addEntity(typeData, obj.name, pos);
           area.navigator.setWalkableAt(pos, false);
         }
@@ -80,7 +81,8 @@ class AreaManager {
           Math.floor(obj.x / tileSize),
           Math.floor(obj.y / tileSize)
         );
-        let char = area.addEntity(obj.type, obj.name, pos);
+        let typeData = EntityManager.getDataByType(obj.type);
+        let char = area.addEntity(typeData, obj.name, pos);
         let movementArea = movementAreas[char.id];
         if (movementArea && movementArea.length) {
           char.movementArea = movementArea;
@@ -88,7 +90,7 @@ class AreaManager {
       });
 
       // list the new area
-      this._areas[mapName] = area;
+      this._areas.push(area);
     });
   }
 }

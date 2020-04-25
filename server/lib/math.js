@@ -32,6 +32,10 @@ class Vector2 {
     this.y /= scalar;
   }
 
+  normalize() {
+    return this.div(this.length);
+  }
+
   equals(vector) {
     return this.x === vector.x && this.y === vector.y;
   }
@@ -50,10 +54,6 @@ class Vector2 {
 
   static div(vector, scalar) {
     return new Vector2(vector.x / scalar, vector.y / scalar);
-  }
-
-  static normalize(vector) {
-    return this.div(vector, vector.length);
   }
 
   static clone(vector) {

@@ -1,9 +1,10 @@
 const { Navigator } = require('../navigator');
-const { Container } = require('./container');
-const { NPC, Enemy } = require('./character');
+const { Container } = require('../entity/container');
+const { NPC, Enemy } = require('../entity/character');
 
 class Area {
-  constructor(size, tiles) {
+  constructor(name, size, tiles) {
+    this._name = name;
     this._size = size;
     this._tiles = tiles;
     this._navigator = new Navigator(this);
@@ -11,6 +12,10 @@ class Area {
     this._entities = [];
     this._spawnedEntities = [];
     this._entityDestroyed = false;
+  }
+
+  get name() {
+    return this._name;
   }
 
   get size() {
@@ -63,7 +68,7 @@ class Area {
         entity = new Container(this, typeData, name, pos);
         break;
       default:
-        throw new Error(`Unknown Entity Type: ${typeData.baseType}`);
+        throw new Error(`Unknown Entity Type: ${typeData.baseType}, for: ${name}`);
     }
 
     this._entities.push(entity);

@@ -15,17 +15,6 @@ const Type = Object.freeze({
   Container: 'container'
 });
 
-class GameObjectTemplate
-{
-  constructor(type, name, id, pos)
-  {
-    this.type = type;
-    this.name = name;
-    this.id = id;
-    this.pos = pos;
-  }
-}
-
 class GameObject
 {
   constructor(pos, name)
@@ -53,64 +42,7 @@ class GameObject
     return [];
   }
 
-  startAction(action)
-  {
-    if (action instanceof Actions.MoveAction)
-    {
-      if (this.action instanceof Actions.MoveAction &&
-          this.action.targetPos.equals(action.targetPos)) // if already doing same action
-      {
-        return;
-      }
-      else if (this.action instanceof Actions.InteractAction)
-      {
-        this.action.finish(Actions.InterruptCause.InterruptByUser)
-      }
-
-      // start new action
-      this.action = action;
-      this._startMoveAction();
-    }
-    else if (action instanceof Actions.TalkAction)
-    {
-      if (this.action instanceof Actions.TalkAction &&
-          this.action.targetObject.nid === action.targetObject.nid) // if already doing same action
-      {
-        return;
-      }
-      else if (this.action instanceof Actions.InteractAction) // end previous action if needed
-      {
-        this.action.finish(Actions.InterruptCause.InterruptByUser);
-      }
-
-      // start new action
-      this.action = action;
-      this._startInteractAction();
-    }
-    else if (action instanceof Actions.AttackAction)
-    {
-      if (this.action instanceof Actions.AttackAction &&
-          this.action.targetObject.nid === action.targetObject.nid) // if already doing same action
-      {
-        console.log(`${this.name} is already attacking `);
-        return;
-      }
-      else if (this.action instanceof Actions.InteractAction) // end previous action if needed
-      {
-        console.log(`finishing ${this.action.constructor.name} for ${this.name}`);
-        this.action.finish(Actions.InterruptCause.InterruptByUser);
-      }
-      else if (this.action instanceof Actions.MoveAction)
-      {
-        this.action.finish(Actions.InterruptCause.HigherPriorityOverride);
-      }
-
-      console.log(`starting ${action.constructor.name} for ${this.name}`);
-      this.action = action;
-      this.combatController.startAttack();
-      this._startInteractAction();
-    }
-  }
+  
 
   /** Returns true if this is not a target of the same object already */
   _startAsTargetOfObject(object)
@@ -123,232 +55,10 @@ class GameObject
     return false;
   }
 
-  finishAction()
-  {
-    console.log(`${this.name} finishes ${this.action.constructor.name}`);
-    this.action.finish();
-    this.action = null;
-  }
-
-  _startMoveAction()
-  {
-    let startPos = this.path ? this.path[0] : this.pos; // if on path, start next path from next node
-    let path = Navigator.findPath(startPos, this.action.targetPos);
-    if (Array.isArray(path) && path.length === 0)
-    {
-      return null;
-    }
-
-    if (this.path) // if already has a path
-    {
-      if (!this.nextPath) // if no next path
-      {
-        this.path = [this.path[0]]; // reduce current path to only next node
-      }
-      this.nextPath = path;
-    }
-    else { // if no path
-      this.path = path;
-
-      Connection.broadcast({
-        type: 'move',
-        nid: this.nid,
-        pos: this.decimalPos,
-        path: path,
-        speed: this.speed
-      });
-    }
-  }
-
-  _startInteractAction()
-  {
-    let diff = Vector2.sub(this.action.targetObject.decimalPos, this.decimalPos);
-    if (diff.length <= this.action.range) // if inside interaction range
-    {
-      this._doActionInRange();
-    }
-    else // if need to move
-    {
-      let startPos = (this.path && this.path.length) ? this.path[0] : this.pos;
-      let shortestPath = Navigator.findShortestPath(Vector2.clone(startPos), this.action.targetObject.getInteractPositions());
-      if (!shortestPath || shortestPath.length === 0)
-      {
-        return;
-        console.log(shortestPath);
-        throw new Error('cannot reach target');
-      }
-      if (this.path) // if already has a path
-      {
-        if (!this.nextPath) // if no next path
-        {
-          this.path = [this.path[0]]; // reduce current path to only next node
-        }
-        this.nextPath = shortestPath;
-      }
-      else { // if no path
-        this.path = shortestPath;
-
-        Connection.broadcast({
-          type: 'move',
-          nid: this.nid,
-          pos: this.decimalPos,
-          path: shortestPath,
-          speed: this.speed
-        });
-      }
-    }
-  }
-
-  _doActionInRange()
-  {
-    if (this.action instanceof Actions.MoveAction)
-    {
-      this.action.finish();
-      this.action = null;
-    }
-    else if (this.action instanceof Actions.TalkAction)
-    {
-      this._connection.user.ws.send(JSON.stringify({
-        type: 'dialog',
-        text: `Talking with ${this.action.targetObject.name}`
-      }));
   
-      this.action.finish();
-      this.action = null;
-    }
-    else if (this.action instanceof Actions.AttackAction)
-    {
-      this.combatController.attack();
-      if (this.action.isFinished)
-      {
-        this.action = null;
-      }
-    }
-  }
 
-  update()
-  {
-    if (!this.action)
-    {
-      this._updateIdle();
-    }
-    else
-    {
-      if (this.action instanceof Actions.MoveAction)
-      {
-        this._updateMove();
-      }
-      else if (this.action instanceof Actions.InteractAction)
-      {
-        this._updateInteractAction();
-      }
-    }
-  }
+  
 
-  _updateIdle() {}
-
-  _updateMove()
-  {
-    if (!this.path)
-    {
-      this._doActionInRange();
-      return;
-    }
-
-    let nextPos = this.path[0];
-    let movementDistance = this.speed * Time.deltaTime;
-
-    while(nextPos)
-    {
-      let curPos = this.decimalPos;
-
-      let diff = Vector2.sub(nextPos, curPos);
-      let distance = diff.length;
-
-      if (movementDistance < distance) // if next node is not reached
-      {
-        let norm = Vector2.normalize(diff);
-        norm.mult(movementDistance);
-        this.decimalPos.add(norm);
-        return;
-      }
-
-      // if next node is reached
-      movementDistance -= distance;
-      this.pos = Vector2.clone(nextPos); // move to next pos in tile grid
-      this.decimalPos = Vector2.clone(this.pos);
-
-      this.path.shift(); // remove first element
-      if (this.path.length === 0) // if destination reached
-      {
-        if (this.nextPath) // continue to next path if possible
-        {
-          this.path = this.nextPath;
-          this.nextPath = null;
-          nextPos = this.path[0];
-
-          Connection.broadcast({
-            type: 'move',
-            nid: this.nid,
-            pos: this.decimalPos,
-            path: this.path,
-            speed: this.speed
-          });
-        }
-        else {
-          this.path = null;
-          this._doActionInRange();
-          return;
-        }
-      }
-      else // if path continues
-      {
-        nextPos = this.path[0];
-      }
-    }
-  }
-
-  _updateInteractAction()
-  {
-    let diff = Vector2.sub(this.action.targetObject.decimalPos, this.decimalPos);
-    if (diff.length <= this.action.range) // if inside interaction range
-    {
-      this._doActionInRange();
-
-      if (this.path && this.path.length > 1) // if still have path left, end it
-      {
-        this.path = [this.path[0]];
-        Connection.broadcast({
-          type: 'move',
-          nid: this.nid,
-          pos: this.decimalPos,
-          path: this.path,
-          speed: this.speed
-        });
-      }
-    }
-    else // if have to move closer
-    {
-      if (this.action.positionUpdated || !this.path) // if need to calculate new path
-      {
-        this._startInteractAction();
-      }
-      else // if continue using old path
-      {
-        this._updateMove();
-      }
-    }
-
-    if (this.action) // update interaction if needed
-    {
-      this.action.updatePosition();
-    }
-  }
-
-  getInteractPositions()
-  {
-    return Navigator.getNeighbors(this.pos);
-  }
 
   toJSON()
   {
@@ -376,25 +86,7 @@ class GameObject
     GameObjectManager._gameObjectDestroyed = true;
   }
 
-  _dispose()
-  {
-    console.log(`Calling _dispose for ${this.nid}`);
-    if (this.combatController)
-    {
-      this.combatController.dispose()
-      this.combatController = null;
-    }
-
-    this._targetOfObjects.forEach(obj => {
-      obj.finishAction();
-    });
-    this._targetOfObjects = [];
-
-    Connection.broadcast({
-      type: 'remove',
-      nid: this.nid
-    });
-  }
+  
 }
 
 class Character extends GameObject
@@ -473,23 +165,6 @@ class NPC extends Character
   }
 }
 
-class Enemy extends NPC
-{
-  constructor(pos, name, id)
-  {
-    super(pos, name);
-    this.id = id;
-    this.type = 'enemy';
-    this.speed = 1;
-
-    this.nextMoveTime = Time.totalTime;
-  }
-
-  get actions()
-  {
-    return ['attack'];
-  }
-}
 
 module.exports.Type = Type;
 

@@ -1,5 +1,10 @@
 [
   {
+    "description": "Common Player Data",
+    "type": "player",
+    "baseType": "player"
+  },
+  {
     "description": "Station Guard",
     "type": "npc_station_guard",
     "baseType": "npc",
