@@ -58,7 +58,7 @@ class GameObjectManager
   static createPlayer(data)
   {
     let pos = new Vector2(data.pos.x, data.pos.y);
-    let player = new Character(data.nid, pos, new CharacterRenderer('white'), data.name, data.actions);
+    let player = new Character(data.networkId, pos, new CharacterRenderer('white'), data.name, data.actions);
     this._add(player);
     return player;
   }
@@ -66,7 +66,7 @@ class GameObjectManager
   static createNPC(data)
   {
     let pos = new Vector2(data.pos.x, data.pos.y);
-    let npc = new Character(data.nid, pos, new CharacterRenderer('yellow'), data.name, data.actions);
+    let npc = new Character(data.networkId, pos, new CharacterRenderer('yellow'), data.name, data.actions);
     this._add(npc, false);
     return npc;
   }
@@ -74,7 +74,7 @@ class GameObjectManager
   static createEnemy(data)
   {
     let pos = new Vector2(data.pos.x, data.pos.y);
-    let enemy = new Character(data.nid, pos, new CharacterRenderer('red'), data.name, data.actions);
+    let enemy = new Character(data.networkId, pos, new CharacterRenderer('red'), data.name, data.actions);
     this._add(enemy, false);
     return enemy;
   }
@@ -82,7 +82,7 @@ class GameObjectManager
   static createContainer(data)
   {
     let pos = new Vector2(data.pos.x, data.pos.y);
-    let container = new Container(data.nid, pos, new TileBoxRenderer('#706d40'), data.name, data.actions);
+    let container = new Container(data.networkId, pos, new TileBoxRenderer('#706d40'), data.name, data.actions);
     this._add(container, false);
     return container;
   }
@@ -90,14 +90,14 @@ class GameObjectManager
   static createInteractable(data)
   {
     let pos = new Vector2(data.pos.x, data.pos.y);
-    let interactable = new Interactable(data.nid, pos, new TileBoxRenderer('#16e700'), data.name, data.actions);
+    let interactable = new Interactable(data.networkId, pos, new TileBoxRenderer('#16e700'), data.name, data.actions);
     this._add(interactable, false);
     return interactable;
   }
 
-  static getByNID(nid)
+  static getByNetworkId(networkId)
   {
-    return this._gameObjects.find(go => go.nid === nid);
+    return this._gameObjects.find(go => go.networkId === networkId);
   }
 
   static getObjectsNearPosition(pos, range)
@@ -117,9 +117,9 @@ class GameObjectManager
 
 class GameObject
 {
-  constructor(nid=null, pos, renderer)
+  constructor(networkId=null, pos, renderer)
   {
-    this.nid = nid;
+    this.networkId = networkId;
     this.pos = pos;
     this.renderer = renderer;
     this._removed = false;
@@ -169,9 +169,9 @@ class GameObject
 
 class Tile extends GameObject
 {
-  constructor(nid, pos, renderer, isWalkable)
+  constructor(networkId, pos, renderer, isWalkable)
   {
-    super(nid, pos, renderer);
+    super(networkId, pos, renderer);
     this.isWalkable = isWalkable;
   }
 
@@ -186,9 +186,9 @@ class Tile extends GameObject
 
 class Character extends GameObject
 {
-  constructor(nid, pos, renderer, name, actions)
+  constructor(networkId, pos, renderer, name, actions)
   {
-    super(nid, pos, renderer);
+    super(networkId, pos, renderer);
     this.name = name;
     this._isOwned = false;
     this.state = 'none';
@@ -230,11 +230,11 @@ class Character extends GameObject
     this.actions.forEach(a => {
       if (a === 'talk')
       {
-        actions.push(new TalkAction(`Talk to ${this.name}`, this.nid));
+        actions.push(new TalkAction(`Talk to ${this.name}`, this.networkId));
       }
       else if (a === 'attack')
       {
-        actions.push(new AttackAction(`Attack ${this.name}`, this.nid));
+        actions.push(new AttackAction(`Attack ${this.name}`, this.networkId));
       }
     });
     return actions;
@@ -300,30 +300,30 @@ class Character extends GameObject
 
 class Container extends GameObject
 {
-  constructor(nid, pos, renderer, name, actions)
+  constructor(networkId, pos, renderer, name, actions)
   {
-    super(nid, pos, renderer);
+    super(networkId, pos, renderer);
     this.name = name;
     this.actions = actions;
   }
 
   getActions()
   {
-    return [new TalkAction(`Interact with ${this.name}`, this.nid)];
+    return [new TalkAction(`Interact with ${this.name}`, this.networkId)];
   }
 }
 
 class Interactable extends GameObject
 {
-  constructor(nid, pos, renderer, name, actions)
+  constructor(networkId, pos, renderer, name, actions)
   {
-    super(nid, pos, renderer);
+    super(networkId, pos, renderer);
     this.name = name;
     this.actions = actions;
   }
 
   getActions()
   {
-    return [new InteractAction(`Interact with ${this.name}`, this.nid)];
+    return [new InteractAction(`Interact with ${this.name}`, this.networkId)];
   }
 }

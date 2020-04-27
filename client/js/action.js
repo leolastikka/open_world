@@ -17,27 +17,27 @@ class WalkAction extends Action
 
 class InteractAction extends Action
 {
-  constructor(text, nid)
+  constructor(text, networkId)
   {
     super(text);
-    this.nid = nid;
+    this.networkId = networkId;
   }
 }
 
 class TalkAction extends InteractAction
 {
-  constructor(text, nid)
+  constructor(text, networkId)
   {
     super(text);
-    this.nid = nid;
+    this.networkId = networkId;
   }
 }
 
 class AttackAction extends InteractAction
 {
-  constructor(text, nid)
+  constructor(text, networkId)
   {
     super(text);
-    this.nid = nid;
+    this.networkId = networkId;
   }
 }

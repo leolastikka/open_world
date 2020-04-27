@@ -244,7 +244,7 @@ class GameState extends State
       this.sendWsAction({
         type: 'action',
         action: 'talk',
-        target: action.nid
+        target: action.networkId
       });
     }
     else if (action instanceof AttackAction)
@@ -252,7 +252,7 @@ class GameState extends State
       this.sendWsAction({
         type: 'action',
         action: 'attack',
-        target: action.nid
+        target: action.networkId
       });
     }
     this.gui.setLastAction(event.action.text);
@@ -306,9 +306,9 @@ class GameState extends State
     }
 
     
-    let objNIDs = [];
-    data.objects.forEach(obj => objNIDs.push(obj.nid));
-    console.log('objects: ', objNIDs);
+    let objNetworkIds = [];
+    data.objects.forEach(obj => objNetworkIds.push(obj.networkId));
+    console.log('objects: ', objNetworkIds);
 
     let objects = data.objects;
     for(let i=0; i<objects.length; i++)
@@ -337,7 +337,7 @@ class GameState extends State
       if(created && obj.path) // if object is moving
       {
         this.onMove({
-          nid: obj.nid,
+          networkId: obj.networkId,
           speed: obj.speed,
           pos: obj.decimalPos,
           path: obj.path
@@ -348,8 +348,8 @@ class GameState extends State
 
   onStatus(data)
   {
-    console.log(`onStatus nid: ${data.nid}`);
-    let go = GameObjectManager.getByNID(data.nid);
+    console.log(`onStatus networkId: ${data.networkId}`);
+    let go = GameObjectManager.getByNetworkId(data.networkId);
     go._inCombat = data.inCombat;
     if (data.hp)
     {
@@ -359,9 +359,9 @@ class GameState extends State
 
   onPlayer(data)
   {
-    console.log(`onPlayer ${data.player.name} nid: ${data.player.nid}`);
+    console.log(`onPlayer ${data.player.name} networkId: ${data.player.networkId}`);
     GameObjectManager._gameObjects.forEach(go => {
-      if (go.nid === data.player.nid)
+      if (go.networkId === data.player.networkId)
       {
         go._isOwned = true;
         this.playerObject = go;
@@ -374,8 +374,8 @@ class GameState extends State
 
   onMove(data)
   {
-    console.log(`onMove nid: ${data.nid}`);
-    let go = GameObjectManager.getByNID(data.nid);
+    console.log(`onMove networkId: ${data.networkId}`);
+    let go = GameObjectManager.getByNetworkId(data.networkId);
     console.log(`- onMove object: ${go.name}`);
     go.speed = data.speed;
     go.pos = Vector2.fromObject(data.pos);
@@ -389,7 +389,7 @@ class GameState extends State
 
   onAdd(data)
   {
-    console.log(`onAdd ${data.obj.type} ${data.obj.name} nid: ${data.obj.nid}`);
+    console.log(`onAdd ${data.obj.type} ${data.obj.name} networkId: ${data.obj.networkId}`);
     switch(data.obj.type)
     {
       case 'player':
@@ -406,8 +406,8 @@ class GameState extends State
 
   onRemove(data)
   {
-    console.log(`onRemove nid: ${data.nid}`);
-    let go = GameObjectManager.getByNID(data.nid);
+    console.log(`onRemove networkId: ${data.networkId}`);
+    let go = GameObjectManager.getByNetworkId(data.networkId);
 
     if (go === this.playerObject)
     {

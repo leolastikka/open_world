@@ -22,7 +22,7 @@ class GameObject
     this._isDestroyed = false;
     this._isPublic = true; // is sent to client
 
-    this.nid = GameObjectManager._getNewNID();
+    this.networkId = GameObjectManager._getNewNetworkId();
     this.pos = Vector2.clone(pos); // position in tile grid
     this.decimalPos = Vector2.clone(this.pos); // position when moving between tiles
     this.name = name;
@@ -63,7 +63,7 @@ class GameObject
   toJSON()
   {
     return {
-      nid: this.nid,
+      networkId: this.networkId,
       type: this.type,
       name: this.name,
       pos: this.pos,
@@ -80,7 +80,7 @@ class GameObject
       return;
     }
 
-    console.log(`Destroying ${this.constructor.name} "${this.name}" with nid: ${this.nid}`);
+    console.log(`Destroying ${this.constructor.name} "${this.name}" with networkId: ${this.networkId}`);
 
     this._isDestroyed = true;
     GameObjectManager._gameObjectDestroyed = true;

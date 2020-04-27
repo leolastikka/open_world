@@ -29,23 +29,31 @@ class Entity {
     return this._area.navigator.getNeighbors(this.pos);
   }
 
-  update = () => {}
+  get isSpawned() {
+    return this._isSpawned;
+  }
 
-  spawn = () => {
+  get isDestroyed() {
+    return this._isDestroyed;
+  }
+
+  update() {}
+
+  spawn() {
     this._isSpawned = true;
   }
 
   /**
    * Called when entity is removed from spawned entities
    */
-  despawn = () => {
+  despawn() {
     this._isSpawned = false;
   }
 
   /**
    * Called when entity is completely removed from entities
    */
-  dispose = () => {
+  dispose() {
     if (this._isSpawned) {
       this.despawn();
     }

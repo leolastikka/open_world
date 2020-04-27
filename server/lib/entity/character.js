@@ -1,6 +1,8 @@
 const { Entity } = require('./entity');
 const { Time } = require('../time');
 const { Vector2 } = require('../math');
+const { MoveAction, InteractAction, TalkAction, AttackAction } = require('../action');
+const { ConnectionManager } = require('../connection');
 
 class Character extends Entity {
   constructor(area, typeData, name, pos) {
@@ -27,27 +29,34 @@ class Character extends Entity {
     return this._typeData.speed;
   }
 
-  update = () => {
-    if (!this._action) {
-      this._updateIdle();
+  update() {
+    if (this._isSpawned) {
+      if (!this._action) {
+        this._updateIdle();
+      }
+      else {
+        if (this._action instanceof MoveAction) {
+          this._updateMove();
+        }
+        else if (this._action instanceof InteractAction) {
+          this._updateInteractAction();
+        }
+      }
     }
     else {
-      if (this._action instanceof Actions.MoveAction) {
-        this._updateMove();
-      }
-      else if (this._action instanceof Actions.InteractAction) {
-        this._updateInteractAction();
+      if (Time.totalTime >= this._nextSpawnTime) {
+        this.spawn();
       }
     }
   }
 
-  startAction = (action) => {
-    if (action instanceof Actions.MoveAction) {
-      if (this._action instanceof Actions.MoveAction &&
+  startAction(action) {
+    if (action instanceof MoveAction) {
+      if (this._action instanceof MoveAction &&
           this._action.targetPos.equals(action.targetPos)) { // if already doing same action
         return;
       }
-      else if (this._action instanceof Actions.InteractAction) {
+      else if (this._action instanceof InteractAction) {
         this.finishAction();
       }
 
@@ -55,12 +64,12 @@ class Character extends Entity {
       this._action = action;
       this._startMoveAction();
     }
-    else if (action instanceof Actions.TalkAction) {
-      if (this._action instanceof Actions.TalkAction &&
+    else if (action instanceof TalkAction) {
+      if (this._action instanceof TalkAction &&
           this._action.targetEntity.networkId === action.targetEntity.networkId) { // if already doing same action
         return;
       }
-      else if (this._action instanceof Actions.InteractAction) { // end previous action if needed
+      else if (this._action instanceof InteractAction) { // end previous action if needed
         this.finishAction();
       }
 
@@ -68,16 +77,16 @@ class Character extends Entity {
       this._action = action;
       this._startInteractAction();
     }
-    else if (action instanceof Actions.AttackAction)
+    else if (action instanceof AttackAction)
     {
-      if (this._action instanceof Actions.AttackAction &&
+      if (this._action instanceof AttackAction &&
           this._action.targetEntity.networkId === action.targetEntity.networkId) { // if already doing same action
         return;
       }
-      else if (this._action instanceof Actions.InteractAction) { // end previous action if needed
+      else if (this._action instanceof InteractAction) { // end previous action if needed
         this.finishAction();
       }
-      else if (this._action instanceof Actions.MoveAction) {
+      else if (this._action instanceof MoveAction) {
         this.finishAction();
       }
 
@@ -88,14 +97,14 @@ class Character extends Entity {
     }
   }
 
-  finishAction = () => {
+  finishAction() {
     this._action.finish();
     this._action = null;
   }
 
-  _updateIdle = () => {}
+  _updateIdle() {}
 
-  _updateMove = () => {
+  _updateMove() {
     if (!this._path) {
       this._doActionInRange();
       return;
@@ -148,7 +157,7 @@ class Character extends Entity {
     }
   }
 
-  _updateInteractAction = () => {
+  _updateInteractAction() {
     let diff = Vector2.sub(this._action.targetEntity.decimalPos, this._decimalPos);
     if (diff.length <= this._action.range) { // if inside interaction range
       this._doActionInRange();
@@ -178,12 +187,12 @@ class Character extends Entity {
     }
   }
 
-  _doActionInRange = () => {
-    if (this._action instanceof Actions.MoveAction) {
+  _doActionInRange() {
+    if (this._action instanceof MoveAction) {
       this._action.finish();
       this._action = null;
     }
-    else if (this._action instanceof Actions.TalkAction) {
+    else if (this._action instanceof TalkAction) {
       this._connection.user.ws.send(JSON.stringify({
         type: 'dialog',
         text: `Talking with ${this._action.targetEntity.name}`
@@ -192,7 +201,7 @@ class Character extends Entity {
       this._action.finish();
       this._action = null;
     }
-    else if (this._action instanceof Actions.AttackAction) {
+    else if (this._action instanceof AttackAction) {
       this._combatController.attack();
       if (this._action.isFinished) {
         this._action = null;
@@ -200,7 +209,7 @@ class Character extends Entity {
     }
   }
 
-  _startMoveAction = () => {
+  _startMoveAction() {
     // if on path, start next path from next node
     let startPos = this._path ? this._path[0] : this.pos; 
     let path = this._area.navigator.findPath(startPos, this._action.targetPos);
@@ -217,7 +226,7 @@ class Character extends Entity {
     else { // if no path
       this._path = path;
 
-      Connection.broadcast({
+      ConnectionManager.broadcast({
         type: 'move',
         networkId: this.networkId,
         decimalPos: this._decimalPos,
@@ -227,7 +236,7 @@ class Character extends Entity {
     }
   }
 
-  _startInteractAction = () => {
+  _startInteractAction() {
     let diff = Vector2.sub(this._action.targetEntity.pos, this._decimalPos);
     if (diff.length <= this._action.range) // if inside interaction range
     {
@@ -263,8 +272,9 @@ class Character extends Entity {
     }
   }
 
-  despawn = () => {
+  despawn() {
     this._isSpawned = false;
+    this._nextSpawnTime = Time.totalTime + this._typeData.respawnTime;
 
     if (this.combatController) {
       this.combatController.dispose()
@@ -278,7 +288,7 @@ class Character extends Entity {
 
     Connection.broadcast({
       type: 'remove',
-      nid: this.nid
+      networkId: this.networkId
     });
   }
 
@@ -288,7 +298,6 @@ class Character extends Entity {
       baseType: this._typeData.baseType,
       name: this._name,
       pos: this.pos,
-      decimalPos: this._decimalPos,
       path: this.path,
       actions: this.actions
     };
@@ -299,10 +308,16 @@ class Player extends Character {
   constructor(area, type, name, pos, equipment) {
     super(area, type, name, pos);
     this._equipment = equipment;
+    this.connection = null;
   }
 
   get speed() {
     return 2;
+  }
+
+  dispose() {
+    super.dispose();
+    this.connection = null;
   }
 }
 
@@ -315,10 +330,10 @@ class NPC extends Character {
     return ['talk'];
   }
 
-  _updateIdle = () => {
+  _updateIdle() {
     if (this.movementArea && this.movementArea.length) {
       let newPos = this.movementArea[Math.floor(Math.random() * (this.movementArea.length - 1))];
-      this.startAction(new Actions.MoveAction(newPos));
+      this.startAction(new MoveAction(newPos));
     }
   }
 }

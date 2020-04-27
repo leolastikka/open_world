@@ -11,6 +11,10 @@ class AreaManager {
     this._loadAreas();
   }
 
+  static getByName(name) {
+    return _.find(this._areas, {name: name});
+  }
+
   static update() {
     this._areas.forEach(area => area.update());
   }
@@ -27,20 +31,36 @@ class AreaManager {
       let areaSize = areaJson.width;
       let tileSize = areaJson.tilewidth;
       let tiles = [];
+      let links = [];
 
       let tilesLayer = areaJson.layers.find(layer => layer.name === 'tiles');
+      let linksLayer = areaJson.layers.find(layer => layer.name === 'links');
       let objectsLayer = areaJson.layers.find(layer => layer.name === 'objects');
       let charactersLayer = areaJson.layers.find(layer => layer.name === 'characters');
       let movementAreasLayer = areaJson.layers.find(layer => layer.name === 'movementAreas');
-      let linksLayer = areaJson.layers.find(layer => layer.name === 'links');
 
       // handle tiles
       for(let i = 0; i < tilesLayer.data.length; i += tilesLayer.width) {
         tiles.push(tilesLayer.data.slice(i, i + tilesLayer.width));
       }
 
+      // handle links
+      linksLayer.objects.forEach(obj => {
+        let pos = new Vector2(
+          Math.floor(obj.x / tileSize),
+          Math.floor(obj.y / tileSize)
+        );
+
+        links.push({
+          type: obj.type,
+          direction: obj.type.slice(0, obj.type.indexOf('_')),
+          name: obj.type.slice(obj.type.indexOf('_') + 1, obj.type.length),
+          pos: pos
+        });
+      });
+
       // create new area
-      let area = new Area(areaName, areaSize, tiles);
+      let area = new Area(areaName, areaSize, tiles, links);
 
       
       // Gather all data to temp objects that needs to be linked by editor id

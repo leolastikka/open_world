@@ -40,62 +40,52 @@ class InteractAction extends Action {
   }
 
   get isPositionUpdated() {
-    return !this.targetObject.pos.equals(this._lastTargetPosition);
+    return !this.targetEntity.pos.equals(this._lastTargetPosition);
   }
 
-  finish(interruptCause)
-  {
-    super.finish(interruptCause);
+  finish() {
+    super.finish();
     // remove this action from target
-    this.targetObject._targetOfObjects = this.targetObject._targetOfObjects.filter(obj => obj !== this.ownerObject);
-    this.targetObject = null;
+    this.targetEntity._targetOfEntities = this.targetEntity._targetOfEntities.filter(ent => ent !== this.ownerEntity);
+    this.targetEntity = null;
 
-    if (!this.ownerObject._isDestroyed) {
+    if (this.ownerEntity.isSpawned) {
       Connection.broadcast({
         type: 'status',
-        nid: this.ownerObject.nid,
+        networkId: this.ownerEntity.networkId,
         inCombat: false
       });
     }
 
-    this.ownerObject = null;
+    this.ownerEntity = null;
   }
 }
 
-class TalkAction extends InteractAction
-{
-  constructor(ownerObject, targetObject, range)
-  {
+class TalkAction extends InteractAction {
+  constructor(ownerObject, targetObject, range) {
     super(ownerObject, targetObject, range);
   }
 }
 
-class TradeAction extends InteractAction
-{
-  constructor(ownerObject, targetObject, range)
-  {
+class TradeAction extends InteractAction {
+  constructor(ownerObject, targetObject, range) {
     super(ownerObject, targetObject, range);
   }
 }
 
-class AttackAction extends InteractAction
-{
-  constructor(ownerObject, targetObject, range)
-  {
+class AttackAction extends InteractAction {
+  constructor(ownerObject, targetObject, range) {
     super(ownerObject, targetObject, range);
   }
 }
 
-class DialogController
-{
+class DialogController {
 
 }
 
-class CombatController
-{
-  constructor(ownerObject, damage)
-  {
-    this.ownerObject = ownerObject;
+class CombatController {
+  constructor(ownerEntity, damage) {
+    this.ownerEntity = ownerEntity;
 
     this.hp = 10;
     this.damage = damage;
@@ -104,69 +94,63 @@ class CombatController
     this._attackIntervalTime = 1;
   }
 
-  startAttack()
-  {
+  startAttack() {
     Connection.broadcast({
       type: 'status',
-      nid: this.ownerObject.nid,
+      networkId: this.ownerEntity.networkId,
       inCombat: true,
       hp: this.hp
     });
   }
 
-  attack()
-  {
-    if (this.ownerObject.action.targetObject._startAsTargetOfObject(this.ownerObject)) // if this is first actual attack
-    {
+  attack() {
+    // if this is first actual attack
+    if (this.ownerEntity.action.targetEntity._startAsTargetOfObject(this.ownerEntity)) {
       // start combat for target too
-      this.ownerObject.action.targetObject.startAction(
-        new AttackAction(this.ownerObject.action.targetObject, this.ownerObject, 1)
+      this.ownerEntity.action.targetEntity.startAction(
+        new AttackAction(this.ownerEntity.action.targetEntity, this.ownerEntity, 1)
       );
     }
-    if (Time.totalTime >= this._nextAttackTime)
-    {
-      this.ownerObject.action.targetObject.combatController.doDamage(this.damage);
+    if (Time.totalTime >= this._nextAttackTime) {
+      this.ownerEntity.action.targetEntity.combatController.doDamage(this.damage);
       this._nextAttackTime = Time.totalTime + this._attackIntervalTime;
     }
   }
 
-  doDamage(damage)
-  {
+  doDamage(damage) {
     this.hp -= damage;
 
-    if (this.hp < 0)
-    {
+    if (this.hp < 0) {
       this.hp = 0;
     }
 
-    if (this.ownerObject._isDestroyed)
-    {
-      throw new Error(`trying to destroy destroyed object with nid: ${this.ownerObject.nid}`)
+    if (!this.ownerEntity.isSpawned) {
+      throw new Error(`trying to despawn despawned object with networkId: ${this.ownerEntity.networkId}`)
     }
     Connection.broadcast({
       type: 'status',
-      nid: this.ownerObject.nid,
+      networkId: this.ownerEntity.networkId,
       inCombat: true,
       hp: this.hp
     });
 
-    if (this.hp === 0)
-    {
-      this.ownerObject.destroy();
+    if (this.hp === 0) {
+      this.ownerEntity.despawn();
     }
   }
 
-  dispose()
-  {
-    this.ownerObject = null;
+  dispose() {
+    this.ownerEntity = null;
   }
 }
 
-module.exports.MoveAction = MoveAction;
-module.exports.InteractAction = InteractAction;
-module.exports.TalkAction = TalkAction;
-module.exports.TradeAction = TradeAction;
-module.exports.AttackAction = AttackAction;
+module.exports = {
+  MoveAction,
+  InteractAction,
+  TalkAction,
+  TradeAction,
+  AttackAction,
 
-module.exports.DialogController = DialogController;
-module.exports.CombatController = CombatController;
+  DialogController,
+  CombatController
+};

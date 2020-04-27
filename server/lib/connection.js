@@ -104,7 +104,7 @@ class Connection {
       ConnectionManager._authController.removeUser(this.user); // temporary
 
       if (this.user.character) {
-        this.user.character.destroy();
+        this.user.character.dispose();
         this.user.character = null;
       }
       this.user = null;
@@ -112,11 +112,9 @@ class Connection {
 
     this.game = null;
   }
-
-  respawnPlayer = () => {
-    this.game.respawnPlayer(this);
-  }
 }
 
-module.exports.Connection = Connection;
-module.exports.ConnectionManager = ConnectionManager;
+module.exports = {
+  Connection,
+  ConnectionManager
+};

@@ -44,8 +44,8 @@ class Game {
     user.ws.send(JSON.stringify({
       type: 'mapData',
       tiles: user.area.tiles,
-      walkable: Navigator.getWalkabilityData(),
-      objects: GameObjectManager.getPublicObjects()
+      walkable: user.area.navigator.getWalkabilityData(),
+      objects: user.area.spawnedEntities
     }));
 
     user.ws.send(JSON.stringify({
@@ -77,51 +77,26 @@ class Game {
   onDisconnectedUser = (user) => {
     ConnectionManager.broadcast({
       type: 'remove',
-      nid: user.character.nid
+      networkId: user.character.networkId
     });
 
     ConnectionManager.logUserCount();
   }
 
   spawnPlayer = (connection) => {
-    let x = 10;
-    let y = 6;
+    let area = AreaManager.getByName('start');
+    let startLink = area.getLinkByType('enter_start');
 
-    let pos = new Vector2(x, y);
-    let player = GameObjectManager.createPlayer(pos, connection.user.username, connection);
-    connection.user.area = this.area;
+    let typeData = EntityManager.getDataByType('player');
+    let player = area.addEntity(typeData, connection.user.username, Vector2.clone(startLink.pos));
+    player.connection = connection;
+    connection.user.area = area;
     connection.user.character = player;
 
     ConnectionManager.broadcastToOthers(connection.user.ws, {
       type: 'add',
       obj: player
     });
-  }
-
-  respawnPlayer = (connection) => {
-    setTimeout(() => {
-      connection.user.character = null;
-
-      let x = 10;
-      let y = 6;
-
-      let pos = new Vector2(x, y);
-      let player = GameObjectManager.createPlayer(pos, connection.user.username, connection);
-      connection.user.area = this.area;
-      connection.user.character = player;
-
-      ConnectionManager.broadcast({
-        type: 'add',
-        obj: player
-      });
-
-      connection.user.ws.send(JSON.stringify({
-        type: 'player',
-        player: player
-      }));
-
-      console.log(`Respawn Player "${player.name}" with nid ${player.nid}`);
-    }, 1000);
   }
 }
 
