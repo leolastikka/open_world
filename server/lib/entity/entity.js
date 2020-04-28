@@ -40,6 +40,7 @@ class Entity {
   update() {}
 
   spawn() {
+    this._area.spawnEntity(this);
     this._isSpawned = true;
   }
 
@@ -48,6 +49,7 @@ class Entity {
    */
   despawn() {
     this._isSpawned = false;
+    this._area.despawnEntity(this);
   }
 
   /**

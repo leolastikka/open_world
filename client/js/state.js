@@ -307,15 +307,15 @@ class GameState extends State
 
     
     let objNetworkIds = [];
-    data.objects.forEach(obj => objNetworkIds.push(obj.networkId));
+    data.entities.forEach(obj => objNetworkIds.push(obj.networkId));
     console.log('objects: ', objNetworkIds);
 
-    let objects = data.objects;
+    let objects = data.entities;
     for(let i=0; i<objects.length; i++)
     {
       let obj = objects[i];
       let created = null;
-      switch(obj.type)
+      switch(obj.baseType)
       {
         case 'player':
           created = GameObjectManager.createPlayer(obj);
@@ -339,7 +339,7 @@ class GameState extends State
         this.onMove({
           networkId: obj.networkId,
           speed: obj.speed,
-          pos: obj.decimalPos,
+          pos: obj.pos,
           path: obj.path
         });
       }
@@ -359,9 +359,9 @@ class GameState extends State
 
   onPlayer(data)
   {
-    console.log(`onPlayer ${data.player.name} networkId: ${data.player.networkId}`);
+    console.log(`onPlayer ${data.entity.name} networkId: ${data.entity.networkId}`);
     GameObjectManager._gameObjects.forEach(go => {
-      if (go.networkId === data.player.networkId)
+      if (go.networkId === data.entity.networkId)
       {
         go._isOwned = true;
         this.playerObject = go;
@@ -389,17 +389,17 @@ class GameState extends State
 
   onAdd(data)
   {
-    console.log(`onAdd ${data.obj.type} ${data.obj.name} networkId: ${data.obj.networkId}`);
-    switch(data.obj.type)
+    console.log(`onAdd ${data.entity.type} ${data.entity.name} networkId: ${data.entity.networkId}`);
+    switch(data.entity.baseType)
     {
       case 'player':
-        GameObjectManager.createPlayer(data.obj);
+        GameObjectManager.createPlayer(data.entity);
         break;
       case 'npc':
-        GameObjectManager.createNPC(data.obj);
+        GameObjectManager.createNPC(data.entity);
         break;
       case 'enemy':
-        GameObjectManager.createEnemy(data.obj);
+        GameObjectManager.createEnemy(data.entity);
         break;
     }
   }

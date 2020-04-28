@@ -32,15 +32,15 @@ class InteractAction extends Action {
     this.targetEntity = targetEntity;
     this.range = range;
 
-    this._lastTargetPosition = Vector2.clone(this.targetEntity.pos);
+    this._lastTargetIntPos = Vector2.clone(this.targetEntity.lastIntPos);
   }
 
   updatePosition() {
-    this._lastTargetPosition = Vector2.clone(this.targetEntity.pos);
+    this._lastTargetIntPos = Vector2.clone(this.targetEntity.lastIntPos);
   }
 
   get isPositionUpdated() {
-    return !this.targetEntity.pos.equals(this._lastTargetPosition);
+    return !this.targetEntity.lastIntPos.equals(this._lastTargetIntPos);
   }
 
   finish() {

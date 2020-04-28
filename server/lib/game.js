@@ -45,12 +45,12 @@ class Game {
       type: 'mapData',
       tiles: user.area.tiles,
       walkable: user.area.navigator.getWalkabilityData(),
-      objects: user.area.spawnedEntities
+      entities: user.area.spawnedEntities
     }));
 
     user.ws.send(JSON.stringify({
       type: 'player',
-      player: user.character
+      entity: user.character
     }));
   }
 
@@ -62,10 +62,10 @@ class Game {
         action = new Actions.MoveAction(Vector2.fromObject(data.target));
         break;
       case 'talk':
-        action = new Actions.TalkAction(character, GameObjectManager.getByNID(data.target), 1);
+        action = new Actions.TalkAction(character, user.area.getEntityByNetworkId(data.target), 1);
         break;
       case 'attack':
-        action = new Actions.AttackAction(character, GameObjectManager.getByNID(data.target), 1);
+        action = new Actions.AttackAction(character, user.area.getEntityByNetworkId(data.target), 1);
         break;
       default:
         user.ws.close();
@@ -95,7 +95,7 @@ class Game {
 
     ConnectionManager.broadcastToOthers(connection.user.ws, {
       type: 'add',
-      obj: player
+      entity: player
     });
   }
 }

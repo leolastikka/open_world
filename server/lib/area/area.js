@@ -44,11 +44,15 @@ class Area {
     return this._spawnedEntities;
   }
 
-  getLinkByType = (type) => {
+  getLinkByType(type) {
     return _.find(this._links, {type: type});
   }
 
-  update = () => {
+  getEntityByNetworkId(networkId) {
+    return _.find(this._entities, {networkId: networkId});
+  }
+
+  update() {
     this._entities.forEach(entity => entity.update());
     if (this._entityDestroyed) {
       this._entities = this._entities.filter(entity => {
@@ -64,7 +68,10 @@ class Area {
     }
   }
 
-  addEntity = (typeData, name, pos) => {
+  /**
+   * Called when entity is added to area
+   */
+  addEntity(typeData, name, pos) {
     let entity = null;
   
     switch (typeData.baseType) {
@@ -88,8 +95,19 @@ class Area {
     return entity;
   }
 
-  removeEntity = (entity) => {
+  removeEntity(entity) {
 
+  }
+
+  /**
+   * Called when existing entity is spawned in area
+   */
+  spawnEntity(entity) {
+    this._spawnedEntities.push(entity);
+  }
+
+  despawnEntity(entity) {
+    this._spawnedEntities.filter(ent => ent != entity);
   }
 }
 

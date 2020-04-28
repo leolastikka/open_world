@@ -16,13 +16,13 @@ class Character extends Entity {
     this._targetEntity = null;
     this._targetOfEntities = [];
 
-    this._decimalPos = Vector2.clone(this.pos);
+    this._lastIntPos = Vector2.clone(this.pos);
     this._path = null;
     this._nextPath = null;
   }
 
-  get decimalPos() {
-    return this._decimalPos;
+  get lastIntPos() {
+    return this._lastIntPos;
   }
 
   get speed() {
@@ -114,7 +114,7 @@ class Character extends Entity {
     let movementDistance = this.speed * Time.deltaTime;
 
     while(nextPos) {
-      let curPos = this._decimalPos;
+      let curPos = this.pos;
 
       let diff = Vector2.sub(nextPos, curPos);
       let distance = diff.length;
@@ -122,26 +122,26 @@ class Character extends Entity {
       if (movementDistance < distance) { // if next node is not reached
         diff.normalize();
         diff.mult(movementDistance);
-        this._decimalPos.add(diff);
+        this.pos.add(diff);
         return;
       }
 
       // if next node is reached
       movementDistance -= distance;
-      this._pos = Vector2.clone(nextPos); // move to next pos in tile grid
-      this._decimalPos = Vector2.clone(this.pos);
+      this._lastIntPos = Vector2.clone(nextPos); // move to next pos in tile grid
+      this.pos = Vector2.clone(this._lastIntPos);
 
       this._path.shift(); // remove first element
       if (this._path.length === 0) { // if destination reached
-        if (this.nextPath) { // continue to next path if possible
+        if (this._nextPath) { // continue to next path if possible
           this._path = this._nextPath;
           this._nextPath = null;
           nextPos = this._path[0];
 
-          Connection.broadcast({
+          ConnectionManager.broadcast({
             type: 'move',
             networkId: this.networkId,
-            decimalPos: this.decimalPos,
+            pos: this.pos,
             path: this._path,
             speed: this.speed
           });
@@ -149,6 +149,7 @@ class Character extends Entity {
         else {
           this._path = null;
           this._doActionInRange();
+          return;
         }
       }
       else { // if path continues
@@ -158,23 +159,23 @@ class Character extends Entity {
   }
 
   _updateInteractAction() {
-    let diff = Vector2.sub(this._action.targetEntity.decimalPos, this._decimalPos);
+    let diff = Vector2.sub(this._action.targetEntity.pos, this.pos);
     if (diff.length <= this._action.range) { // if inside interaction range
       this._doActionInRange();
 
       if (this._path && this._path.length > 1) { // if still have path left, end it
         this._path = [this._path[0]];
-        Connection.broadcast({
+        ConnectionManager.broadcast({
           type: 'move',
           networkId: this.networkId,
-          decimalPos: this._decimalPos,
+          pos: this.pos,
           path: this._path,
           speed: this.speed
         });
       }
     }
     else { // if have to move closer
-      if (this.action.isPositionUpdated || !this._path) { // if need to calculate new path
+      if (this._action.isPositionUpdated || !this._path) { // if need to calculate new path
         this._startInteractAction();
       }
       else { // if continue using old path
@@ -193,7 +194,7 @@ class Character extends Entity {
       this._action = null;
     }
     else if (this._action instanceof TalkAction) {
-      this._connection.user.ws.send(JSON.stringify({
+      this.connection.user.ws.send(JSON.stringify({
         type: 'dialog',
         text: `Talking with ${this._action.targetEntity.name}`
       }));
@@ -211,7 +212,7 @@ class Character extends Entity {
 
   _startMoveAction() {
     // if on path, start next path from next node
-    let startPos = this._path ? this._path[0] : this.pos; 
+    let startPos = this._path ? this._path[0] : this.lastIntPos;
     let path = this._area.navigator.findPath(startPos, this._action.targetPos);
     if (Array.isArray(path) && path.length === 0) {
       return null;
@@ -229,7 +230,7 @@ class Character extends Entity {
       ConnectionManager.broadcast({
         type: 'move',
         networkId: this.networkId,
-        decimalPos: this._decimalPos,
+        pos: this.pos,
         path: path,
         speed: this.speed
       });
@@ -237,14 +238,14 @@ class Character extends Entity {
   }
 
   _startInteractAction() {
-    let diff = Vector2.sub(this._action.targetEntity.pos, this._decimalPos);
+    let diff = Vector2.sub(this._action.targetEntity.lastIntPos, this.pos);
     if (diff.length <= this._action.range) // if inside interaction range
     {
       this._doActionInRange();
     }
     else // if need to move
     {
-      let startPos = (this._path && this._path.length) ? this._path[0] : this.pos;
+      let startPos = (this._path && this._path.length) ? this._path[0] : this.lastIntPos;
       let shortestPath = this._area.navigator.findShortestPath(
         Vector2.clone(startPos),
         this._action.targetEntity.interactPositions
@@ -261,10 +262,10 @@ class Character extends Entity {
       else { // if no path
         this._path = shortestPath;
 
-        Connection.broadcast({
+        ConnectionManager.broadcast({
           type: 'move',
           networkId: this.networkId,
-          decimalPos: this._decimalPos,
+          pos: this.pos,
           path: shortestPath,
           speed: this.speed
         });
@@ -286,7 +287,7 @@ class Character extends Entity {
     });
     this._targetOfEntities = [];
 
-    Connection.broadcast({
+    ConnectionManager.broadcast({
       type: 'remove',
       networkId: this.networkId
     });
