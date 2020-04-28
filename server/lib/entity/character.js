@@ -274,7 +274,8 @@ class Character extends Entity {
   }
 
   despawn() {
-    this._isSpawned = false;
+    super.despawn();
+
     this._nextSpawnTime = Time.totalTime + this._typeData.respawnTime;
 
     if (this.combatController) {

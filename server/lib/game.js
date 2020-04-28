@@ -79,8 +79,11 @@ class Game {
       type: 'remove',
       networkId: user.character.networkId
     });
-
     ConnectionManager.logUserCount();
+
+    user.character.dispose();
+    user.character = null;
+    user.area = null;
   }
 
   spawnPlayer = (connection) => {

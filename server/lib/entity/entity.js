@@ -59,6 +59,7 @@ class Entity {
     if (this._isSpawned) {
       this.despawn();
     }
+    this._area.removeEntity(this);
     this._area = null;
   }
 

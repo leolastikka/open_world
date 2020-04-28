@@ -96,7 +96,7 @@ class Area {
   }
 
   removeEntity(entity) {
-
+    this._entities = this._entities.filter(ent => ent != entity);
   }
 
   /**
@@ -107,7 +107,7 @@ class Area {
   }
 
   despawnEntity(entity) {
-    this._spawnedEntities.filter(ent => ent != entity);
+    this._spawnedEntities = this._spawnedEntities.filter(ent => ent != entity);
   }
 }
 
