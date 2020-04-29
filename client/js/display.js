@@ -1,7 +1,5 @@
-class Display
-{
-  constructor()
-  {
+class Display {
+  constructor() {
     this.unitsPerLowestWidth = 15;
     this.pos = new Vector2();
 
@@ -15,11 +13,10 @@ class Display
 
     this.onResize();
 
-    window.addEventListener('resize', () => this.onResize());
+    window.addEventListener('resize', this.onResize);
   }
 
-  onResize()
-  {
+  onResize = () => {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
@@ -34,28 +31,23 @@ class Display
     this.unitHeight = this.height / this.pixelsPerUnit;
   }
 
-  zoomIn()
-  {
+  zoomIn = () => {
     this.zoomLevel += 0.1;
-    if (this.zoomLevel > this.maxOutZoom)
-    {
+    if (this.zoomLevel > this.maxOutZoom) {
       this.zoomLevel = this.maxOutZoom;
     }
     this.onResize();
   }
 
-  zoomOut()
-  {
+  zoomOut = () => {
     this.zoomLevel -= 0.1;
-    if (this.zoomLevel < this.maxInZoom)
-    {
+    if (this.zoomLevel < this.maxInZoom) {
       this.zoomLevel = this.maxInZoom;
     }
     this.onResize();
   }
 
-  isInViewport(worldPos)
-  {
+  isInViewport(worldPos) {
     let diff = Vector2.sub(worldPos, this.pos);
     return (diff.x > -this.unitWidth * 0.6 &&
         diff.x < this.unitWidth * 0.6 &&
@@ -63,22 +55,19 @@ class Display
         diff.y < this.unitHeight * 0.6);
   }
 
-  getRenderPos(worldPos)
-  {
+  getRenderPos(worldPos) {
     let diff = Vector2.sub(worldPos, this.pos);
     diff = Vector2.mult(diff, this.pixelsPerUnit);
     return Vector2.add(diff, new Vector2(this.width/2.0, this.height/2.0));
   }
 
-  screenToUnitPos(screenPos)
-  {
+  screenToUnitPos(screenPos) {
     let screenUnitPos = Vector2.sub(screenPos, new Vector2(this.width/2.0, this.height/2.0));
     screenUnitPos = Vector2.div(screenUnitPos, this.pixelsPerUnit);
     return Vector2.add(screenUnitPos, this.pos);
   }
 
-  screenToUnitPosFloor(screenPos)
-  {
+  screenToUnitPosFloor(screenPos) {
     let screenUnitPos = Vector2.sub(screenPos, new Vector2(this.width/2.0, this.height/2.0));
     screenUnitPos.div(this.pixelsPerUnit);
     screenUnitPos.add(this.pos);

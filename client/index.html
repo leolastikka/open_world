@@ -9,17 +9,20 @@
   <title>OpenWorld</title>
 
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="crt.css">
 
   <script src="./js/action.js"></script>
   <script src="./js/connection.js"></script>
   <script src="./js/display.js"></script>
-  <script src="./js/game_object.js"></script>
   <script src="./js/game.js"></script>
   <script src="./js/gui.js"></script>
+  <script src="./js/entity/entity.js"></script>
+  <script src="./js/entity/entity_manager.js"></script>
   <script src="./js/math.js"></script>
   <script src="./js/renderer.js"></script>
-  <script src="./js/state.js"></script>
+  <script src="./js/state/state.js"></script>
+  <script src="./js/state/connect_state.js"></script>
+  <script src="./js/state/game_state.js"></script>
+  <script src="./js/state/login_state.js"></script>
   <script src="./js/storage.js"></script>
   <script src="./js/time.js"></script>
 </head>
@@ -36,8 +39,6 @@
       ><br>
       > Login with any credentials<br>
       > A new user is created on login and deleted on logout<br>
-      ><br>
-      > <button id="toggleCRT">Toggle CRT</button><br>
       ><br>
     </p>
 	  <form id="loginForm">

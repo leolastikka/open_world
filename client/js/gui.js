@@ -88,9 +88,9 @@ class GUI extends EventTarget
     let unitPos = this.game.display.screenToUnitPosFloor(new Vector2(event.clientX, event.clientY));
 
     let actions = [];
-    let clickedObjects = GameObjectManager.getObjectsNearPosition(unitPos, 1);
-    clickedObjects.forEach(go => {
-      actions.unshift.apply(actions, go.getActions());
+    let clickedEntities = EntityManager.getEntitiesNearPosition(unitPos, 1);
+    clickedEntities.forEach(go => {
+      actions.unshift.apply(actions, go.actions);
     });
 
     if (actions.length === 0)
@@ -159,17 +159,16 @@ class GUI extends EventTarget
     this.dispatchEvent(new Event('logout'));
   }
 
-  openDropdownMenu(x, y)
-  {
+  openDropdownMenu(x, y) {
     let clickPos = new Vector2(x, y);
     let unitPos = this.game.display.screenToUnitPos(clickPos)
     unitPos.add(new Vector2(0.5, 0.5));
     unitPos = new Vector2(Math.floor(unitPos.x), Math.floor(unitPos.y));
 
     let actions = [new Action('Cancel')];
-    let clickedObjects = GameObjectManager.getObjectsNearPosition(unitPos, 1);
-    clickedObjects.forEach(go => {
-      actions.unshift.apply(actions, go.getActions());
+    let clickedEntities = EntityManager.getEntitiesNearPosition(unitPos, 1);
+    clickedEntities.forEach(go => {
+      actions.unshift.apply(actions, go.actions);
     });
 
     this.dropdownMenuElement.innerHTML = '';
