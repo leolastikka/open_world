@@ -5,7 +5,7 @@ class Display {
 
     this.maxInZoom = 1;
     this.maxOutZoom = 3;
-    this.zoomLevel = 1;
+    this.zoomLevel = 2;
 
     let canvas = document.getElementById('mainCanvas');
     this.canvas = canvas;
@@ -32,7 +32,7 @@ class Display {
   }
 
   zoomIn = () => {
-    this.zoomLevel += 0.1;
+    this.zoomLevel += 0.5;
     if (this.zoomLevel > this.maxOutZoom) {
       this.zoomLevel = this.maxOutZoom;
     }
@@ -40,7 +40,7 @@ class Display {
   }
 
   zoomOut = () => {
-    this.zoomLevel -= 0.1;
+    this.zoomLevel -= 0.5;
     if (this.zoomLevel < this.maxInZoom) {
       this.zoomLevel = this.maxInZoom;
     }

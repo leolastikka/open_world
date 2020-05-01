@@ -43,6 +43,8 @@ class SpriteRenderer extends Renderer {
         display.context.globalAlpha = 1;
       }
     }
+    // use antialiasing when pixel art isn't scaled properly
+    display.context.imageSmoothingEnabled = !(display.zoomLevel % 1 === 0);
     display.context.drawImage(this._texture, src.x, src.y, src.w, src.h, dest.x, dest.y, dest.w, dest.h);
     display.context.globalAlpha = 1;
   }
