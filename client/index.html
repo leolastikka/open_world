@@ -13,12 +13,12 @@
   <script src="./js/action.js"></script>
   <script src="./js/connection.js"></script>
   <script src="./js/display.js"></script>
-  <script src="./js/game.js"></script>
   <script src="./js/gui.js"></script>
   <script src="./js/entity/entity.js"></script>
   <script src="./js/entity/entity_manager.js"></script>
   <script src="./js/math.js"></script>
   <script src="./js/renderer.js"></script>
+  <script src="./js/resource_manager.js"></script>
   <script src="./js/state/state.js"></script>
   <script src="./js/state/connect_state.js"></script>
   <script src="./js/state/game_state.js"></script>
@@ -28,6 +28,10 @@
 </head>
 
 <body>
+  <div style="display:none;">
+    <img id="spriteSheet" src="./res/tiles.png">
+  </div>
+
   <canvas id="mainCanvas"></canvas>
   
   <div id="login" hidden="hidden">
@@ -101,6 +105,6 @@
     </div>
   </div>
 
-  <script src="./js/main.js"></script>
+  <script src="./js/game.js"></script>
 </body>
 </html>

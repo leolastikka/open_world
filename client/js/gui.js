@@ -8,6 +8,10 @@ class GUI extends EventTarget
     this.touchTimer = null;
     this.touchEvent = null;
     this.longTouchTime = 250; // ms
+    this.pointerUnitData = {
+      pos: null,
+      hasActions: false
+    };
 
     this.onClickLogout = this.onClickLogout.bind(this);
     this.onZoomIn = this.onZoomIn.bind(this);
@@ -93,6 +97,11 @@ class GUI extends EventTarget
       actions.unshift.apply(actions, go.actions);
     });
 
+    this.pointerUnitData = {
+      pos: unitPos,
+      hasActions: false
+    };
+
     if (actions.length === 0)
     {
       this.actionSuggestion.innerHTML = '';
@@ -100,6 +109,7 @@ class GUI extends EventTarget
     else
     {
       this.actionSuggestion.innerHTML = `> Do action: ${actions[0].text}`;
+      this.pointerUnitData.hasActions = true;
     }
   }
 

@@ -1,101 +1,37 @@
-class Renderer
-{
-  static get RenderLayer()
-  {
-    return {
-      Tile: 0,
-      Object: 1
+const RenderLayer = Object.freeze({
+  Floor: 0,
+  Walls: 1
+});
+
+class Renderer {
+  constructor(layer) {
+    this.layer = layer;
+    this.entity = null; // needs to be set by the parent entity
+  }
+  render(display) {}
+  dispose() {
+    this.entity = null;
+  }
+}
+
+class SpriteRenderer extends Renderer {
+  constructor(layer, texture, rect) {
+    super(layer);
+    this._texture = texture;
+    this._rect = rect;
+  }
+
+  render(display) {
+    const src = this._rect;
+    const destPos = display.getRenderPos(this.entity.pos);
+    const dest = {
+      x: destPos.x,
+      y: destPos.y,
+      w: ResourceManager.spriteWidth * display.zoomLevel,
+      h: ResourceManager.spriteHeight * display.zoomLevel
     };
-  }
-
-  constructor() {}
-  render(canvasContext, data) {}
-  renderGUI(canvasContext, data) {}
-}
-
-class TileRenderer extends Renderer
-{
-  constructor(color, borderColor='black')
-  {
-    super();
-    this.color = color;
-    this.borderColor = borderColor;
-  }
-
-  render(canvasContext, data)
-  {
-    canvasContext.beginPath();
-    canvasContext.fillStyle = this.color;
-    canvasContext.fillRect(
-      data.pos.x - data.size / 2 +1,
-      data.pos.y - data.size / 2 +1,
-      data.size -2,
-      data.size -2);
-    canvasContext.fill();
-
-    // canvasContext.strokeStyle = this.borderColor;
-    // canvasContext.strokeRect(
-    //   data.pos.x - data.size / 2,
-    //   data.pos.y - data.size / 2,
-    //   data.size,
-    //   data.size);
-  }
-}
-
-class TileTriangleRenderer extends Renderer
-{
-  constructor(color)
-  {
-    super();
-    this.color = color;
-    this.borderColor = 'white';
-  }
-
-  render(canvasContext, data)
-  {
-    canvasContext.beginPath();
-    canvasContext.fillStyle = this.color;
-
-    // bottom right
-    canvasContext.moveTo(
-      data.pos.x + data.size / 2 -1,
-      data.pos.y + data.size / 2 -1
-    );
-    // bottom left
-    canvasContext.lineTo(
-      data.pos.x - data.size / 2 +1,
-      data.pos.y + data.size / 2 -1
-    );
-    // top center
-    canvasContext.lineTo(
-      data.pos.x -1,
-      data.pos.y - data.size / 2
-    );
-    canvasContext.fill();
-
-    // canvasContext.strokeStyle = this.borderColor;
-    // canvasContext.stroke();
-  }
-}
-
-class TileBoxRenderer extends Renderer
-{
-  constructor(color)
-  {
-    super();
-    this.color = color;
-  }
-
-  render(canvasContext, data)
-  {
-    canvasContext.beginPath();
-    canvasContext.fillStyle = this.color;
-    canvasContext.fillRect(
-      data.pos.x - data.size / 2 + data.size / 4,
-      data.pos.y - data.size / 2 + data.size / 4,
-      data.size - data.size / 2,
-      data.size - data.size / 2);
-    canvasContext.fill();
+    //display.context.imageSmoothingEnabled = false;
+    display.context.drawImage(this._texture, src.x, src.y, src.w, src.h, dest.x, dest.y, dest.w, dest.h);
   }
 }
 

@@ -1,12 +1,14 @@
 class EntityManager {
-  static init() {
+  static init(game, gameState) {
+    this._game = game;
+    this._gameState = gameState;
     this._entities = [];
     this._entityRemoved = false;
   }
 
-  static update(game) {
+  static update() {
     this._entities.forEach(ent => {
-      ent.update(game);
+      ent.update(this._game);
     });
 
     // delete removed entities if needed
@@ -18,89 +20,166 @@ class EntityManager {
         ent.dispose();
         return false;
       });
+      this._entityRemoved = false;
     }
+
+    // sort entities
+    this._entities.sort((a, b) => {
+      const layer = a.renderer.layer - b.renderer.layer;
+      if (layer != 0) {
+        return layer;
+      }
+      const y = a.pos.y - b.pos.y;
+      if (y != 0) {
+        return y;
+      }
+      return a.pos.x - b.pos.x;
+    });
   }
 
-  static render(context, display) {
+  static render(gameState) {
     this._entities.forEach(ent => {
-      ent.render(context, display);
+      ent.render(this._game.display);
     });
 
-    
-    this._entities.forEach(ent => {
-      ent.renderGUI(context, display);
-    });
+    const pointerUnitData = gameState.gui.pointerUnitData;
+    if (pointerUnitData.pos) {
+      let hoverPos = Vector2.clone(pointerUnitData.pos);
+      hoverPos.add(new Vector2(2, 2)); // counterfix for screenToUnitPos
+      hoverPos = this._game.display.getRenderPos(hoverPos);
+      const ctx = this._game.display.context;
+      ctx.strokeStyle = pointerUnitData.hasActions ? 'greenyellow' : 'red';
+      ctx.beginPath();
+      ctx.moveTo(
+        hoverPos.x,
+        hoverPos.y + ResourceManager.tileHeight * this._game.display.zoomLevel * 0.5
+        );
+      ctx.lineTo(
+        hoverPos.x + ResourceManager.tileWidth * this._game.display.zoomLevel * 0.5,
+        hoverPos.y
+        );
+      ctx.lineTo(
+        hoverPos.x + ResourceManager.tileWidth * this._game.display.zoomLevel,
+        hoverPos.y + ResourceManager.tileHeight * this._game.display.zoomLevel * 0.5
+        );
+      ctx.lineTo(
+        hoverPos.x + ResourceManager.tileWidth * this._game.display.zoomLevel * 0.5,
+        hoverPos.y + ResourceManager.tileHeight * this._game.display.zoomLevel
+        );
+      ctx.closePath();
+      ctx.stroke();
+    }
+    // this._entities.forEach(ent => {
+    //   ent.renderGUI(context, display);
+    // });
   }
 
   static _add(entity) {
-    if (entity instanceof Tile) {
-      this._entities.unshift(entity);
+    this._entities.push(entity);
+  }
+
+  static createArea(data) {
+    const floor = data.floor;
+    const walls = data.walls;
+    const walkable = data.walkable;
+    for (let i = 0; i < floor.length; i++) {
+      for (let j = 0; j < floor[i].length; j++) {
+        let pos = new Vector2(j, i);
+        this.createTile(pos, floor[i][j], walkable[i][j]);
+        this.createTile(pos, walls[i][j], false);
+      }
     }
-    else {
-      this._entities.push(entity);
+    
+    let objNetworkIds = [];
+    data.entities.forEach(obj => objNetworkIds.push(obj.networkId));
+
+    for(let i = 0; i < data.entities.length; i++) {
+      let ent = data.entities[i];
+      let created = null;
+      switch(ent.baseType) {
+        case 'player':
+          created = this.createPlayer(ent);
+          break;
+        case 'npc':
+          created = this.createNPC(ent);
+          break;
+        case 'enemy':
+          created = this.createEnemy(ent);
+          break;
+        case 'container':
+          created = this.createContainer(ent);
+          break;
+      }
+
+      if(created && ent.path) { // if object is moving
+        this.onMove({
+          networkId: ent.networkId,
+          speed: ent.speed,
+          pos: ent.pos,
+          path: ent.path
+        });
+      }
     }
   }
 
   static createTile(pos, type, isWalkable) {
-    switch(type) {
-      case 2: // walkable rock
-        this._add(new Tile(null, pos, new TileRenderer('#2e2e2e', 'black'), isWalkable));
-        break;
-      case 3: // walkable dirt
-        this._add(new Tile(null, pos, new TileRenderer('#383727', 'black'), isWalkable));
-        break;
-      case 4: // walkable grass
-        this._add(new Tile(null, pos, new TileRenderer('#0e3612', 'black'), isWalkable));
-        break;
-      case 5: // water
-        this._add(new Tile(null, pos, new TileRenderer('#0e8eb8', 'white'), isWalkable));
-        break;
-      case 6: // stone wall
-        this._add(new Tile(null, pos, new TileRenderer('#8e8e8e', 'white'), isWalkable));
-        break;
-      case 7: // stone object
-        this._add(new Tile(null, pos, new TileTriangleRenderer('#8e8e8e'), isWalkable));
-        break;
-      case 8: // tree object
-        this._add(new Tile(null, pos, new TileTriangleRenderer('#1a5f20'), isWalkable));
-        break;
+    if (ResourceManager.floorTiles.includes(type)) {
+      const renderer = new SpriteRenderer(
+        RenderLayer.Floor,
+        ResourceManager.texture,
+        ResourceManager.getSpriteRectByIndex(type)
+        );
+      this._add(new Tile(null, pos, renderer, isWalkable));
+    }
+    else if (ResourceManager.wallsTiles.includes(type)) {
+      const renderer = new SpriteRenderer(
+        RenderLayer.Walls,
+        ResourceManager.texture,
+        ResourceManager.getSpriteRectByIndex(type)
+        );
+      this._add(new Tile(null, pos, renderer, isWalkable));
     }
   }
 
   static createPlayer(data) {
-    let pos = new Vector2(data.pos.x, data.pos.y);
-    let player = new Character(data.networkId, pos, new CharacterRenderer('white'), data.name, data.actions);
+    const pos = new Vector2(data.pos.x, data.pos.y);
+    const renderer = new SpriteRenderer(
+      RenderLayer.Walls,
+      ResourceManager.texture,
+      ResourceManager.getSpriteRectByIndex(ResourceManager.playerTile)
+      );
+    const player = new Character(data.networkId, pos, renderer, data.name, data.actions);
     this._add(player);
     return player;
   }
 
-  static createNPC(data) {
-    let pos = new Vector2(data.pos.x, data.pos.y);
-    let npc = new Character(data.networkId, pos, new CharacterRenderer('yellow'), data.name, data.actions);
-    this._add(npc, false);
-    return npc;
-  }
+  // static createNPC(data) {
+  //   let pos = new Vector2(data.pos.x, data.pos.y);
+  //   let npc = new Character(data.networkId, pos, new CharacterRenderer('yellow'), data.name, data.actions);
+  //   this._add(npc, false);
+  //   return npc;
+  // }
 
-  static createEnemy(data) {
-    let pos = new Vector2(data.pos.x, data.pos.y);
-    let enemy = new Character(data.networkId, pos, new CharacterRenderer('red'), data.name, data.actions);
-    this._add(enemy, false);
-    return enemy;
-  }
+  // static createEnemy(data) {
+  //   let pos = new Vector2(data.pos.x, data.pos.y);
+  //   let enemy = new Character(data.networkId, pos, new CharacterRenderer('red'), data.name, data.actions);
+  //   this._add(enemy, false);
+  //   return enemy;
+  // }
 
-  static createContainer(data) {
-    let pos = new Vector2(data.pos.x, data.pos.y);
-    let container = new Container(data.networkId, pos, new TileBoxRenderer('#706d40'), data.name, data.actions);
-    this._add(container, false);
-    return container;
-  }
+  // static createContainer(data) {
+  //   let pos = new Vector2(data.pos.x, data.pos.y);
+  //   let container = new Container(data.networkId, pos, new TileBoxRenderer('#706d40'), data.name, data.actions);
+  //   this._add(container, false);
+  //   return container;
+  // }
 
-  static createInteractable(data) {
-    let pos = new Vector2(data.pos.x, data.pos.y);
-    let interactable = new Interactable(data.networkId, pos, new TileBoxRenderer('#16e700'), data.name, data.actions);
-    this._add(interactable, false);
-    return interactable;
-  }
+  // static createInteractable(data) {
+  //   let pos = new Vector2(data.pos.x, data.pos.y);
+  //   let interactable = new Interactable(data.networkId, pos, new TileBoxRenderer('#16e700'), data.name, data.actions);
+  //   this._add(interactable, false);
+  //   return interactable;
+  // }
 
   static getByNetworkId(networkId) {
     return this._entities.find(ent => ent.networkId === networkId);
@@ -115,5 +194,8 @@ class EntityManager {
   static dispose() {
     this._entities.forEach(ent => ent.dispose());
     this._entities = [];
+
+    this._game = null;
+    this._gameState = null;
   }
 }

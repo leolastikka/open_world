@@ -2,7 +2,10 @@ class Entity {
   constructor(networkId = null, pos, renderer) {
     this.networkId = networkId;
     this.pos = pos;
-    this.renderer = renderer;
+    if (renderer) {
+      renderer.entity = this;
+      this.renderer = renderer;
+    }
     this._removed = false;
   }
 
@@ -14,11 +17,11 @@ class Entity {
   update(game) {}
   get actions() {}
 
-  render(canvasContext, camera) {
-    if (this.renderer && camera.isInViewport(this.pos)) {
-      this.renderer.render(canvasContext, {
-        pos: camera.getRenderPos(this.pos),
-        size: camera.pixelsPerUnit
+  render(display) {
+    if (this.renderer && display.isInViewport(this.pos)) {
+      this.renderer.render(display, {
+        pos: display.getRenderPos(this.pos),
+        size: display.pixelsPerUnit
       });
     }
   }

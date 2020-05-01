@@ -4,15 +4,18 @@ const { Vector2 } = require('./math');
 class Navigator {
   constructor(area) {
     this._area = area;
+    this._walkableTiles = [1,2,3,4]; // walkable tile indexes
+
     this._grid = new PF.Grid(area.size, area.size);
     this._finder = new PF.AStarFinder({
       allowDiagonal: true,
       dontCrossCorners: true
     });
 
-    for (let i=0; i<area.tiles.length; i++) {
-      for (let j=0; j<area.tiles[i].length; j++) {
-        let isWalkable = area.tiles[i][j] < 5;
+    for (let i=0; i<area.floor.length; i++) {
+      for (let j=0; j<area.floor[i].length; j++) {
+        let isWalkable = this._walkableTiles.includes(area.floor[i][j]) &&
+            area.walls[i][j] == -1;
         this._grid.setWalkableAt(j, i, isWalkable);
       }
     }

@@ -43,7 +43,8 @@ class Game {
   onReady = (user) => {
     user.ws.send(JSON.stringify({
       type: 'mapData',
-      tiles: user.area.tiles,
+      floor: user.area.floor,
+      walls: user.area.walls,
       walkable: user.area.navigator.getWalkabilityData(),
       entities: user.area.spawnedEntities
     }));

@@ -1,16 +1,14 @@
 class GameState extends State {
   constructor(game, logoutCallback) {
     super();
-    EntityManager.init();
     Time.init();
+    EntityManager.init(game, this);
 
     this.game = game;
     this.logoutCallback = logoutCallback;
     this.isLoading = true;
 
     this.playerEntity = null;
-
-    this.mapSize = null;
 
     this.loadingElement = document.getElementById('loading');
     this.loadingElement.removeAttribute('hidden');
@@ -30,11 +28,11 @@ class GameState extends State {
 
   update() {
     Time.update();
-    EntityManager.update(this.game);
+    EntityManager.update();
   }
 
   render() {
-    EntityManager.render(this.game.display.context, this.game.display);
+    EntityManager.render(this);
   }
 
   onClick = (event) => {
@@ -91,7 +89,7 @@ class GameState extends State {
         this.onPlayer(data);
         break;
       case 'mapData':
-        this.onMapData(data);
+        this.onAreaData(data);
         break;
       case 'status':
         this.onStatus(data);
@@ -111,52 +109,8 @@ class GameState extends State {
     }
   }
 
-  onMapData(data) {
-    this.mapSize = data.tiles.length;
-
-    let tiles = data.tiles;
-    let walkable = data.walkable;
-    for (let i = 0; i < tiles.length; i++) {
-      for (let j = 0; j < tiles[i].length; j++) {
-        let pos = new Vector2(j, i);
-        EntityManager.createTile(pos, tiles[i][j], walkable[i][j]);
-      }
-    }
-    
-    let objNetworkIds = [];
-    data.entities.forEach(obj => objNetworkIds.push(obj.networkId));
-
-    for(let i = 0; i < data.entities.length; i++)
-    {
-      let ent = data.entities[i];
-      let created = null;
-      switch(ent.baseType) {
-        case 'player':
-          created = EntityManager.createPlayer(ent);
-          break;
-        case 'npc':
-          created = EntityManager.createNPC(ent);
-          break;
-        case 'enemy':
-          created = EntityManager.createEnemy(ent);
-          break;
-        case 'container':
-          created = EntityManager.createContainer(ent);
-          break;
-        case 'interactable':
-          created = EntityManager.createInteractable(ent);
-          break;
-      }
-
-      if(created && ent.path) { // if object is moving
-        this.onMove({
-          networkId: ent.networkId,
-          speed: ent.speed,
-          pos: ent.pos,
-          path: ent.path
-        });
-      }
-    }
+  onAreaData(data) {
+    EntityManager.createArea(data);
   }
 
   onStatus(data) {
@@ -212,7 +166,7 @@ class GameState extends State {
       this.playerEntity = null;
     }
 
-    ent.destroy();
+    ent.dispose();
   }
 
   onDialog(data) {

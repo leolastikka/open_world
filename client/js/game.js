@@ -1,9 +1,24 @@
+"use strict";
+
+window.requestAnimationFrame =
+    window.requestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.msRequestAnimationFrame;
+
+window.addEventListener('load', function(e) {
+  let game = new Game();
+  game.start();
+});
+
 class Game {
   constructor() {
     this.connected = false;
 
     this.display = new Display();
     this.connection = new Connection();
+
+    ResourceManager.init();
   }
 
   start = () => {
@@ -35,6 +50,7 @@ class Game {
   render = () => {
     let ctx = this.display.context;
     ctx.fillStyle = 'black';
+    //ctx.fillStyle = '#012009'; // dark green
     ctx.fillRect(0, 0, this.display.width, this.display.height);
 
     this.state.render();

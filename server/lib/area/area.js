@@ -4,10 +4,11 @@ const { Container } = require('../entity/container');
 const { NPC, Enemy, Player } = require('../entity/character');
 
 class Area {
-  constructor(name, size, tiles, links) {
+  constructor(name, size, floor, walls, links) {
     this._name = name;
     this._size = size;
-    this._tiles = tiles;
+    this._floor = floor;
+    this._walls = walls;
     this._links = links;
     this._navigator = new Navigator(this);
 
@@ -24,8 +25,12 @@ class Area {
     return this._size;
   }
 
-  get tiles() {
-    return this._tiles;
+  get floor() {
+    return this._floor;
+  }
+
+  get walls() {
+    return this._walls;
   }
 
   get objects() {
