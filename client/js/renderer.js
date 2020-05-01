@@ -31,7 +31,20 @@ class SpriteRenderer extends Renderer {
       h: ResourceManager.spriteHeight * display.zoomLevel
     };
     //display.context.imageSmoothingEnabled = false;
+    if (this.layer === RenderLayer.Walls && !this.entity.isOwned) {
+      const diff = Vector2.sub(display.pos, this.entity.pos);
+      if (diff.x > -3 &&
+          diff.x < 1 &&
+          diff.y > -3 &&
+          diff.y < 1) {
+        display.context.globalAlpha = 0.5;
+      }
+      else {
+        display.context.globalAlpha = 1;
+      }
+    }
     display.context.drawImage(this._texture, src.x, src.y, src.w, src.h, dest.x, dest.y, dest.w, dest.h);
+    display.context.globalAlpha = 1;
   }
 }
 

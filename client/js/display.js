@@ -3,7 +3,7 @@ class Display {
     this.unitsPerLowestWidth = 15;
     this.pos = new Vector2();
 
-    this.maxInZoom = 0.5;
+    this.maxInZoom = 1;
     this.maxOutZoom = 3;
     this.zoomLevel = 1;
 
