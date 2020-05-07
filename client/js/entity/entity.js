@@ -26,22 +26,50 @@ class Entity {
     }
   }
 
-  renderGUI(canvasContext, camera) {
-    if (this.renderer && this instanceof Character && camera.isInViewport(this.pos)) {
-      let pos = camera.getRenderPos(this.pos);
-      pos.add(new Vector2(0, -camera.pixelsPerUnit));
+  renderGUI(display) {
+    if (this.renderer && this instanceof Character && display.isInViewport(this.pos)) {
+      let pos = display.getRenderPos(this.pos);
+      pos.add(new Vector2(
+        ResourceManager.spriteWidth / 2 * display.zoomLevel,
+        ResourceManager.spriteHeight / 6 * display.zoomLevel
+        ));
 
-      let hpPos = camera.getRenderPos(this.pos);
-      hpPos.add(new Vector2(0, -camera.pixelsPerUnit * 0.25));
+      // let hpPos = camera.getRenderPos(this.pos);
+      // hpPos.add(new Vector2(0, -camera.pixelsPerUnit * 0.25));
 
-      this.renderer.renderGUI(canvasContext, {
-        pos: pos,
-        text: this.name,
-        inCombat: this._inCombat,
-        hp: this._hp,
-        hpPos: hpPos,
-        size: camera.pixelsPerUnit
-      });
+      display.context.font = `${10 * display.zoomLevel}px 'Minecraft-Regular', monospace`;
+      display.context.fillStyle = 'greenyellow';
+      display.context.textAlign = 'center';
+      display.context.fillText(this.name, pos.x, pos.y);
+
+      // this.renderer.renderGUI(canvasContext, {
+      //   pos: pos,
+      //   text: this.name,
+      //   inCombat: this._inCombat,
+      //   hp: this._hp,
+      //   hpPos: hpPos,
+      //   size: camera.pixelsPerUnit
+      // });
+      // if (data.inCombat)
+      // {
+      //   canvasContext.beginPath();
+      //   canvasContext.fillStyle = 'red';
+      //   canvasContext.fillRect(
+      //     data.hpPos.x - data.size / 2,
+      //     data.hpPos.y - data.size / 2,
+      //     data.size,
+      //     data.size / 5);
+      //   canvasContext.fill();
+
+      //   canvasContext.beginPath();
+      //   canvasContext.fillStyle = 'yellowgreen';
+      //   canvasContext.fillRect(
+      //     data.hpPos.x - data.size / 2,
+      //     data.hpPos.y - data.size / 2,
+      //     data.size * (data.hp / 10),
+      //     data.size / 5);
+      //   canvasContext.fill();
+      // }
     }
   }
 }

@@ -42,6 +42,10 @@ class EntityManager {
       ent.render(this._game.display);
     });
 
+    this._entities.forEach(ent => {
+      ent.renderGUI(this._game.display);
+    });
+
     const pointerUnitData = gameState.gui.pointerUnitData;
     if (pointerUnitData.pos) {
       let hoverPos = Vector2.clone(pointerUnitData.pos);
@@ -70,9 +74,6 @@ class EntityManager {
       ctx.closePath();
       ctx.stroke();
     }
-    // this._entities.forEach(ent => {
-    //   ent.renderGUI(context, display);
-    // });
   }
 
   static _add(entity) {
