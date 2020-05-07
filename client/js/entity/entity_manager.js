@@ -148,19 +148,40 @@ class EntityManager {
     const renderer = new AnimatedSpriteRenderer(
       RenderLayer.Walls,
       ResourceManager.texture,
-      ResourceManager.getAnimationsByBaseType('player')
+      ResourceManager.getAnimationsByType('player')
       );
     const player = new Character(data.networkId, pos, renderer, data.name, data.actions);
     this._add(player);
     return player;
   }
 
-  // static createNPC(data) {
-  //   let pos = new Vector2(data.pos.x, data.pos.y);
-  //   let npc = new Character(data.networkId, pos, new CharacterRenderer('yellow'), data.name, data.actions);
-  //   this._add(npc, false);
-  //   return npc;
-  // }
+  static createNPC(data) {
+    let pos = new Vector2(data.pos.x, data.pos.y);
+    let renderer = null;
+
+    if (['npc_station_guard'].includes(data.type)) {
+      renderer = new AnimatedSpriteRenderer(
+        RenderLayer.Walls,
+        ResourceManager.texture,
+        ResourceManager.getAnimationsByType('npc_guard')
+        );
+    }
+    else if (['npc_info', 'npc_station_worker'].includes(data.type)) {
+      renderer = new AnimatedSpriteRenderer(
+        RenderLayer.Walls,
+        ResourceManager.texture,
+        ResourceManager.getAnimationsByType('npc_worker')
+        );
+    }
+    else {
+      console.log(data);
+      throw new Error('ei toimi');
+    }
+
+    let npc = new Character(data.networkId, pos, renderer, data.name, data.actions);
+    this._add(npc, false);
+    return npc;
+  }
 
   // static createEnemy(data) {
   //   let pos = new Vector2(data.pos.x, data.pos.y);

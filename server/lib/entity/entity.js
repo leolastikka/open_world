@@ -66,6 +66,7 @@ class Entity {
   toJSON() {
     return {
       networkId: this._networkId,
+      type: this._typeData.type,
       baseType: this._typeData.baseType,
       name: this._name,
       pos: this.pos

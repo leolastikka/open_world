@@ -80,7 +80,6 @@ class Animation {
     for (let i = 0; i < frames.length; i++) {
       this._animationLength += frames[i].time;
     }
-    console.log(`Created animation: `, this);
   }
 
   get name() {

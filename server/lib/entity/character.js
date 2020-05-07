@@ -297,6 +297,7 @@ class Character extends Entity {
   toJSON() {
     return {
       networkId: this.networkId,
+      type: this._typeData.type,
       baseType: this._typeData.baseType,
       name: this._name,
       pos: this.pos,

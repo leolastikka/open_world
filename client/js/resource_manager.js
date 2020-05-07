@@ -11,13 +11,32 @@ class ResourceManager {
     this._spriteHeight = 48;
     
     this._floorTiles = [0,1,2,3,4];
-    this._wallsTiles = [14,15,16,17,18,19,20,21,22,23,24,25,26,27,28, 34,35, 38, 49, 51];
-    this._playerTile = 48;
+    this._wallsTiles = [14,15,16,17,18,19,20,21,22,23,24,25,26,27,28, 34,35, 38];
 
     const Rect = ResourceManager.getSpriteRectByIndex;
 
     // animation frames = [[Rect(spriteIndex), frame time in seconds], ...]
     this._animationsData = {
+      npc_guard: [
+        {
+          name: 'idle',
+          frames: [[Rect(51), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(51), 0.2], [Rect(67), 0.2]]
+        }
+      ],
+      npc_worker: [
+        {
+          name: 'idle',
+          frames: [[Rect(49), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(49), 0.2], [Rect(65), 0.2]]
+        }
+      ],
       player: [
         {
           name: 'idle',
@@ -63,10 +82,6 @@ class ResourceManager {
     return this._wallsTiles;
   }
 
-  static get playerTile() {
-    return this._playerTile;
-  }
-
   static getSpriteRectByIndex = (index) => {
     const maxPos = this._textureSize / this._spriteWidth;
     return {
@@ -77,8 +92,8 @@ class ResourceManager {
     }
   }
 
-  static getAnimationsByBaseType(baseType) {
-    const entityAnimations = this._animationsData[baseType];
+  static getAnimationsByType(type) {
+    const entityAnimations = this._animationsData[type];
     let animations = {};
     for (let i = 0; i < entityAnimations.length; i++) {
       let animation = entityAnimations[i];

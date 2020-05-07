@@ -58,14 +58,14 @@ class AreaManager {
         }
       }
 
+      // Use tileHeight also for x axis, because editor handles isometric object grid as squares
+
       // handle links
       linksLayer.objects.forEach(obj => {
         let pos = new Vector2(
-          Math.floor(obj.x / tileWidth),
+          Math.floor(obj.x / tileHeight),
           Math.floor(obj.y / tileHeight)
         );
-        pos.add(new Vector2(3,0)); // fix editor bug/feature
-        console.log(pos);
 
         links.push({
           type: obj.type,
@@ -86,8 +86,8 @@ class AreaManager {
           let positions = [];
           movementArea.polygon.forEach(p => {
             positions.push(new Vector2(
-              Math.floor((movementArea.x + p.x) / tileWidth) + 2, // fix editor bug/feature
-              Math.floor((movementArea.y + p.y) / tileHeight) + 2 // fix editor bug/feature
+              Math.floor((movementArea.x + p.x) / tileHeight),
+              Math.floor((movementArea.y + p.y) / tileHeight)
             ));
           });
 
@@ -104,10 +104,9 @@ class AreaManager {
         objectsLayer.objects.forEach(obj => {
           if (obj.type === 'container') {
             let pos = new Vector2(
-              Math.floor(obj.x / tileWidth),
+              Math.floor(obj.x / tileHeight),
               Math.floor(obj.y / tileHeight)
             );
-            pos.add(new Vector2(2,2)); // fix editor bug/feature
             let typeData = EntityManager.getDataByType(obj.type);
             area.addEntity(typeData, obj.name, pos);
             area.navigator.setWalkableAt(pos, false);
@@ -119,10 +118,9 @@ class AreaManager {
       if (charactersLayer) {
         charactersLayer.objects.forEach(obj => {
           let pos = new Vector2(
-            Math.floor(obj.x / tileWidth),
+            Math.floor(obj.x / tileHeight),
             Math.floor(obj.y / tileHeight)
           );
-          pos.add(new Vector2(2,2)); // fix editor bug/feature
           let typeData = EntityManager.getDataByType(obj.type);
           let char = area.addEntity(typeData, obj.name, pos);
           let movementArea = movementAreas[char.id];
