@@ -1,3 +1,8 @@
+@font-face {
+  font-family: Minecraft-Regular;
+  src: url('./res/Minecraft-Regular.otf') format("opentype");
+}
+
 html {
   height: 100%;
   background-color: black;
@@ -6,7 +11,7 @@ body {
   min-height: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: Minecraft-Regular, 'Courier New', Courier, monospace;
   font-size: 1em;
   overflow: hidden;
 }
@@ -28,11 +33,11 @@ body {
   margin: 0;
 }
 #login input, button {
-  border: 1px solid greenyellow;
+  border: 2px solid greenyellow;
   background: #012009; /* dark green */
   color: greenyellow;
-  font-family: 'Courier New', Courier, monospace;
-  padding: 0;
+  font-family: Minecraft-Regular, 'Courier New', Courier, monospace;
+  padding: 0 4px;
 }
 button:hover {
   color: #012009; /* dark green */
@@ -46,7 +51,7 @@ button:hover {
 }
 #menu {
   width: calc(100% - 0.4em);
-  border-bottom: 1px solid yellowgreen;
+  border-bottom: 2px solid yellowgreen;
   padding: 0.2em;
 }
 #menu button {
@@ -58,7 +63,7 @@ button:hover {
   z-index: 3;
   color: yellowgreen;
   background: #012009; /* dark green */
-  border: 1px solid yellowgreen;
+  border: 2px solid yellowgreen;
   list-style: none;
   padding: 0px;
   margin: 0;
@@ -69,18 +74,15 @@ button:hover {
   background: yellowgreen;
   cursor: pointer;
 }
-#dropdownMenu li:before
-{
+#dropdownMenu li:before {
   content: '>';
   margin: 0 0.25em;
 }
-#dropdownMenu li:after
-{
+#dropdownMenu li:after {
   content: ' ';
   margin:0.25em;
 }
-#dialog
-{
+#dialog {
   position: absolute;
   left: 0;
   top: 0;
@@ -91,10 +93,9 @@ button:hover {
   text-align: center;
   color: yellowgreen;
   background-color: rgba(1, 32, 9, 0.75); /* dark green transparent */
-  border: 1px solid yellowgreen;
+  border: 2px solid yellowgreen;
 }
-#action
-{
+#action {
   position: absolute;
   z-index: 4;
   left: 0;
@@ -102,9 +103,9 @@ button:hover {
   color: yellowgreen;
   background-color: rgba(1, 32, 9, 0.75); /* dark green transparent */
   font-size: 0.75em;
+  font-weight: bold;
 }
-#action p
-{
+#action p {
   margin: 0;
 }
 
