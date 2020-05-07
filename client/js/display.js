@@ -32,7 +32,7 @@ class Display {
   }
 
   zoomIn = () => {
-    this.zoomLevel += 0.5;
+    this.zoomLevel += 1;
     if (this.zoomLevel > this.maxOutZoom) {
       this.zoomLevel = this.maxOutZoom;
     }
@@ -40,7 +40,7 @@ class Display {
   }
 
   zoomOut = () => {
-    this.zoomLevel -= 0.5;
+    this.zoomLevel -= 1;
     if (this.zoomLevel < this.maxInZoom) {
       this.zoomLevel = this.maxInZoom;
     }
@@ -48,11 +48,6 @@ class Display {
   }
 
   isInViewport(worldPos) {
-    // let diff = Vector2.sub(worldPos, this.pos);
-    // return (diff.x > -this.unitWidth * 0.6 &&
-    //     diff.x < this.unitWidth * 0.6 &&
-    //     diff.y > -this.unitHeight * 0.6 &&
-    //     diff.y < this.unitHeight * 0.6);
     const maxTiles = 10;
     const diff = Vector2.sub(worldPos, this.pos);
     return diff.x > -maxTiles &&
@@ -68,27 +63,31 @@ class Display {
     const pos = new Vector2(x, y);
     pos.mult(this.zoomLevel);
     pos.add(new Vector2(this.width/2.0, this.height/2.0));
+    const halfSprite = ResourceManager.halfSpriteVector;
+    halfSprite.mult(this.zoomLevel);
+    pos.sub(halfSprite);
     return pos;
-    // let diff = Vector2.sub(worldPos, this.pos);
-    // diff = Vector2.mult(diff, this.pixelsPerUnit);
-    // return Vector2.add(diff, new Vector2(this.width/2.0, this.height/2.0));
   }
 
   screenToUnitPos(screenPos) {
     const screenUnitPos = Vector2.sub(screenPos, new Vector2(this.width/2.0, this.height/2.0));
+    const halfSprite = ResourceManager.halfSpriteVector;
+    halfSprite.mult(this.zoomLevel);
+    screenUnitPos.add(halfSprite);
     const tileX = (screenUnitPos.x + (2 * screenUnitPos.y) - (ResourceManager.tileWidth / 2)) / ResourceManager.tileWidth;
     const tileY = (screenUnitPos.x - (2 * screenUnitPos.y) - (ResourceManager.tileHeight / 2)) / - ResourceManager.tileWidth;
     const pos = new Vector2(tileX, tileY);
     pos.div(this.zoomLevel);
     pos.add(this.pos);
+    pos.add(new Vector2(-2, -2)); // fix something
     return pos;
-    // let screenUnitPos = Vector2.sub(screenPos, new Vector2(this.width/2.0, this.height/2.0));
-    // screenUnitPos = Vector2.div(screenUnitPos, this.pixelsPerUnit);
-    // return Vector2.add(screenUnitPos, this.pos);
   }
 
   screenToUnitPosFloor(screenPos) {
     const screenUnitPos = Vector2.sub(screenPos, new Vector2(this.width/2.0, this.height/2.0));
+    const halfSprite = ResourceManager.halfSpriteVector;
+    halfSprite.mult(this.zoomLevel);
+    screenUnitPos.add(halfSprite);
     const tileX = (screenUnitPos.x + (2 * screenUnitPos.y) - (ResourceManager.tileWidth / 2)) / ResourceManager.tileWidth;
     const tileY = (screenUnitPos.x - (2 * screenUnitPos.y) - (ResourceManager.tileHeight / 2)) / - ResourceManager.tileWidth;
     const pos = new Vector2(tileX, tileY);
@@ -96,10 +95,5 @@ class Display {
     pos.add(this.pos);
     pos.add(new Vector2(-2, -2)); // fix something
     return new Vector2(Math.floor(pos.x), Math.floor(pos.y));
-    // let screenUnitPos = Vector2.sub(screenPos, new Vector2(this.width/2.0, this.height/2.0));
-    // screenUnitPos.div(this.pixelsPerUnit);
-    // screenUnitPos.add(this.pos);
-    // screenUnitPos.add(new Vector2(0.5, 0.5));
-    // return new Vector2(Math.floor(screenUnitPos.x), Math.floor(screenUnitPos.y));
   }
 }
