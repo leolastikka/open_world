@@ -21,8 +21,12 @@ class SpriteRenderer extends Renderer {
     this._rect = rect;
   }
 
+  get rect() {
+    return this._rect;
+  }
+
   render(display) {
-    const src = this._rect;
+    const src = this.rect;
     const destPos = display.getRenderPos(this.entity.pos);
     const dest = {
       x: destPos.x,
@@ -47,6 +51,55 @@ class SpriteRenderer extends Renderer {
     display.context.imageSmoothingEnabled = !(display.zoomLevel % 1 === 0);
     display.context.drawImage(this._texture, src.x, src.y, src.w, src.h, dest.x, dest.y, dest.w, dest.h);
     display.context.globalAlpha = 1;
+  }
+}
+
+class AnimatedSpriteRenderer extends SpriteRenderer {
+  constructor(layer, texture, animations) {
+    super(layer, texture, null);
+    this._animations = animations;
+    this._animation = animations['idle'];
+  }
+
+  get rect() {
+    return this._animation.frame.rect;
+  }
+
+  setAnimation(name) {
+    this._animation = this._animations[name];
+  }
+}
+
+class Animation {
+  constructor(name, frames) {
+    this._name = name;
+    this._frames = frames;
+
+    this._animationTime = 0; // progress time
+    this._animationLength = 0;
+    for (let i = 0; i < frames.length; i++) {
+      this._animationLength += frames[i].time;
+    }
+    console.log(`Created animation: `, this);
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  get frame() {
+    this._animationTime += Time.deltaTime;
+    const progress = this._animationTime / this._animationLength;
+    if (progress > 1) {
+      this._animationTime -= this._animationLength;
+    }
+
+    let i = 0;
+    let t = this._frames[i].time;
+    while (t < this._animationTime) {
+      t += this._frames[i++].time;
+    }
+    return this._frames[i];
   }
 }
 

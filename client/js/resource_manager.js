@@ -13,6 +13,22 @@ class ResourceManager {
     this._floorTiles = [0,1,2,3,4];
     this._wallsTiles = [14,15,16,17,18,19,20,21,22,23,24,25,26,27,28, 34,35, 38, 49, 51];
     this._playerTile = 48;
+
+    const Rect = ResourceManager.getSpriteRectByIndex;
+
+    // animation frames = [[Rect(spriteIndex), frame time in seconds], ...]
+    this._animationsData = {
+      player: [
+        {
+          name: 'idle',
+          frames: [[Rect(48), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(48), 0.2], [Rect(64), 0.2]]
+        }
+      ]
+    };
   }
 
   static get texture() {
@@ -25,6 +41,10 @@ class ResourceManager {
 
   static get tileHeight() {
     return this._tileHeight;
+  }
+
+  static get halfSpriteVector() {
+    return new Vector2(this._spriteWidth / 2, this._spriteHeight / 2);
   }
 
   static get spriteWidth() {
@@ -47,7 +67,7 @@ class ResourceManager {
     return this._playerTile;
   }
 
-  static getSpriteRectByIndex(index) {
+  static getSpriteRectByIndex = (index) => {
     const maxPos = this._textureSize / this._spriteWidth;
     return {
       x: this._spriteWidth * (index % maxPos),
@@ -55,5 +75,22 @@ class ResourceManager {
       w: this._spriteWidth,
       h: this._spriteHeight
     }
+  }
+
+  static getAnimationsByBaseType(baseType) {
+    const entityAnimations = this._animationsData[baseType];
+    let animations = {};
+    for (let i = 0; i < entityAnimations.length; i++) {
+      let animation = entityAnimations[i];
+      let frames = [];
+      for (let j = 0; j < animation.frames.length; j++) {
+        frames.push({
+          rect: animation.frames[j][0],
+          time: animation.frames[j][1]
+        });
+      }
+      animations[animation.name] = new Animation(animation.name, frames);
+    }
+    return animations;
   }
 }

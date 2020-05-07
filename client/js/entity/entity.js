@@ -80,6 +80,7 @@ class Character extends Entity {
   setPath(path) {
     this.state = 'moving';
     this.path = path;
+    this.renderer.setAnimation('walk');
   }
 
   update(game) {
@@ -112,6 +113,7 @@ class Character extends Entity {
   move() {
     if (!this.path) {
       this.state = 'idle';
+      this.renderer.setAnimation('idle');
       return;
     }
 
@@ -145,6 +147,7 @@ class Character extends Entity {
         }
         else {
           this.state = 'idle';
+          this.renderer.setAnimation('idle');
           this.path = null;
           return;
         }

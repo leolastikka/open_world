@@ -49,6 +49,7 @@ class EntityManager {
       hoverPos = this._game.display.getRenderPos(hoverPos);
       const ctx = this._game.display.context;
       ctx.strokeStyle = pointerUnitData.hasActions ? 'greenyellow' : 'red';
+      ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(
         hoverPos.x,
@@ -143,10 +144,10 @@ class EntityManager {
 
   static createPlayer(data) {
     const pos = new Vector2(data.pos.x, data.pos.y);
-    const renderer = new SpriteRenderer(
+    const renderer = new AnimatedSpriteRenderer(
       RenderLayer.Walls,
       ResourceManager.texture,
-      ResourceManager.getSpriteRectByIndex(ResourceManager.playerTile)
+      ResourceManager.getAnimationsByBaseType('player')
       );
     const player = new Character(data.networkId, pos, renderer, data.name, data.actions);
     this._add(player);
