@@ -34,7 +34,7 @@ class SpriteRenderer extends Renderer {
       w: ResourceManager.spriteWidth * display.zoomLevel,
       h: ResourceManager.spriteHeight * display.zoomLevel
     };
-    //display.context.imageSmoothingEnabled = false;
+    // render entities near and below player transparent
     if (this.layer === RenderLayer.Walls && !this.entity.isOwned) {
       const diff = Vector2.sub(display.pos, this.entity.pos);
       if (diff.x > -3 &&
@@ -47,8 +47,7 @@ class SpriteRenderer extends Renderer {
         display.context.globalAlpha = 1;
       }
     }
-    // use antialiasing when pixel art isn't scaled properly
-    display.context.imageSmoothingEnabled = !(display.zoomLevel % 1 === 0);
+    display.context.imageSmoothingEnabled = false;
     display.context.drawImage(this._texture, src.x, src.y, src.w, src.h, dest.x, dest.y, dest.w, dest.h);
     display.context.globalAlpha = 1;
   }
