@@ -33,7 +33,7 @@
     "type": "npc_station_worker",
     "baseType": "npc",
     
-    "speed": 1
+    "speed": 0.75
   },
   {
     "description": "Start Area Info Cleric",

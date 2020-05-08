@@ -34,7 +34,7 @@ class ResourceManager {
         },
         {
           name: 'walk',
-          frames: [[Rect(49), 0.2], [Rect(65), 0.2]]
+          frames: [[Rect(49), 0.3], [Rect(65), 0.3]]
         }
       ],
       player: [
