@@ -97,6 +97,10 @@ class Animation {
     let t = this._frames[i].time;
     while (t < this._animationTime) {
       t += this._frames[i++].time;
+      if (i === this._frames.length) {
+        i--;
+        break;
+      }
     }
     return this._frames[i];
   }

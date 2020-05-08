@@ -301,7 +301,8 @@ class Character extends Entity {
       baseType: this._typeData.baseType,
       name: this._name,
       pos: this.pos,
-      path: this.path,
+      path: this._path,
+      speed: this.speed,
       actions: this.actions
     };
   }

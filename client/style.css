@@ -102,7 +102,6 @@ button:hover {
   top: 3em;
   color: yellowgreen;
   background-color: rgba(1, 32, 9, 0.75); /* dark green transparent */
-  font-size: 0.75em;
   font-weight: bold;
 }
 #action p {

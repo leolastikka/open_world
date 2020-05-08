@@ -29,8 +29,7 @@ class AreaManager {
       let areaName = areaFile.slice(0, -('.json'.length));
 
       let areaSize = areaJson.width;
-      let tileWidth = areaJson.tilewidth;
-      let tileHeight = areaJson.tileheight;
+      let tileHeight = areaJson.tileheight; // only this is used when parsing isometric object positions
       let floor = [];
       let walls = [];
       let links = [];
@@ -123,7 +122,7 @@ class AreaManager {
           );
           let typeData = EntityManager.getDataByType(obj.type);
           let char = area.addEntity(typeData, obj.name, pos);
-          let movementArea = movementAreas[char.id];
+          let movementArea = movementAreas[obj.id];
           if (movementArea && movementArea.length) {
             char.movementArea = movementArea;
           }

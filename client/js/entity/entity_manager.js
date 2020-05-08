@@ -114,7 +114,7 @@ class EntityManager {
       }
 
       if(created && ent.path) { // if object is moving
-        this.onMove({
+        this._gameState.onMove({
           networkId: ent.networkId,
           speed: ent.speed,
           pos: ent.pos,
@@ -172,10 +172,6 @@ class EntityManager {
         ResourceManager.texture,
         ResourceManager.getAnimationsByType('npc_worker')
         );
-    }
-    else {
-      console.log(data);
-      throw new Error('ei toimi');
     }
 
     let npc = new Character(data.networkId, pos, renderer, data.name, data.actions);
