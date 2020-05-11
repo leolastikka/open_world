@@ -19,7 +19,7 @@ body {
   z-index: 1;
   position: absolute;
 }
-#login, #login form, #loading, #connecting, #menu {
+#login, #login a, #login form, #loading, #connecting, #menu {
   color: greenyellow;
   background-color: #012009; /* dark green */
 }
