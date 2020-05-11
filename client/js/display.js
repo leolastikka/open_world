@@ -79,7 +79,7 @@ class Display {
     const pos = new Vector2(tileX, tileY);
     pos.div(this.zoomLevel);
     pos.add(this.pos);
-    pos.add(new Vector2(-2, -1.5)); // fix something
+    pos.add(new Vector2(-2, -2)); // fix something
     return pos;
   }
 
