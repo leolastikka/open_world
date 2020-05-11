@@ -1,6 +1,5 @@
 const { Vector2 } = require('./math');
 const { Time } = require('./time');
-const Connection = require('./connection');
 
 class Action {
   constructor() {
@@ -50,7 +49,7 @@ class InteractAction extends Action {
     this.targetEntity = null;
 
     if (this.ownerEntity.isSpawned) {
-      Connection.broadcast({
+      this.ownerEntity.area.broadcast({
         type: 'status',
         networkId: this.ownerEntity.networkId,
         inCombat: false
@@ -79,6 +78,12 @@ class AttackAction extends InteractAction {
   }
 }
 
+class AreaLinkAction extends InteractAction {
+  constructor(ownerObject, targetObject, range) {
+    super(ownerObject, targetObject, range);
+  }
+}
+
 class DialogController {
 
 }
@@ -95,7 +100,7 @@ class CombatController {
   }
 
   startAttack() {
-    Connection.broadcast({
+    this.ownerEntity.area.broadcast({
       type: 'status',
       networkId: this.ownerEntity.networkId,
       inCombat: true,
@@ -127,7 +132,7 @@ class CombatController {
     if (!this.ownerEntity.isSpawned) {
       throw new Error(`trying to despawn despawned object with networkId: ${this.ownerEntity.networkId}`)
     }
-    Connection.broadcast({
+    this.ownerEntity.area.broadcast({
       type: 'status',
       networkId: this.ownerEntity.networkId,
       inCombat: true,
@@ -150,6 +155,7 @@ module.exports = {
   TalkAction,
   TradeAction,
   AttackAction,
+  AreaLinkAction,
 
   DialogController,
   CombatController

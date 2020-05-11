@@ -39,5 +39,13 @@
     "description": "Start Area Info Cleric",
     "type": "npc_info",
     "baseType": "npc"
+  },
+  {
+    "description": "Training Enemy",
+    "type": "enemy_training",
+    "baseType": "enemy",
+
+    "respawnTime": 3,
+    "speed": 0.75
   }
 ]

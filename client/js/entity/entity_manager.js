@@ -34,6 +34,20 @@ class EntityManager {
         return y;
       }
       return a.pos.x - b.pos.x;
+      // const posA = Vector2.clone(a.pos);
+      // const posB = Vector2.clone(b.pos);
+      // if (a instanceof Tile) {
+      //   posA.add(new Vector2(-0.5, -0.5));
+      // }
+      // if (b instanceof Tile) {
+      //   posB.add(new Vector2(-0.5, -0.5));
+      // }
+      // const y = posA.y - posB.y;
+
+      // if (y != 0) {
+      //   return y;
+      // }
+      // return posA.x - posB.x;
     });
   }
 
@@ -111,6 +125,9 @@ class EntityManager {
         case 'container':
           created = this.createContainer(ent);
           break;
+        case 'link':
+          created = this.createLink(ent);
+          break;
       }
 
       if(created && ent.path) { // if object is moving
@@ -144,7 +161,7 @@ class EntityManager {
   }
 
   static createPlayer(data) {
-    const pos = new Vector2(data.pos.x, data.pos.y);
+    const pos = Vector2.fromObject(data.pos);
     const renderer = new AnimatedSpriteRenderer(
       RenderLayer.Walls,
       ResourceManager.texture,
@@ -156,7 +173,7 @@ class EntityManager {
   }
 
   static createNPC(data) {
-    let pos = new Vector2(data.pos.x, data.pos.y);
+    const pos = Vector2.fromObject(data.pos);
     let renderer = null;
 
     if (['npc_station_guard'].includes(data.type)) {
@@ -174,17 +191,32 @@ class EntityManager {
         );
     }
 
-    let npc = new Character(data.networkId, pos, renderer, data.name, data.actions);
+    const npc = new Character(data.networkId, pos, renderer, data.name, data.actions);
     this._add(npc, false);
     return npc;
   }
 
-  // static createEnemy(data) {
-  //   let pos = new Vector2(data.pos.x, data.pos.y);
-  //   let enemy = new Character(data.networkId, pos, new CharacterRenderer('red'), data.name, data.actions);
-  //   this._add(enemy, false);
-  //   return enemy;
-  // }
+  static createLink(data) {
+    const pos = Vector2.fromObject(data.pos);
+    const renderer = new SpriteRenderer(
+      RenderLayer.Walls,
+      ResourceManager.texture,
+      ResourceManager.getSpriteRectByIndex(ResourceManager.linkTile)
+      );
+    this._add(new AreaLink(data.networkId, pos, renderer, data.name, data.actions));
+  }
+
+  static createEnemy(data) {
+    const pos = new Vector2(data.pos.x, data.pos.y);
+    const renderer = new AnimatedSpriteRenderer(
+      RenderLayer.Walls,
+      ResourceManager.texture,
+      ResourceManager.getAnimationsByType('enemy')
+      );
+    let enemy = new Character(data.networkId, pos, renderer, data.name, data.actions);
+    this._add(enemy, false);
+    return enemy;
+  }
 
   // static createContainer(data) {
   //   let pos = new Vector2(data.pos.x, data.pos.y);

@@ -1,8 +1,7 @@
 const { Entity } = require('./entity');
 const { Time } = require('../time');
 const { Vector2 } = require('../math');
-const { MoveAction, InteractAction, TalkAction, AttackAction } = require('../action');
-const { ConnectionManager } = require('../connection');
+const { MoveAction, InteractAction, TalkAction, AttackAction, AreaLinkAction } = require('../action');
 
 class Character extends Entity {
   constructor(area, typeData, name, pos) {
@@ -16,13 +15,9 @@ class Character extends Entity {
     this._targetEntity = null;
     this._targetOfEntities = [];
 
-    this._lastIntPos = Vector2.clone(this.pos);
+    this.lastIntPos = Vector2.clone(this.pos);
     this._path = null;
     this._nextPath = null;
-  }
-
-  get lastIntPos() {
-    return this._lastIntPos;
   }
 
   get speed() {
@@ -77,8 +72,7 @@ class Character extends Entity {
       this._action = action;
       this._startInteractAction();
     }
-    else if (action instanceof AttackAction)
-    {
+    else if (action instanceof AttackAction) {
       if (this._action instanceof AttackAction &&
           this._action.targetEntity.networkId === action.targetEntity.networkId) { // if already doing same action
         return;
@@ -90,9 +84,23 @@ class Character extends Entity {
         this.finishAction();
       }
 
-      console.log(`starting ${action.constructor.name} for ${this._name}`);
       this._action = action;
       this._combatController.startAttack();
+      this._startInteractAction();
+    }
+    else if (action instanceof AreaLinkAction) {
+      if (this._action instanceof AreaLinkAction &&
+          this._action.targetEntity.networkId === action.targetEntity.networkId) { // if already doing same action
+        return;
+      }
+      else if (this._action instanceof InteractAction) {
+        this.finishAction();
+      }
+      else if (this._action instanceof MoveAction) {
+        this.finishAction();
+      }
+
+      this._action = action;
       this._startInteractAction();
     }
   }
@@ -128,8 +136,8 @@ class Character extends Entity {
 
       // if next node is reached
       movementDistance -= distance;
-      this._lastIntPos = Vector2.clone(nextPos); // move to next pos in tile grid
-      this.pos = Vector2.clone(this._lastIntPos);
+      this.lastIntPos = Vector2.clone(nextPos); // move to next pos in tile grid
+      this.pos = Vector2.clone(this.lastIntPos);
 
       this._path.shift(); // remove first element
       if (this._path.length === 0) { // if destination reached
@@ -138,7 +146,7 @@ class Character extends Entity {
           this._nextPath = null;
           nextPos = this._path[0];
 
-          ConnectionManager.broadcast({
+          this.area.broadcast({
             type: 'move',
             networkId: this.networkId,
             pos: this.pos,
@@ -165,7 +173,7 @@ class Character extends Entity {
 
       if (this._path && this._path.length > 1) { // if still have path left, end it
         this._path = [this._path[0]];
-        ConnectionManager.broadcast({
+        this.area.broadcast({
           type: 'move',
           networkId: this.networkId,
           pos: this.pos,
@@ -194,10 +202,10 @@ class Character extends Entity {
       this._action = null;
     }
     else if (this._action instanceof TalkAction) {
-      this.connection.user.ws.send(JSON.stringify({
+      this.typeData.connection.send({
         type: 'dialog',
         text: `Talking with ${this._action.targetEntity.name}`
-      }));
+      });
   
       this._action.finish();
       this._action = null;
@@ -208,12 +216,24 @@ class Character extends Entity {
         this._action = null;
       }
     }
+    else if (this._action instanceof AreaLinkAction) {
+      const { AreaManager } = require('../area/area_manager'); // require here because otherwise undefined
+      AreaManager.changeEntityArea(
+        this,
+        AreaManager.getByName(this._action.targetEntity.typeData.targetName
+        ));
+      this.typeData.connection.send({
+        type: 'changeArea'
+      });
+      this._action.finish();
+      this._action = null;
+    }
   }
 
   _startMoveAction() {
     // if on path, start next path from next node
     let startPos = this._path ? this._path[0] : this.lastIntPos;
-    let path = this._area.navigator.findPath(startPos, this._action.targetPos);
+    let path = this.area.navigator.findPath(startPos, this._action.targetPos);
     if (Array.isArray(path) && path.length === 0) {
       return null;
     }
@@ -227,7 +247,7 @@ class Character extends Entity {
     else { // if no path
       this._path = path;
 
-      ConnectionManager.broadcast({
+      this.area.broadcast({
         type: 'move',
         networkId: this.networkId,
         pos: this.pos,
@@ -239,14 +259,12 @@ class Character extends Entity {
 
   _startInteractAction() {
     let diff = Vector2.sub(this._action.targetEntity.lastIntPos, this.pos);
-    if (diff.length <= this._action.range) // if inside interaction range
-    {
+    if (diff.length <= this._action.range) { // if inside interaction range
       this._doActionInRange();
     }
-    else // if need to move
-    {
+    else { // if need to move
       let startPos = (this._path && this._path.length) ? this._path[0] : this.lastIntPos;
-      let shortestPath = this._area.navigator.findShortestPath(
+      let shortestPath = this.area.navigator.findShortestPath(
         Vector2.clone(startPos),
         this._action.targetEntity.interactPositions
       );
@@ -262,7 +280,7 @@ class Character extends Entity {
       else { // if no path
         this._path = shortestPath;
 
-        ConnectionManager.broadcast({
+        this.area.broadcast({
           type: 'move',
           networkId: this.networkId,
           pos: this.pos,
@@ -288,7 +306,7 @@ class Character extends Entity {
     });
     this._targetOfEntities = [];
 
-    ConnectionManager.broadcast({
+    this.area.broadcast({
       type: 'remove',
       networkId: this.networkId
     });
@@ -312,7 +330,6 @@ class Player extends Character {
   constructor(area, type, name, pos, equipment) {
     super(area, type, name, pos);
     this._equipment = equipment;
-    this.connection = null;
   }
 
   get speed() {
@@ -321,7 +338,6 @@ class Player extends Character {
 
   dispose() {
     super.dispose();
-    this.connection = null;
   }
 }
 
@@ -348,7 +364,8 @@ class Enemy extends NPC {
   }
 
   get actions() {
-    return ['attack'];
+    return [];
+    //return ['attack'];
   }
 }
 

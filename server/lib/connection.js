@@ -49,10 +49,20 @@ class ConnectionManager {
 
 class Connection {
   constructor(ws, game) {
-    this.ws = ws;
-    this.game = game;
-    this.user = null;
+    this._ws = ws;
+    this._game = game;
+    this._user = null;
     this.playerObject = null;
+  }
+
+  get user() {
+    return this._user;
+  }
+
+  send(data) {
+    if (this._ws) {
+      this._ws.send(JSON.stringify(data));
+    }
   }
 
   onMessage = (msg) => {
@@ -62,55 +72,56 @@ class Connection {
       data = JSON.parse(msg);
     } catch (ex) {
       console.log(ex);
-      ws.close();
+      this._ws.close();
       return;
     };
 
-    if (!this.ws.isAuthenticated) {
-      let authenticatedUser = ConnectionManager._authController.authenticateWebSocket(this.ws, data);
+    if (!this._ws.isAuthenticated) {
+      let authenticatedUser = ConnectionManager._authController.authenticateWebSocket(this._ws, data);
       if (authenticatedUser) {
-        this.user = authenticatedUser;
-        this.game.onConnectedUser(this);
+        this._user = authenticatedUser;
+        this._game.onConnectedUser(this);
 
-        this.ws.isAuthenticated = true;
-        this.ws.send(JSON.stringify({success:1}));
+        this._ws.isAuthenticated = true;
+        this._ws.send(JSON.stringify({success:1}));
       }
       else {
-        this.ws.close();
+        this._ws.close();
       }
     }
     else {
       switch(data.type) {
         case 'ready':
-          this.game.onReady(this.user);
+          this._game.onReady(this._user);
           break;
         case 'action':
-          this.game.onAction(this.user, data);
+          this._game.onAction(this._user, data);
           break;
         default:
-          this.ws.close();
+          this._ws.close();
       }
     }
   }
 
   onClose = (event) => {
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
+    if (this._ws) {
+      this._ws.close();
+      this._ws = null;
     }
 
-    if (this.user) {
-      this.game.onDisconnectedUser(this.user);
-      ConnectionManager._authController.removeUser(this.user); // temporary
+    if (this._user) {
+      this._user.area.removeConnection(this);
+      this._game.onDisconnectedUser(this._user);
+      ConnectionManager._authController.removeUser(this._user); // temporary
 
-      if (this.user.character) {
-        this.user.character.dispose();
-        this.user.character = null;
+      if (this._user.character) {
+        this._user.character.dispose();
+        this._user.character = null;
       }
-      this.user = null;
+      this._user = null;
     }
 
-    this.game = null;
+    this._game = null;
   }
 }
 

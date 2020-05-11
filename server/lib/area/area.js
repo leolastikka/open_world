@@ -1,20 +1,21 @@
-const _ = require('lodash');
 const { Navigator } = require('../navigator');
-const { Container } = require('../entity/container');
+const { AreaLink, Container } = require('../entity/interactable');
 const { NPC, Enemy, Player } = require('../entity/character');
+const { EntityVisibility } = require('../entity/entity');
 
 class Area {
-  constructor(name, size, floor, walls, links) {
+  constructor(name, size, floor, walls) {
     this._name = name;
     this._size = size;
     this._floor = floor;
     this._walls = walls;
-    this._links = links;
     this._navigator = new Navigator(this);
 
     this._entities = [];
     this._spawnedEntities = [];
     this._entityDestroyed = false;
+
+    this._connections = [];
   }
 
   get name() {
@@ -33,10 +34,6 @@ class Area {
     return this._walls;
   }
 
-  get objects() {
-    return this._objects;
-  }
-
   get navigator() {
     return this._navigator;
   }
@@ -46,15 +43,17 @@ class Area {
   }
 
   get spawnedEntities() {
-    return this._spawnedEntities;
+    return this._spawnedEntities.filter(ent => ent.visibleFor === EntityVisibility.All);
   }
 
   getLinkByType(type) {
-    return _.find(this._links, {type: type});
+    return this._entities.find((ent) => {
+      return ent.typeData.type === type;
+    });
   }
 
   getEntityByNetworkId(networkId) {
-    return _.find(this._entities, {networkId: networkId});
+    return this._entities.find(ent => ent.networkId === networkId);
   }
 
   update() {
@@ -92,12 +91,19 @@ class Area {
       case 'player':
         entity = new Player(this, typeData, name, pos);
         break;
+      case 'link':
+        entity = new AreaLink(this, typeData, name, pos);
+        break;
       default:
         throw new Error(`Unknown Entity Type: ${typeData.baseType}, for: ${name}`);
     }
 
     this._entities.push(entity);
     return entity;
+  }
+
+  addExistingEntity(entity) {
+    this._entities.push(entity);
   }
 
   removeEntity(entity) {
@@ -113,6 +119,26 @@ class Area {
 
   despawnEntity(entity) {
     this._spawnedEntities = this._spawnedEntities.filter(ent => ent != entity);
+  }
+
+  addConnection(connection) {
+    this._connections.push(connection);
+  }
+
+  removeConnection(connection) {
+    this._connections = this._connections.filter(conn => conn !== connection);
+  }
+
+  broadcast(data) {
+    this._connections.forEach(conn => conn.send(data));
+  }
+
+  broadcastToOthers(connection, data) {
+    this._connections.forEach(conn => {
+      if (conn != connection) {
+        conn.send(data);
+      }
+    });
   }
 }
 

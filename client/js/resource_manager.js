@@ -11,12 +11,23 @@ class ResourceManager {
     this._spriteHeight = 48;
     
     this._floorTiles = [0,1,2,3,4];
-    this._wallsTiles = [14,15,16,17,18,19,20,21,22,23,24,25,26,27,28, 34,35, 38];
+    this._wallsTiles = [14,15,16,17,18,19,20,21,22,23,24,25,26,27,28, 32,33,34,35,36,37,38];
+    this._linkTile = 13;
 
     const Rect = ResourceManager.getSpriteRectByIndex;
 
     // animation frames = [[Rect(spriteIndex), frame time in seconds], ...]
     this._animationsData = {
+      enemy: [
+        {
+          name: 'idle',
+          frames: [[Rect(50), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(50), 0.2], [Rect(66), 0.2]]
+        }
+      ],
       npc_guard: [
         {
           name: 'idle',
@@ -80,6 +91,10 @@ class ResourceManager {
 
   static get wallsTiles() {
     return this._wallsTiles;
+  }
+
+  static get linkTile() {
+    return this._linkTile;
   }
 
   static getSpriteRectByIndex = (index) => {

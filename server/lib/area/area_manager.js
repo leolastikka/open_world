@@ -1,9 +1,9 @@
 const FS = require('fs');
 const Path = require('path');
-const _ = require('lodash');
 const { Vector2 } = require('../math');
 const { Area } = require('./area');
 const { EntityManager } = require('../entity/entity_manager');
+const { Player } = require('../entity/character');
 
 class AreaManager {
   static init() {
@@ -12,34 +12,52 @@ class AreaManager {
   }
 
   static getByName(name) {
-    return _.find(this._areas, {name: name});
+    return this._areas.find(a => a.name === name);
   }
 
   static update() {
     this._areas.forEach(area => area.update());
   }
 
+  static changeEntityArea(entity, targetArea) {
+    const originalArea = entity.area;
+    entity.area.removeEntity(entity);
+    entity.area.despawnEntity(entity);
+    entity.area = targetArea;
+    const targetLink = targetArea.getLinkByType(`enter_${originalArea.name}`);
+    entity.pos = Vector2.clone(targetLink.pos);
+    entity.lastIntPos = Vector2.clone(targetLink.pos);
+    targetArea.addExistingEntity(entity);
+    targetArea.spawnEntity(entity);
+
+    if (entity instanceof Player) {
+      const conn = entity.typeData.connection;
+      originalArea.removeConnection(conn);
+      targetArea.addConnection(conn);
+      conn.user.area = targetArea;
+    }
+  }
+
   static _loadAreas() {
     const areasDir = '../../resources/areas';
-    let areaFiles = FS.readdirSync(Path.join(__dirname, areasDir));
+    const areaFiles = FS.readdirSync(Path.join(__dirname, areasDir));
 
-    // create area for each area file
+    //create area for each area file
     areaFiles.forEach(areaFile => {
-      let areaJson = JSON.parse(FS.readFileSync(Path.join(__dirname, `${areasDir}/${areaFile}`)));
-      let areaName = areaFile.slice(0, -('.json'.length));
+      const areaJson = JSON.parse(FS.readFileSync(Path.join(__dirname, `${areasDir}/${areaFile}`)));
+      const areaName = areaFile.slice(0, -('.json'.length));
 
-      let areaSize = areaJson.width;
-      let tileHeight = areaJson.tileheight; // only this is used when parsing isometric object positions
-      let floor = [];
-      let walls = [];
-      let links = [];
+      const areaSize = areaJson.width;
+      const tileHeight = areaJson.tileheight; // only this is used when parsing isometric object positions
+      const floor = [];
+      const walls = [];
 
-      let floorLayer = areaJson.layers.find(layer => layer.name === 'floor');
-      let wallsLayer = areaJson.layers.find(layer => layer.name === 'walls');
-      let linksLayer = areaJson.layers.find(layer => layer.name === 'links');
-      let objectsLayer = areaJson.layers.find(layer => layer.name === 'objects');
-      let charactersLayer = areaJson.layers.find(layer => layer.name === 'characters');
-      let movementAreasLayer = areaJson.layers.find(layer => layer.name === 'movementAreas');
+      const floorLayer = areaJson.layers.find(layer => layer.name === 'floor');
+      const wallsLayer = areaJson.layers.find(layer => layer.name === 'walls');
+      const linksLayer = areaJson.layers.find(layer => layer.name === 'links');
+      const objectsLayer = areaJson.layers.find(layer => layer.name === 'objects');
+      const charactersLayer = areaJson.layers.find(layer => layer.name === 'characters');
+      const movementAreasLayer = areaJson.layers.find(layer => layer.name === 'movementAreas');
 
       // handle tiles
       for(let i = 0; i < floorLayer.data.length; i += floorLayer.width) {
@@ -57,25 +75,26 @@ class AreaManager {
         }
       }
 
+      // create new area
+      const area = new Area(areaName, areaSize, floor, walls);
+
       // Use tileHeight also for x axis, because editor handles isometric object grid as squares
 
       // handle links
       linksLayer.objects.forEach(obj => {
-        let pos = new Vector2(
+        const pos = new Vector2(
           Math.floor(obj.x / tileHeight),
           Math.floor(obj.y / tileHeight)
         );
-
-        links.push({
+        const typeData = {
           type: obj.type,
+          baseType: 'link',
           direction: obj.type.slice(0, obj.type.indexOf('_')),
-          name: obj.type.slice(obj.type.indexOf('_') + 1, obj.type.length),
+          targetName: obj.type.slice(obj.type.indexOf('_') + 1, obj.type.length),
           pos: pos
-        });
+        };
+        area.addEntity(typeData, obj.name, pos);
       });
-
-      // create new area
-      let area = new Area(areaName, areaSize, floor, walls, links);
 
       // Gather all data to temp objects that needs to be linked by editor id
       // and link them here to avoid needing editor id later
@@ -90,7 +109,7 @@ class AreaManager {
             ));
           });
 
-          let forProperty = _.find(movementArea.properties, {name: 'for'});
+          let forProperty = movementArea.properties.find(prop => prop.name === 'for');
           let forIds = JSON.parse(forProperty.value);
           forIds.forEach(id => {
             movementAreas[id] = positions;

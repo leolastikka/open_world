@@ -75,6 +75,13 @@ class GameState extends State {
         target: action.networkId
       });
     }
+    else if (action instanceof AreaLinkAction) {
+      this.sendWsAction({
+        type: 'action',
+        action: 'link',
+        target: action.networkId
+      });
+    }
     this.gui.setLastAction(event.action.text);
   }
 
@@ -106,6 +113,9 @@ class GameState extends State {
       case 'dialog':
         this.onDialog(data);
         break;
+      case 'changeArea':
+        this.onChangeArea();
+        break;
     }
   }
 
@@ -132,6 +142,9 @@ class GameState extends State {
 
   onMove(data) {
     let ent = EntityManager.getByNetworkId(data.networkId);
+    if (!ent) {
+      console.log(data);
+    }
     ent.speed = data.speed;
     ent.pos = Vector2.fromObject(data.pos);
     
@@ -171,6 +184,14 @@ class GameState extends State {
 
   onDialog(data) {
     this.gui.openDialog(data.text);
+  }
+
+  onChangeArea() {
+    this.loadingElement.removeAttribute('hidden');
+    this.gui.hide();
+    EntityManager.dispose();
+    EntityManager.init(this.game, this);
+    this.game.connection.ws.send(JSON.stringify({type:'ready'}));
   }
 
   onWsClose = (event) => {

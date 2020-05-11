@@ -37,7 +37,7 @@ class Entity {
       // let hpPos = camera.getRenderPos(this.pos);
       // hpPos.add(new Vector2(0, -camera.pixelsPerUnit * 0.25));
 
-      display.context.font = `${10 * display.zoomLevel}px 'Minecraft-Regular', monospace`;
+      display.context.font = `${10 * display.zoomLevel}px 'Minecraft Regular', monospace`;
       display.context.fillStyle = 'greenyellow';
       display.context.textAlign = 'center';
       display.context.fillText(this.name, pos.x, pos.y);
@@ -189,26 +189,20 @@ class Character extends Entity {
   attack() {}
 }
 
-class Container extends Entity {
+class AreaLink extends Entity {
   constructor(networkId, pos, renderer, name, actions) {
     super(networkId, pos, renderer);
     this.name = name;
-    this.actions = actions;
+    this._actions = actions;
   }
 
   get actions() {
-    return [new TalkAction(`Interact with ${this.name}`, this.networkId)];
-  }
-}
-
-class Interactable extends Entity {
-  constructor(networkId, pos, renderer, name, actions) {
-    super(networkId, pos, renderer);
-    this.name = name;
-    this.actions = actions;
-  }
-
-  get actions() {
-    return [new InteractAction(`Interact with ${this.name}`, this.networkId)];
+    let actions = [];
+    this._actions.forEach(a => {
+      if (a === 'goto') {
+        actions.push(new AreaLinkAction(this.name, this.networkId));
+      }
+    });
+    return actions;
   }
 }

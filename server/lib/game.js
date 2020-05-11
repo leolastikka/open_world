@@ -1,10 +1,9 @@
 const { AreaManager } = require('./area/area_manager');
 const { EntityManager } = require('./entity/entity_manager');
 const { Vector2 } = require('./math');
-const { Navigator } = require('./navigator');
 const { Time } = require('./time');
 const ConnectionManager = require('./connection').ConnectionManager;
-const Actions = require('./action');
+const { MoveAction, TalkAction, AttackAction, AreaLinkAction } = require('./action');
 
 class Game {
   constructor(db, wss) {
@@ -60,13 +59,16 @@ class Game {
     let action = null;
     switch(data.action) {
       case 'move':
-        action = new Actions.MoveAction(Vector2.fromObject(data.target));
+        action = new MoveAction(Vector2.fromObject(data.target));
         break;
       case 'talk':
-        action = new Actions.TalkAction(character, user.area.getEntityByNetworkId(data.target), 1);
+        action = new TalkAction(character, user.area.getEntityByNetworkId(data.target), 1);
         break;
       case 'attack':
-        action = new Actions.AttackAction(character, user.area.getEntityByNetworkId(data.target), 1);
+        action = new AttackAction(character, user.area.getEntityByNetworkId(data.target), 1);
+        break;
+      case 'link':
+        action = new AreaLinkAction(character, user.area.getEntityByNetworkId(data.target), 1);
         break;
       default:
         user.ws.close();
@@ -76,7 +78,8 @@ class Game {
   }
 
   onDisconnectedUser = (user) => {
-    ConnectionManager.broadcast({
+    user.area.removeConnection();
+    user.area.broadcast({
       type: 'remove',
       networkId: user.character.networkId
     });
@@ -88,16 +91,18 @@ class Game {
   }
 
   spawnPlayer = (connection) => {
-    let area = AreaManager.getByName('start');
-    let startLink = area.getLinkByType('enter_start');
+    const area = AreaManager.getByName('start');
+    const startLink = area.getLinkByType('enter_start');
 
-    let typeData = EntityManager.getDataByType('player');
-    let player = area.addEntity(typeData, connection.user.username, Vector2.clone(startLink.pos));
-    player.connection = connection;
+    const typeData = Object.assign({
+      connection: connection
+    }, EntityManager.getDataByType('player'));
+    const player = area.addEntity(typeData, connection.user.username, Vector2.clone(startLink.pos));
+    area.addConnection(connection);
     connection.user.area = area;
     connection.user.character = player;
 
-    ConnectionManager.broadcastToOthers(connection.user.ws, {
+    area.broadcastToOthers(connection, {
       type: 'add',
       entity: player
     });

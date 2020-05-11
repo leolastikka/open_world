@@ -1,16 +1,22 @@
 const { EntityManager } = require('./entity_manager');
 const { Vector2 } = require('../math');
 
-// eg NPC1, NPC2, ...
+const EntityVisibility = Object.freeze({
+  All: -1,
+  None: 0
+});
+
 class Entity {
   constructor(area, typeData, name, pos) {
-    this._area = area;
+    this.area = area;
     this._typeData = typeData;
     this._name = name; // name set from editor
     this._networkId = EntityManager.getNewNetworkId();
     this._isSpawned = false;
     this.pos = Vector2.clone(pos);
+    this.lastIntPos = Vector2.clone(this.pos);
     this._isDestroyed = false;
+    this._visibleFor = EntityVisibility.All;
   }
 
   get name() {
@@ -21,12 +27,20 @@ class Entity {
     return this._networkId;
   }
 
+  get visibleFor() {
+    return this._visibleFor;
+  }
+
+  get typeData() {
+    return this._typeData;
+  }
+
   get actions() {
     return [];
   }
 
   get interactPositions() {
-    return this._area.navigator.getNeighbors(this.pos);
+    return this.area.navigator.getNeighbors(this.pos);
   }
 
   get isSpawned() {
@@ -37,10 +51,14 @@ class Entity {
     return this._isDestroyed;
   }
 
-  update() {}
+  update() {
+    if (!this._isSpawned) {
+      this.spawn();
+    }
+  }
 
   spawn() {
-    this._area.spawnEntity(this);
+    this.area.spawnEntity(this);
     this._isSpawned = true;
   }
 
@@ -49,7 +67,7 @@ class Entity {
    */
   despawn() {
     this._isSpawned = false;
-    this._area.despawnEntity(this);
+    this.area.despawnEntity(this);
   }
 
   /**
@@ -59,8 +77,8 @@ class Entity {
     if (this._isSpawned) {
       this.despawn();
     }
-    this._area.removeEntity(this);
-    this._area = null;
+    this.area.removeEntity(this);
+    this.area = null;
   }
 
   toJSON() {
@@ -75,5 +93,6 @@ class Entity {
 }
 
 module.exports = {
-  Entity
+  Entity,
+  EntityVisibility
 };
