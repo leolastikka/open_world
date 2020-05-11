@@ -40,7 +40,7 @@ class Entity {
   }
 
   get interactPositions() {
-    return this.area.navigator.getNeighbors(this.pos);
+    return this.area.navigator.getNeighbors(this.lastIntPos);
   }
 
   get isSpawned() {

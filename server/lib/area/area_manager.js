@@ -129,11 +129,11 @@ class AreaManager {
       if (objectsLayer) {
         objectsLayer.objects.forEach(obj => {
           if (obj.type === 'container') {
-            let pos = new Vector2(
+            const pos = new Vector2(
               Math.floor(obj.x / tileHeight),
               Math.floor(obj.y / tileHeight)
             );
-            let typeData = EntityManager.getDataByType(obj.type);
+            const typeData = EntityManager.getDataByType(obj.type);
             area.addEntity(typeData, obj.name, pos);
             area.navigator.setWalkableAt(pos, false);
           }

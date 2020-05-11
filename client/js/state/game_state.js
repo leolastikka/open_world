@@ -189,6 +189,8 @@ class GameState extends State {
   onChangeArea() {
     this.loadingElement.removeAttribute('hidden');
     this.gui.hide();
+    this.gui.closeDialog();
+    this.gui.closeDropdownMenu();
     EntityManager.dispose();
     EntityManager.init(this.game, this);
     this.game.connection.ws.send(JSON.stringify({type:'ready'}));

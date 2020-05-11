@@ -87,8 +87,7 @@ class GUI extends EventTarget
     }
   }
 
-  onPointerMove(event)
-  {
+  onPointerMove(event) {
     let unitPos = this.game.display.screenToUnitPosFloor(new Vector2(event.clientX, event.clientY));
 
     let actions = [];
@@ -102,12 +101,10 @@ class GUI extends EventTarget
       hasActions: false
     };
 
-    if (actions.length === 0)
-    {
+    if (actions.length === 0) {
       this.actionSuggestion.innerHTML = '';
     }
-    else
-    {
+    else {
       this.actionSuggestion.innerHTML = `> Do action: ${actions[0].text}`;
       this.pointerUnitData.hasActions = true;
     }
@@ -152,27 +149,23 @@ class GUI extends EventTarget
     this.openDropdownMenu(touch.clientX, touch.clientY);
   }
 
-  onWheel(event)
-  {
-    if (event.deltaY < 0)
-    {
+  onWheel(event) {
+    if (event.deltaY < 0) {
       this.onZoomIn();
     }
-    else if (event.deltaY > 0)
-    {
+    else if (event.deltaY > 0) {
       this.onZoomOut();
     }
   }
 
-  onClickLogout(event)
-  {
+  onClickLogout(event) {
     this.dispatchEvent(new Event('logout'));
   }
 
   openDropdownMenu(x, y) {
     let clickPos = new Vector2(x, y);
     let unitPos = this.game.display.screenToUnitPos(clickPos)
-    unitPos.add(new Vector2(0.5, 0.5));
+    unitPos.add(new Vector2(0, 0.5));
     unitPos = new Vector2(Math.floor(unitPos.x), Math.floor(unitPos.y));
 
     let actions = [new Action('Cancel')];
