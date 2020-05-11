@@ -23,12 +23,20 @@ class AreaManager {
     const originalArea = entity.area;
     entity.area.removeEntity(entity);
     entity.area.despawnEntity(entity);
+    originalArea.broadcast({
+      type: 'remove',
+      networkId: entity.networkId
+    });
     entity.area = targetArea;
     const targetLink = targetArea.getLinkByType(`enter_${originalArea.name}`);
     entity.pos = Vector2.clone(targetLink.pos);
     entity.lastIntPos = Vector2.clone(targetLink.pos);
     targetArea.addExistingEntity(entity);
     targetArea.spawnEntity(entity);
+    targetArea.broadcast({
+      type: 'add',
+      entity: entity
+    })
 
     if (entity instanceof Player) {
       const conn = entity.typeData.connection;
