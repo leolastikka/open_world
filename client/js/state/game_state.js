@@ -49,6 +49,11 @@ class GameState extends State {
       e.action = actions[0];
       this.onAction(e);
     }
+
+    this.gui.pointerUnitData = {
+      pos: unitPos,
+      hasActions: actions.length !== 0
+    };
   }
 
   onAction = (event) => {
