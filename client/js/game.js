@@ -8,6 +8,7 @@ window.requestAnimationFrame =
 
 class Game {
   constructor() {
+    console.log('new Game()');
     this.connected = false;
 
     this.display = new Display();
@@ -52,8 +53,7 @@ class Game {
   }
 }
 
-// initialize code
-(function() {
+window.addEventListener('load', function(e) {
   let game = new Game();
   game.start();
-})();
+});
