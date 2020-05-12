@@ -1,5 +1,6 @@
 class LoginState extends State {
   constructor(game, onLoginCallback, message = null) {
+    console.log('new LoginState()');
     super();
 
     this.game = game;
@@ -10,6 +11,7 @@ class LoginState extends State {
 
     this.loginElement = document.getElementById('login');
     this.loginElement.removeAttribute('hidden');
+    console.log('loginElement set to visible');
 
     this.loginCancel = document.getElementById('loginCancel');
     this.loginCancel.setAttribute('hidden', 'hidden');
