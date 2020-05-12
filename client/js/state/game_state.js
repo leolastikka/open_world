@@ -147,9 +147,6 @@ class GameState extends State {
 
   onMove(data) {
     let ent = EntityManager.getByNetworkId(data.networkId);
-    if (!ent) {
-      console.log(data);
-    }
     ent.speed = data.speed;
     ent.pos = Vector2.fromObject(data.pos);
     

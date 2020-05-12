@@ -6,15 +6,8 @@ window.requestAnimationFrame =
     window.webkitRequestAnimationFrame ||
     window.msRequestAnimationFrame;
 
-window.addEventListener('load', function(e) {
-  console.log('window onload');
-  let game = new Game();
-  game.start();
-});
-
 class Game {
   constructor() {
-    console.log('new Game()');
     this.connected = false;
 
     this.display = new Display();
@@ -24,7 +17,6 @@ class Game {
   }
 
   start = () => {
-    console.log('Game.start()');
     this.state = new LoginState(this, this.loginSuccess);
     window.requestAnimationFrame(() => this.update());
   }
@@ -59,3 +51,9 @@ class Game {
     this.state.render();
   }
 }
+
+// initialize code
+(function() {
+  let game = new Game();
+  game.start();
+})();
