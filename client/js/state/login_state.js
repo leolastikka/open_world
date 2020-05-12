@@ -1,6 +1,10 @@
 class LoginState extends State {
   constructor(game, onLoginCallback, message = null) {
     super();
+    this.login = this.login.bind(this);
+    this.succeedLogin = this.succeedLogin.bind(this);
+    this.failLogin = this.failLogin.bind(this);
+    this.cancelLogin = this.cancelLogin.bind(this);
 
     this.game = game;
     this.onLoginCallback = onLoginCallback;
@@ -36,7 +40,7 @@ class LoginState extends State {
     this.loginForm.addEventListener('submit', this.login);
   }
 
-  login = () => {
+  login() {
     if (this.isLoggingIn) {
       return false;
     }
@@ -67,25 +71,25 @@ class LoginState extends State {
     return false;
   }
 
-  succeedLogin = (response) => {
+  succeedLogin(response) {
     this.onLoginCallback();
   }
 
-  failLogin = (response) => {
+  failLogin(response) {
     this.loginError.removeAttribute('hidden');
     this.loginForm.removeAttribute('hidden');
     this.loginCancel.setAttribute('hidden', 'hidden');
     this.isLoggingIn = false;
   }
 
-  cancelLogin = () => {
+  cancelLogin() {
     this.loginRequest.abort();
     this.loginForm.removeAttribute('hidden');
     this.loginCancel.setAttribute('hidden', 'hidden');
     this.isLoggingIn = false;
   }
 
-  dispose = () => {
+  dispose() {
     this.loginForm.removeEventListener('submit', this.login);
     this.loginCancelButton.removeEventListener('click', this.cancelLogin);
     this.loginElement.setAttribute('hidden', 'hidden');

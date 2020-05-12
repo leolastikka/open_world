@@ -1,6 +1,13 @@
 class GameState extends State {
   constructor(game, logoutCallback) {
     super();
+    this.onClick = this.onClick.bind(this);
+    this.onAction = this.onAction.bind(this);
+    this.onWsMessage = this.onWsMessage.bind(this);
+    this.onWsClose = this.onWsClose.bind(this);
+    this.onWsError = this.onWsError.bind(this);
+    this.onLogout = this.onLogout.bind(this);
+
     Time.init();
     EntityManager.init(game, this);
 
@@ -35,7 +42,7 @@ class GameState extends State {
     EntityManager.render(this);
   }
 
-  onClick = (event) => {
+  onClick(event) {
     let unitPos = event.unitPos;
 
     let actions = [];
@@ -56,7 +63,7 @@ class GameState extends State {
     };
   }
 
-  onAction = (event) => {
+  onAction(event) {
     let action = event.action;
 
     if (action instanceof WalkAction) {
@@ -94,7 +101,7 @@ class GameState extends State {
     this.game.connection.ws.send(JSON.stringify(data));
   }
 
-  onWsMessage = (msg) => {
+  onWsMessage(msg) {
     let data = JSON.parse(msg.data);
     switch(data.type){
       case 'player':
@@ -198,15 +205,15 @@ class GameState extends State {
     this.game.connection.ws.send(JSON.stringify({type:'ready'}));
   }
 
-  onWsClose = (event) => {
+  onWsClose(event) {
     this.logoutCallback();
   }
 
-  onWsError = (event) => {
+  onWsError(event) {
     this.logoutCallback();
   }
 
-  onLogout = () => {
+  onLogout() {
     this.game.connection.closeWs();
     this.logoutCallback();
   }

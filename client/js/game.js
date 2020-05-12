@@ -1,5 +1,9 @@
 class Game {
   constructor() {
+    this.loginSuccess = this.loginSuccess.bind(this);
+    this.connectSuccess = this.connectSuccess.bind(this);
+    this.returnToLogin = this.returnToLogin.bind(this);
+
     this.connected = false;
 
     this.display = new Display();
@@ -8,39 +12,37 @@ class Game {
     ResourceManager.init();
   }
 
-  start = () => {
+  start() {
     this.state = new LoginState(this, this.loginSuccess);
     window.requestAnimationFrame(() => this.update());
   }
 
-  loginSuccess = () => {
+  loginSuccess() {
     this.state.dispose();
     this.state = new ConnectState(this, this.connectSuccess, this.returnToLogin);
   }
 
-  connectSuccess = () => {
+  connectSuccess() {
     this.state.dispose();
     this.state = new GameState(this, this.returnToLogin);
   }
 
-  returnToLogin = (message = null) => {
+  returnToLogin(message = null) {
     this.state.dispose();
     this.state = new LoginState(this, this.loginSuccess, message);
   }
 
-  update = () => {
+  update() {
     this.state.update();
     this.render();
     window.requestAnimationFrame(() => this.update());
   }
 
-  render = () => {
+  render() {
     let ctx = this.display.context;
     ctx.fillStyle = 'black';
-    //ctx.fillStyle = '#012009'; // dark green
     ctx.fillRect(0, 0, this.display.width, this.display.height);
 
     this.state.render();
   }
 }
-console.log('game file loaded');

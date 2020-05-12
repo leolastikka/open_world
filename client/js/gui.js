@@ -1,7 +1,5 @@
-class GUI extends EventTarget
-{
-  constructor(game)
-  {
+class GUI extends EventTarget {
+  constructor(game) {
     super();
 
     this.game = game;
@@ -55,25 +53,20 @@ class GUI extends EventTarget
     this.actionLast.innerHTML = '';
   }
 
-  show()
-  {
+  show() {
     this.element.removeAttribute('hidden');
   }
 
-  hide()
-  {
+  hide() {
     this.element.setAttribute('hidden', 'hidden');
   }
 
-  onClick(event)
-  {
-    if (event.button === 0) // left click
-    {
-      if (event.target === this.element)
-      {
+  onClick(event) {
+    if (event.button === 0) { // left click
+      if (event.target === this.element) {
         this.closeDropdownMenu();
       }
-      else{
+      else {
         return;
       }
 
@@ -185,61 +178,51 @@ class GUI extends EventTarget
 
     this.dropdownMenuElement.removeAttribute('hidden');
     let menuPos = new Vector2(x, y);
-    if (menuPos.x + this.dropdownMenuElement.offsetWidth > this.game.display.width)
-    {
+    if (menuPos.x + this.dropdownMenuElement.offsetWidth > this.game.display.width) {
       menuPos.x -= menuPos.x + this.dropdownMenuElement.offsetWidth - this.game.display.width;
     }
-    if (menuPos.y + this.dropdownMenuElement.offsetHeight > this.game.display.height)
-    {
+    if (menuPos.y + this.dropdownMenuElement.offsetHeight > this.game.display.height) {
       menuPos.y -= menuPos.y + this.dropdownMenuElement.offsetHeight - this.game.display.height;
     }
     this.dropdownMenuElement.style.left = `${menuPos.x}px`;
     this.dropdownMenuElement.style.top = `${menuPos.y}px`;
   }
 
-  clickDropdownMenuItem(action, event)
-  {
+  clickDropdownMenuItem(action, event) {
     let e = new Event('action');
     e.action = action;
     this.dispatchEvent(e);
   }
 
-  closeDropdownMenu()
-  {
+  closeDropdownMenu() {
     this.dropdownMenuElement.setAttribute('hidden', 'hidden');
     this.dropdownMenuElement.innerHTML = '';
   }
 
-  openDialog(text)
-  {
+  openDialog(text) {
     this.dialogElement.querySelector('p[name="content"]').innerHTML = text;
     this.dialogElement.removeAttribute('hidden');
   }
 
-  closeDialog()
-  {
+  closeDialog() {
     this.dialogElement.setAttribute('hidden', 'hidden');
   }
 
-  setLastAction(text)
-  {
+  setLastAction(text) {
     this.actionLast.innerHTML = `> Last action: ${text}`;
   }
 
-  onZoomIn()
-  {
+  onZoomIn() {
     this.closeDropdownMenu();
     this.game.display.zoomIn();
   }
 
-  onZoomOut()
-  {
+  onZoomOut() {
     this.closeDropdownMenu();
    this.game.display.zoomOut(); 
   }
 
-  dispose()
-  {
+  dispose() {
     this.element.setAttribute('hidden', 'hidden');
 
     this.logoutButton.removeEventListener('click', this.onClickLogout);

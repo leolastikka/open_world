@@ -38,4 +38,3 @@ class AreaLinkAction extends InteractAction {
     this.networkId = networkId;
   }
 }
-console.log('action file loaded');

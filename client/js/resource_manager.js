@@ -1,7 +1,7 @@
 class ResourceManager {
   static init() {
-    // this._texture = new Image();
-    // this._texture.src = '../img/tiles.png';
+    this.getSpriteRectByIndex = this.getSpriteRectByIndex.bind(this);
+
     this._texture = document.getElementById('spriteSheet');
 
     this._textureSize = 512;
@@ -97,7 +97,7 @@ class ResourceManager {
     return this._linkTile;
   }
 
-  static getSpriteRectByIndex = (index) => {
+  static getSpriteRectByIndex(index) {
     const maxPos = this._textureSize / this._spriteWidth;
     return {
       x: this._spriteWidth * (index % maxPos),

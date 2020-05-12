@@ -1,5 +1,9 @@
 class Display {
   constructor() {
+    this.onResize = this.onResize.bind(this);
+    this.zoomIn = this.zoomIn.bind(this);
+    this.zoomOut = this.zoomOut.bind(this);
+
     this.unitsPerLowestWidth = 15;
     this.pos = new Vector2();
 
@@ -16,7 +20,7 @@ class Display {
     window.addEventListener('resize', this.onResize);
   }
 
-  onResize = () => {
+  onResize() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
@@ -31,7 +35,7 @@ class Display {
     this.unitHeight = this.height / this.pixelsPerUnit;
   }
 
-  zoomIn = () => {
+  zoomIn() {
     this.zoomLevel += 1;
     if (this.zoomLevel > this.maxOutZoom) {
       this.zoomLevel = this.maxOutZoom;
@@ -39,7 +43,7 @@ class Display {
     this.onResize();
   }
 
-  zoomOut = () => {
+  zoomOut() {
     this.zoomLevel -= 1;
     if (this.zoomLevel < this.maxInZoom) {
       this.zoomLevel = this.maxInZoom;

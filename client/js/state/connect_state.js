@@ -1,6 +1,7 @@
 class ConnectState extends State {
   constructor(game, succesCallback, failCallback) {
     super();
+    this.cancelConnect = this.cancelConnect.bind(this);
 
     this.game = game;
     this.succesCallback = succesCallback;
@@ -19,12 +20,12 @@ class ConnectState extends State {
     });
   }
 
-  cancelConnect = () => {
+  cancelConnect() {
     this.game.connection.closeWs();
     this.failCallback();
   }
 
-  dispose = () => {
+  dispose() {
     this.connectCancelButton.removeEventListener('click', this.cancelConnect);
     this.connectingElement.setAttribute('hidden', 'hidden');
   }
