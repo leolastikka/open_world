@@ -87,9 +87,9 @@ button:hover {
   left: 0;
   top: 0;
   z-index: 5;
-  margin: 10%;
-  width: 80%;
-  height: 80%;
+  margin: 10vh 10vw;
+  width: 80vw;
+  height: 80vh;
   text-align: center;
   color: yellowgreen;
   background-color: rgba(1, 32, 9, 0.75); /* dark green transparent */
