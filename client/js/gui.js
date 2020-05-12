@@ -192,6 +192,7 @@ class GUI extends EventTarget {
     let e = new Event('action');
     e.action = action;
     this.dispatchEvent(e);
+    this.pointerUnitData.pos = null;
   }
 
   closeDropdownMenu() {
