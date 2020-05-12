@@ -117,18 +117,17 @@
   </div>
 
   <script>
-    window.addEventListener('load', (e) => {
-      "use strict";
+  "use strict";
+  window.addEventListener('load', (e) => {
+    window.requestAnimationFrame =
+        window.requestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.msRequestAnimationFrame;
 
-      window.requestAnimationFrame =
-          window.requestAnimationFrame ||
-          window.mozRequestAnimationFrame ||
-          window.webkitRequestAnimationFrame ||
-          window.msRequestAnimationFrame;
-
-      let game = new Game();
-      game.start();
-    });
+    const game = new Game();
+    game.start();
+  });
   </script>
 </body>
 </html>

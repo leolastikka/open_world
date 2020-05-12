@@ -43,3 +43,4 @@ class Game {
     this.state.render();
   }
 }
+console.log('game file loaded');
