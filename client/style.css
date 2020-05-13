@@ -94,6 +94,8 @@ button:hover {
   color: yellowgreen;
   background-color: rgba(1, 32, 9, 0.75); /* dark green transparent */
   border: 2px solid yellowgreen;
+  overflow-y: scroll;
+
 }
 #action {
   position: absolute;
