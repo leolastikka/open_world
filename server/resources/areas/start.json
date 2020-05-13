@@ -184,7 +184,7 @@
                 {
                  "height":0,
                  "id":9,
-                 "name":"Info Cleric",
+                 "name":"Info",
                  "point":true,
                  "rotation":0,
                  "type":"npc_info",
@@ -196,7 +196,7 @@
                 {
                  "height":0,
                  "id":10,
-                 "name":"Info Cleric",
+                 "name":"Info",
                  "point":true,
                  "rotation":0,
                  "type":"npc_info",
