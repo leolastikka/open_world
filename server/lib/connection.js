@@ -23,7 +23,7 @@ class ConnectionManager {
 
   static sendToUser(userId, data) {
     let user = this._game.users.find(u => u.id === userId);
-    user.ws.send(JSON.stringify(data));
+    user.connection.send(JSON.stringify(data));
   }
   
   static broadcast(data) {
@@ -77,7 +77,7 @@ class Connection {
     };
 
     if (!this._ws.isAuthenticated) {
-      let authenticatedUser = ConnectionManager._authController.authenticateWebSocket(this._ws, data);
+      let authenticatedUser = ConnectionManager._authController.authenticateWebSocket(this, data);
       if (authenticatedUser) {
         this._user = authenticatedUser;
         this._game.onConnectedUser(this);
@@ -122,6 +122,11 @@ class Connection {
     }
 
     this._game = null;
+  }
+
+  close() {
+    this._ws.close();
+    this._ws = null;
   }
 }
 

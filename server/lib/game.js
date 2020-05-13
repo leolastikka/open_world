@@ -40,18 +40,26 @@ class Game {
   }
 
   onReady = (user) => {
-    user.ws.send(JSON.stringify({
+    user.connection.send({
       type: 'mapData',
       floor: user.area.floor,
       walls: user.area.walls,
       walkable: user.area.navigator.getWalkabilityData(),
       entities: user.area.spawnedEntities
-    }));
+    });
 
-    user.ws.send(JSON.stringify({
+    user.connection.send({
       type: 'player',
       entity: user.character
-    }));
+    });
+
+    const spawnMessage = user.spawnMessage;
+    if (spawnMessage) {
+      user.connection.send({
+        type: 'dialog',
+        text: spawnMessage
+      });
+    }
   }
 
   onAction = (user, data) => {
@@ -71,7 +79,7 @@ class Game {
         action = new AreaLinkAction(character, user.area.getEntityByNetworkId(data.target), 1);
         break;
       default:
-        user.ws.close();
+        user.connection.close();
         return;
     }
     character.startAction(action);
