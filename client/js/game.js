@@ -9,6 +9,7 @@ class Game {
     this.display = new Display();
     this.connection = new Connection();
 
+    Options.init();
     ResourceManager.init();
   }
 

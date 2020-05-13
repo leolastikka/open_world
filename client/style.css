@@ -107,6 +107,12 @@ button:hover {
 #action p {
   margin: 0;
 }
+#options {
+  position: absolute;
+  z-index: 4;
+  top: 3em;
+  right: 0;
+}
 
 /* Large devices (desktops, 992px and up) */
 
