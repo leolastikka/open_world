@@ -11,7 +11,7 @@ class User {
 
     this._spawnMessageShown = false;
     this._spawnMessage = `Hello ${username}!<br><br>` +
-        'Welcome to your first reserach station.<br>' +
+        'Welcome to your first physical research station.<br>' +
         'Here you will learn how to get the best out of your new mechanical body with our latest training methods and equipment.<br>' +
         'As you already know, the more you benefit our cause, the more you benefit yourself.<br>' +
         'Please follow the green line on the floor to the training area.<br><br>' +
