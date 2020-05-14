@@ -123,7 +123,12 @@ button:disabled {
 /* Large devices (desktops, 992px and up) */
 
 /* Medium devices (tablets, 768px and up) */
-@media (max-width: 768px) {}
+@media (max-width: 768px) {
+  #menu button {
+    display: inline-block;
+    margin: 0;
+  }
+}
 
 /* Small devices (landscape phones, 576px and up) */
 @media (max-width: 576px) {
