@@ -34,10 +34,6 @@
   </div>
 
   <canvas id="mainCanvas"></canvas>
-
-  <div id="options">
-    <button name="fullscreen">Toggle Fullscreen</button>
-  </div>
   
   <div id="login" hidden="hidden">
     <p>
@@ -45,6 +41,8 @@
       > Welcome to<br>
       > OpenWorld<br>
       > v 0.0.1<br>
+      ><br>
+      > <button name="fullscreen">Toggle Fullscreen</button><br>
       ><br>
       > Login with any credentials.<br>
       > A new user is created on login and deleted on logout.<br>
@@ -100,8 +98,12 @@
   <div id="gui" hidden="hidden">
     <div id="menu">
       <button name="logout">Logout</button>
+      <button name="fullscreen">Fullscreen</button>
       <button name="zoomIn">+</button>
       <button name="zoomOut">-</button>
+      <button name="equipment" disabled>Equipment</button>
+      <button name="inventory" disabled>Inventory</button>
+      <button name="skills" disabled>Skills</button>
     </div>
 
     <ul id="dropdownMenu" hidden="hidden"></ul>

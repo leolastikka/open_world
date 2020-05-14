@@ -15,6 +15,8 @@ class LoginState extends State {
     this.loginElement = document.getElementById('login');
     this.loginElement.removeAttribute('hidden');
 
+    this.loginElement.querySelector('button[name="fullscreen"]').addEventListener('click', Options.toggleFullscreen);
+
     this.loginCancel = document.getElementById('loginCancel');
     this.loginCancel.setAttribute('hidden', 'hidden');
 
@@ -92,6 +94,7 @@ class LoginState extends State {
   dispose() {
     this.loginForm.removeEventListener('submit', this.login);
     this.loginCancelButton.removeEventListener('click', this.cancelLogin);
+    this.loginElement.querySelector('button[name="fullscreen"]').removeEventListener('click', Options.toggleFullscreen);
     this.loginElement.setAttribute('hidden', 'hidden');
   }
 }

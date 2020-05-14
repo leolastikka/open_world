@@ -19,7 +19,7 @@ body {
   z-index: 1;
   position: absolute;
 }
-#login, #login a, #login form, #loading, #connecting, #menu {
+#login, #login a, #login form, #loading, #connecting {
   color: greenyellow;
   background-color: #012009; /* dark green */
 }
@@ -44,19 +44,29 @@ button:hover {
   background: yellowgreen;
   cursor: pointer;
 }
+button:disabled {
+  border: 2px solid green;
+  color: green;
+  background: #012009; /* dark green */
+}
 
 #gui {
   user-select: none;
   -moz-user-select: none;
 }
 #menu {
-  width: calc(100% - 0.4em);
-  border-bottom: 2px solid yellowgreen;
-  padding: 0.2em;
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  right: 0;
+  display: inline-grid;
+  height: 100%;
 }
 #menu button {
   font-size: 1em;
   padding: 0 0.25em;
+  display: block;
+  margin: 1em;
 }
 #dropdownMenu {
   position: absolute;
@@ -109,12 +119,6 @@ button:hover {
 #action p {
   margin: 0;
 }
-#options {
-  position: absolute;
-  z-index: 4;
-  top: 3em;
-  right: 0;
-}
 
 /* Large devices (desktops, 992px and up) */
 
@@ -129,5 +133,20 @@ button:hover {
   #login input, #login button {
     font-size: 1em;
     max-width: 100%;
+  }
+  #menu {
+    top: auto;
+    right: auto;
+    left: 0;
+    bottom: 0;
+    height: auto;
+    width: 100%;
+    display: inline-table;
+    align-items: center;
+    justify-content: center;
+  }
+  #menu button {
+    display: inline-block;
+    margin: auto;
   }
 }

@@ -25,6 +25,7 @@ class GUI extends EventTarget {
 
     this.element = document.getElementById('gui');
     this.menuElement = document.getElementById('menu');
+    this.fullscreenButton = this.menuElement.querySelector('button[name="fullscreen"]');
     this.logoutButton = this.menuElement.querySelector('button[name="logout"]');
     this.zoomInButton = this.menuElement.querySelector('button[name="zoomIn"]');
     this.zoomOutButton = this.menuElement.querySelector('button[name="zoomOut"]');
@@ -35,6 +36,7 @@ class GUI extends EventTarget {
     this.actionSuggestion = this.actionElement.querySelector('p[name="suggestion"]');
     this.actionLast = this.actionElement.querySelector('p[name="last"]');
 
+    this.fullscreenButton.addEventListener('click', Options.toggleFullscreen);
     this.logoutButton.addEventListener('click', this.onClickLogout);
     this.zoomInButton.addEventListener('click', this.onZoomIn);
     this.zoomOutButton.addEventListener('click', this.onZoomOut);
@@ -143,11 +145,15 @@ class GUI extends EventTarget {
   }
 
   onWheel(event) {
-    if (event.deltaY < 0) {
-      this.onZoomIn();
-    }
-    else if (event.deltaY > 0) {
-      this.onZoomOut();
+    // prevent zoom when scrolling in dialog window
+    if (event.target !== this.dialogElement &&
+        event.target.parentElement !== this.dialogElement) {
+      if (event.deltaY < 0) {
+        this.onZoomIn();
+      }
+      else if (event.deltaY > 0) {
+        this.onZoomOut();
+      }
     }
   }
 
