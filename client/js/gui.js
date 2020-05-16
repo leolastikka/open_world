@@ -17,7 +17,6 @@ class GUI extends EventTarget {
     this.onClick = this.onClick.bind(this);
     this.onTouchStart = this.onTouchStart.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
-    this.onGestureEnd = this.onGestureEnd.bind(this);
     this.onLongTouch = this.onLongTouch.bind(this);
     this.onWheel = this.onWheel.bind(this);
     this.closeDropdownMenu = this.closeDropdownMenu.bind(this);
@@ -28,6 +27,8 @@ class GUI extends EventTarget {
     this.menuElement = document.getElementById('menu');
     this.fullscreenButton = this.menuElement.querySelector('button[name="fullscreen"]');
     this.logoutButton = this.menuElement.querySelector('button[name="logout"]');
+    this.zoomInButton = this.menuElement.querySelector('button[name="zoomIn"]');
+    this.zoomOutButton = this.menuElement.querySelector('button[name="zoomOut"]');
     this.dropdownMenuElement = document.getElementById('dropdownMenu');
     this.dialogElement = document.getElementById('dialog');
     this.dialogCloseXButton = this.dialogElement.querySelector('button[name="close-x"]');
@@ -38,6 +39,8 @@ class GUI extends EventTarget {
 
     this.fullscreenButton.addEventListener('click', Options.toggleFullscreen);
     this.logoutButton.addEventListener('click', this.onClickLogout);
+    this.zoomInButton.addEventListener('click', this.onZoomIn);
+    this.zoomOutButton.addEventListener('click', this.onZoomOut);
     this.dialogCloseXButton.addEventListener('click', this.closeDialog);
     this.dialogCloseButton.addEventListener('click', this.closeDialog);
 
@@ -46,7 +49,6 @@ class GUI extends EventTarget {
     this.element.addEventListener('touchstart', this.onTouchStart);
     this.element.addEventListener('touchend', this.onTouchEnd);
     this.element.addEventListener('wheel', this.onWheel);
-    this.element.addEventListener('gestureend', this.onGestureEnd);
 
     this.element.oncontextmenu = () => false; // disable default right click
     this.closeDialog();
@@ -136,15 +138,6 @@ class GUI extends EventTarget {
       this.touchTimer = clearTimeout(this.touchTimer);
     }
     this.touchEvent = null;
-  }
-
-  onGestureEnd(event) {
-    if (event.scale < 1.0) {
-      this.game.display.zoomOut();
-    }
-    else if (event.scale > 1.0) {
-      this.game.display.zoomIn();
-    }
   }
 
   onLongTouch()
@@ -242,6 +235,8 @@ class GUI extends EventTarget {
     this.element.setAttribute('hidden', 'hidden');
 
     this.logoutButton.removeEventListener('click', this.onClickLogout);
+    this.zoomInButton.removeEventListener('click', this.onZoomIn);
+    this.zoomOutButton.removeEventListener('click', this.onZoomOut);
     this.dialogCloseXButton.removeEventListener('click', this.closeDialog);
     this.dialogCloseButton.removeEventListener('click', this.closeDialog);
 
