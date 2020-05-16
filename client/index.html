@@ -9,6 +9,7 @@
   <title>OpenWorld</title>
 
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./res/fontawesome/css/all.css">
 
   <script src="./js/action.js"></script>
   <script src="./js/connection.js"></script>
@@ -74,6 +75,7 @@
       > Source code: <a href="https://github.com/leolastikka/open_world">Github</a><br>
       > Other credits:<br>
       > - Minecraft Regular font by Jacob Debono<br>
+      > - Font Awesome by Dave Gandy - <a href="http://fontawesome.io">http://fontawesome.io</a><br>
     </p>
   </div>
 
@@ -97,13 +99,13 @@
 
   <div id="gui" hidden="hidden">
     <div id="menu">
-      <button name="logout">Logout</button>
-      <button name="fullscreen">Fullscreen</button>
-      <button name="zoomIn">+</button>
-      <button name="zoomOut">-</button>
-      <button name="equipment" disabled>Equipment</button>
-      <button name="inventory" disabled>Inventory</button>
-      <button name="skills" disabled>Skills</button>
+      <button name="logout"><i class="fas fa-sign-out-alt fa-3x"></i></button>
+      <button name="fullscreen"><i class="fas fa-expand fa-3x"></i></button>
+      <button name="audio"><i class="fas fa-volume-up fa-3x"></i></button>
+      <button name="equipment" disabled><i class="fas fa-user fa-3x"></i></button>
+      <button name="inventory" disabled><i class="fas fa-briefcase fa-3x"></i></button>
+      <button name="skills" disabled><i class="fas fa-chart-bar fa-3x"></i></button>
+      <button name="settings" disabled><i class="fas fa-cog fa-3x"></i></button>
     </div>
 
     <ul id="dropdownMenu" hidden="hidden"></ul>
@@ -114,8 +116,9 @@
     </div>
 
     <div id="dialog" hidden="hidden">
+      <button name="close-x" class="close"><i class="fas fa-times fa-2x"></i></button>
       <p name="content"></p>
-      <button>Close</button>
+      <button name="close">Close</button>
     </div>
   </div>
 

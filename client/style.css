@@ -63,10 +63,11 @@ button:disabled {
   height: 100%;
 }
 #menu button {
-  font-size: 1em;
-  padding: 0 0.25em;
+  padding: 0;
   display: block;
-  margin: 1em;
+  margin: 1vmin;
+  width: 10vmin;
+  height: 10vmin;
 }
 #dropdownMenu {
   position: absolute;
@@ -105,7 +106,11 @@ button:disabled {
   background-color: rgba(1, 32, 9, 0.75); /* dark green transparent */
   border: 2px solid yellowgreen;
   overflow-y: scroll;
-
+}
+#dialog button.close {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 #action {
   position: absolute;
