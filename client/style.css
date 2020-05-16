@@ -69,6 +69,9 @@ button:disabled {
   width: 8vmin;
   height: 8vmin;
 }
+i {
+  font-size: 2em;
+}
 #dropdownMenu {
   position: absolute;
   z-index: 3;
