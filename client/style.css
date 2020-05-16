@@ -135,6 +135,7 @@ i {
   #menu button {
     display: inline-block;
     margin: 0;
+    height: auto;
   }
 }
 
