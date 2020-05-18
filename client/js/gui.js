@@ -14,6 +14,7 @@ class GUI extends EventTarget {
     this.onClickLogout = this.onClickLogout.bind(this);
     this.onZoomIn = this.onZoomIn.bind(this);
     this.onZoomOut = this.onZoomOut.bind(this);
+    this._onToggleAudio = this._onToggleAudio.bind(this);
     this.onClick = this.onClick.bind(this);
     this.onTouchStart = this.onTouchStart.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
@@ -29,6 +30,7 @@ class GUI extends EventTarget {
     this.logoutButton = this.menuElement.querySelector('button[name="logout"]');
     this.zoomInButton = this.menuElement.querySelector('button[name="zoomIn"]');
     this.zoomOutButton = this.menuElement.querySelector('button[name="zoomOut"]');
+    this.audioButton = this.menuElement.querySelector('button[name="audio"]');
     this.dropdownMenuElement = document.getElementById('dropdownMenu');
     this.dialogElement = document.getElementById('dialog');
     this.dialogCloseXButton = this.dialogElement.querySelector('button[name="close-x"]');
@@ -41,6 +43,7 @@ class GUI extends EventTarget {
     this.logoutButton.addEventListener('click', this.onClickLogout);
     this.zoomInButton.addEventListener('click', this.onZoomIn);
     this.zoomOutButton.addEventListener('click', this.onZoomOut);
+    this.audioButton.addEventListener('click', this._onToggleAudio);
     this.dialogCloseXButton.addEventListener('click', this.closeDialog);
     this.dialogCloseButton.addEventListener('click', this.closeDialog);
 
@@ -55,6 +58,7 @@ class GUI extends EventTarget {
     this.closeDropdownMenu();
     this.actionSuggestion.innerHTML = '';
     this.actionLast.innerHTML = '';
+    this._updateAudioIcon();
   }
 
   show() {
@@ -231,12 +235,30 @@ class GUI extends EventTarget {
    this.game.display.zoomOut(); 
   }
 
+  _onToggleAudio() {
+    Options.toggleAudio();
+    this._updateAudioIcon();
+  }
+
+  _updateAudioIcon() {
+    const iconElement = this.audioButton.querySelector('i');
+    if (Options.audioEnabled) {
+      iconElement.classList.remove('icon-volume-off');
+      iconElement.classList.add('icon-volume-up');
+    }
+    else {
+      iconElement.classList.remove('icon-volume-up');
+      iconElement.classList.add('icon-volume-off');
+    }
+  }
+
   dispose() {
     this.element.setAttribute('hidden', 'hidden');
 
     this.logoutButton.removeEventListener('click', this.onClickLogout);
     this.zoomInButton.removeEventListener('click', this.onZoomIn);
     this.zoomOutButton.removeEventListener('click', this.onZoomOut);
+    this.audioButton.removeEventListener('click', this._onToggleAudio);
     this.dialogCloseXButton.removeEventListener('click', this.closeDialog);
     this.dialogCloseButton.removeEventListener('click', this.closeDialog);
 

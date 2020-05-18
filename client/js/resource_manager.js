@@ -59,6 +59,22 @@ class ResourceManager {
         }
       ]
     };
+
+    this._audioEnabled = false;
+    this._audioContext = new AudioContext();
+    this.audioVolume = 0.5; // 0 ... 1
+
+    const audioDir = '../res';
+    this._audioClips = [
+      new AudioClip('menu', `${audioDir}/LoadingLoop.wav`),
+      new AudioClip('start', `${audioDir}/Shinsei.mp3`)
+    ];
+    this._currentMusic = null;
+    this._nextMusic = null;
+
+    this._crossfading = false;
+    this._crossfadeStartTime = null;
+    this._crossfadeDuration = 1;
   }
 
   static get texture() {
@@ -97,6 +113,14 @@ class ResourceManager {
     return this._linkTile;
   }
 
+  static get audioContext() {
+    return this._audioContext;
+  }
+
+  static get audioEnabled() {
+    return this._audioEnabled;
+  }
+
   static getSpriteRectByIndex(index) {
     const maxPos = this._textureSize / this._spriteWidth;
     return {
@@ -122,5 +146,168 @@ class ResourceManager {
       animations[animation.name] = new Animation(animation.name, frames);
     }
     return animations;
+  }
+
+  static enableAudio() {
+    this._audioEnabled = true;
+    if (this._currentMusic) {
+      this._currentMusic.play();
+    }
+    if (this._nextMusic) {
+      this._nextMusic.play();
+    }
+  }
+
+  static disableAudio() {
+    this._audioEnabled = false;
+    if (this._currentMusic) {
+      this._currentMusic.stop();
+    }
+    if (this._nextMusic) {
+      this._nextMusic.stop();
+    }
+  }
+
+  static updateAudio() {
+    if (this._crossfading) {
+      this._updateCrossfade();
+    }
+  }
+
+  static setVolume(value) {
+
+  }
+
+  static playMusic(name) {
+    if (this._audioEnabled) {
+      if (!this._crossfading) {
+        this._crossfading = true;
+      }
+      else {
+        this._currentMusic.stop();
+        this._currentMusic = null;
+        this._nextMusic.stop();
+        this._nextMusic = null;
+      }
+
+      this._crossfadeStartTime = Time.totalTime;
+      this._nextMusic = this._audioClips.find(a => a.name === name);
+      this._nextMusic.play();
+      this._updateCrossfade();
+    }
+    else {
+      this._currentMusic = this._audioClips.find(a => a.name === name);
+    }
+  }
+
+  static _updateCrossfade() {
+    const elapsedTime = Time.totalTime - this._crossfadeStartTime;
+    let progress = 0;
+    if (elapsedTime != 0) {
+      progress = Math.min(elapsedTime / this._crossfadeDuration, 1);
+    }
+    // Use an equal-power crossfading curve
+    var gain1 = Math.cos(progress * 0.5 * Math.PI) * this.audioVolume;
+    var gain2 = Math.cos((1.0 - progress) * 0.5 * Math.PI) * this.audioVolume;
+
+    if (this._currentMusic) {
+      this._currentMusic.gain.value = gain1;
+    }
+    this._nextMusic.gain.value = gain2;
+
+    if (progress === 1) {
+      if (this._currentMusic) {
+        this._currentMusic.stop(0);
+      }
+      this._currentMusic = this._nextMusic;
+      this._nextMusic = null;
+      this._crossfading = false;
+    }
+  }
+}
+
+class AudioClip {
+  constructor(name, url) {
+    this._name = name;
+    this._url = url;
+
+    this._audioSource = null; // AudioBufferSourceNode, AudioScheduledSourceNode interface
+    this._gainNode = null; // GainNode
+    this._buffer = null; // AudioBuffer
+
+    this._isReady = false;
+    this._playWhenReady = false;
+
+    this._load();
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  get gain() {
+    return this._gainNode.gain;
+  }
+  get isReady() {
+    return this._isReady;
+  }
+
+  play() {
+    if (this.isReady) {
+      this._audioSource = ResourceManager.audioContext.createBufferSource();
+      this._audioSource.buffer = this._buffer;
+      this._audioSource.loop = true;
+      this._gainNode = ResourceManager.audioContext.createGain();
+      this._audioSource.connect(this._gainNode);
+      this._gainNode.connect(ResourceManager.audioContext.destination);
+      this._gainNode.gain.value = ResourceManager.audioVolume;
+      this._audioSource.start(0);
+    }
+    else {
+      this._playWhenReady = true;
+    }
+  }
+
+  stop() {
+    if (this._isReady) {
+      this._audioSource.stop(0);
+      this._audioSource = null;
+      this._gainNode = null;
+    }
+    else {
+      this._playWhenReady = false;
+    }
+  }
+
+  _load() {
+    const request = new XMLHttpRequest();
+    request.open('GET', this._url, true);
+    request.responseType = 'arraybuffer';
+    request.onload = () => {
+      ResourceManager.audioContext.decodeAudioData(
+        request.response,
+        (buffer) => {
+          this._buffer = buffer;
+          this._isReady = true;
+
+          if (this._playWhenReady) {
+            this.play();
+          }
+        },
+        (error) => console.error('decodeAudioData error', error)
+        );
+    }
+    request.onerror = () => {
+      alert('BufferLoader: XHR error');
+    }
+    request.send();
+  }
+}
+
+class AudioShort extends AudioClip {
+}
+
+class AudioLong extends AudioClip {
+  constructor(name, audioSource, gainNode, loop) {
   }
 }

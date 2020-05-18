@@ -9,7 +9,7 @@
   <title>OpenWorld</title>
 
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="./res/fontello-37f0218c/css/fontawesome.css">
+  <link rel="stylesheet" href="./res/fontello-9908c6d7/css/fontawesome.css">
 
   <script src="./js/action.js"></script>
   <script src="./js/connection.js"></script>
@@ -44,6 +44,7 @@
       > v 0.0.1<br>
       ><br>
       > <button name="fullscreen">Toggle Fullscreen</button><br>
+      > <button name="audio">Enable Audio</button><br>
       ><br>
       > Login with any credentials.<br>
       > A new user is created on login and deleted on logout.<br>
@@ -73,9 +74,11 @@
       <br>
       <br>
       > Source code: <a href="https://github.com/leolastikka/open_world">Github</a><br>
-      > Other credits:<br>
-      > - Minecraft Regular font by Jacob Debono<br>
-      > - Font Awesome by Dave Gandy - <a href="http://fontawesome.io">http://fontawesome.io</a><br>
+      > Other assets used in this project:<br>
+      > - Font, Minecraft Regular <a href="https://www.1001freefonts.com/minecraft.font">https://www.1001freefonts.com/minecraft.font</a><br>
+      > - Icons, Font Awesome <a href="http://fontawesome.io">http://fontawesome.io</a><br>
+      > - Music, Shinsei <a href="https://opengameart.org/content/shinsei">https://opengameart.org/content/shinsei</a><br>
+      > - Music, Loading Screen Loop <a href="https://opengameart.org/content/loading-screen-loop">https://opengameart.org/content/loading-screen-loop</a><br>
     </p>
   </div>
 
@@ -103,7 +106,7 @@
       <button name="fullscreen"><i class="icon-resize-full-alt"></i></button>
       <button name="zoomIn"><i class="icon-zoom-in"></i></button>
       <button name="zoomOut"><i class="icon-zoom-out"></i></button>
-      <button name="audio" disabled><i class="icon-volume-up"></i></button>
+      <button name="audio"><i class="icon-volume-up"></i></button>
       <button name="equipment" disabled><i class="icon-user"></i></button>
       <button name="inventory" disabled><i class="icon-briefcase"></i></button>
       <button name="skills" disabled><i class="icon-chart-bar"></i></button>
@@ -132,6 +135,9 @@
         window.mozRequestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
         window.msRequestAnimationFrame;
+
+    window.AudioContext = window.AudioContext ||
+        window.webkitAudioContext;
 
     const game = new Game();
     game.start();

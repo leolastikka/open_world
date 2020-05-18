@@ -1,6 +1,20 @@
 class Options {
   static init() {
     this.toggleFullscreen = this.toggleFullscreen.bind(this);
+    this.toggleAudio = this.toggleAudio.bind(this);
+  }
+
+  static get audioEnabled() {
+    return ResourceManager.audioEnabled;
+  }
+
+  static toggleAudio() {
+    if (ResourceManager.audioEnabled) {
+      ResourceManager.disableAudio();
+    }
+    else {
+      ResourceManager.enableAudio();
+    }
   }
 
   static toggleFullscreen() {

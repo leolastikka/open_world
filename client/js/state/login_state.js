@@ -5,6 +5,7 @@ class LoginState extends State {
     this.succeedLogin = this.succeedLogin.bind(this);
     this.failLogin = this.failLogin.bind(this);
     this.cancelLogin = this.cancelLogin.bind(this);
+    this.toggleAudio = this.toggleAudio.bind(this);
 
     this.game = game;
     this.onLoginCallback = onLoginCallback;
@@ -16,6 +17,7 @@ class LoginState extends State {
     this.loginElement.removeAttribute('hidden');
 
     this.loginElement.querySelector('button[name="fullscreen"]').addEventListener('click', Options.toggleFullscreen);
+    this.loginElement.querySelector('button[name="audio"]').addEventListener('click', this.toggleAudio);
 
     this.loginCancel = document.getElementById('loginCancel');
     this.loginCancel.setAttribute('hidden', 'hidden');
@@ -40,6 +42,9 @@ class LoginState extends State {
 
     this.loginForm.onsubmit = () => {return false};
     this.loginForm.addEventListener('submit', this.login);
+
+    this._updateAudioButton();
+    ResourceManager.playMusic('menu');
   }
 
   login() {
@@ -91,10 +96,26 @@ class LoginState extends State {
     this.isLoggingIn = false;
   }
 
+  toggleAudio() {
+    Options.toggleAudio();
+    this._updateAudioButton();
+  }
+
+  _updateAudioButton() {
+    const audioButton = this.loginElement.querySelector('button[name="audio"]');
+    if (Options.audioEnabled) {
+      audioButton.innerHTML = 'Disable Audio';
+    }
+    else {
+      audioButton.innerHTML = 'Enable Audio';
+    }
+  }
+
   dispose() {
     this.loginForm.removeEventListener('submit', this.login);
     this.loginCancelButton.removeEventListener('click', this.cancelLogin);
     this.loginElement.querySelector('button[name="fullscreen"]').removeEventListener('click', Options.toggleFullscreen);
+    this.loginElement.querySelector('button[name="audio"]').removeEventListener('click', this.toggleAudio);
     this.loginElement.setAttribute('hidden', 'hidden');
   }
 }

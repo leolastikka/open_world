@@ -34,7 +34,9 @@ class Game {
   }
 
   update() {
+    Time.update();
     this.state.update();
+    ResourceManager.updateAudio();
     this.render();
     window.requestAnimationFrame(() => this.update());
   }
