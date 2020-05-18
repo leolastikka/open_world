@@ -210,14 +210,16 @@ class ResourceManager {
     var gain1 = Math.cos(progress * 0.5 * Math.PI) * this.audioVolume;
     var gain2 = Math.cos((1.0 - progress) * 0.5 * Math.PI) * this.audioVolume;
 
-    if (this._currentMusic) {
+    if (this._currentMusic && this._currentMusic.isReady) {
       this._currentMusic.gain.value = gain1;
     }
-    this._nextMusic.gain.value = gain2;
+    if (this._nextMusic.isReady) {
+      this._nextMusic.gain.value = gain2;
+    }
 
     if (progress === 1) {
       if (this._currentMusic) {
-        this._currentMusic.stop(0);
+        this._currentMusic.stop();
       }
       this._currentMusic = this._nextMusic;
       this._nextMusic = null;
@@ -280,13 +282,16 @@ class AudioClip {
   }
 
   _load() {
+    console.log(`${this.name} start loading`);
     const request = new XMLHttpRequest();
     request.open('GET', this._url, true);
     request.responseType = 'arraybuffer';
     request.onload = () => {
+      console.log(`${this.name} request onload`);
       ResourceManager.audioContext.decodeAudioData(
         request.response,
         (buffer) => {
+          console.log(`${this.name} audio decoded`);
           this._buffer = buffer;
           this._isReady = true;
 
