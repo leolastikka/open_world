@@ -66,7 +66,7 @@ class ResourceManager {
 
     const audioDir = '../res';
     this._audioClips = [
-      new AudioClip('menu', `${audioDir}/LoadingLoop.wav`),
+      new AudioClip('menu', `${audioDir}/LoadingLoop.mp3`),
       new AudioClip('start', `${audioDir}/Shinsei.mp3`)
     ];
     this._currentMusic = null;
@@ -282,16 +282,13 @@ class AudioClip {
   }
 
   _load() {
-    console.log(`${this.name} start loading`);
     const request = new XMLHttpRequest();
     request.open('GET', this._url, true);
     request.responseType = 'arraybuffer';
     request.onload = () => {
-      console.log(`${this.name} request onload`);
       ResourceManager.audioContext.decodeAudioData(
         request.response,
         (buffer) => {
-          console.log(`${this.name} audio decoded`);
           this._buffer = buffer;
           this._isReady = true;
 
