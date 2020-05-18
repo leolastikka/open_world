@@ -93,6 +93,9 @@ class Character extends Entity {
           this._action.targetEntity.networkId === action.targetEntity.networkId) { // if already doing same action
         return;
       }
+      else if (this.area.name === action.targetEntity.typeData.targetName) { // if already in the same area
+        return;
+      }
       else if (this._action instanceof InteractAction) {
         this.finishAction();
       }
