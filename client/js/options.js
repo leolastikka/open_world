@@ -26,6 +26,7 @@ class Options {
       ResourceManager.disableAudio();
     }
     else {
+      ResourceManager.audioContext.resume();
       ResourceManager.enableAudio();
     }
   }

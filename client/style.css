@@ -153,6 +153,8 @@ input[type=range]::-webkit-slider-runnable-track {
   cursor: pointer;
   background:#012009;
   border: 2px solid greenyellow;
+  height: 0.5em;
+  margin-top: 0.25em;
 }
 input[type=range]::-webkit-slider-thumb {
   border: 2px solid greenyellow;
@@ -160,7 +162,9 @@ input[type=range]::-webkit-slider-thumb {
   cursor: pointer;
   -webkit-appearance: none;
   border-radius: 0;
-  height: 1em
+  height: 1em;
+  width: 1em;
+  margin-top: -0.375em;
 }
 input[type=range]:focus::-webkit-slider-runnable-track {
   background:#012009;
