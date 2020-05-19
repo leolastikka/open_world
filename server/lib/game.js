@@ -76,7 +76,14 @@ class Game {
         action = new AttackAction(character, user.area.getEntityByNetworkId(data.target), 1);
         break;
       case 'link':
-        action = new AreaLinkAction(character, user.area.getEntityByNetworkId(data.target), 1);
+        const target = user.area.getEntityByNetworkId(data.target);
+        if (!target) {
+          user.connection.close();
+          return;
+        }
+        else {
+          action = new AreaLinkAction(character, target, 1);
+        }
         break;
       default:
         user.connection.close();
