@@ -19,6 +19,10 @@ body {
   z-index: 1;
   position: absolute;
 }
+#login {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
 #login, #login a, #login form, #loading, #connecting {
   color: greenyellow;
   background-color: #012009; /* dark green */
