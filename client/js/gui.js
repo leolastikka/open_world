@@ -15,6 +15,8 @@ class GUI extends EventTarget {
     this.onZoomIn = this.onZoomIn.bind(this);
     this.onZoomOut = this.onZoomOut.bind(this);
     this._onToggleAudio = this._onToggleAudio.bind(this);
+    this._onToggleSettings = this._onToggleSettings.bind(this);
+    this.closeSettings = this.closeSettings.bind(this);
     this.onClick = this.onClick.bind(this);
     this.onTouchStart = this.onTouchStart.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
@@ -26,11 +28,15 @@ class GUI extends EventTarget {
 
     this.element = document.getElementById('gui');
     this.menuElement = document.getElementById('menu');
-    this.fullscreenButton = this.menuElement.querySelector('button[name="fullscreen"]');
     this.logoutButton = this.menuElement.querySelector('button[name="logout"]');
+    this.fullscreenButton = this.menuElement.querySelector('button[name="fullscreen"]');
     this.zoomInButton = this.menuElement.querySelector('button[name="zoomIn"]');
     this.zoomOutButton = this.menuElement.querySelector('button[name="zoomOut"]');
     this.audioButton = this.menuElement.querySelector('button[name="audio"]');
+    this.settingsButton = this.menuElement.querySelector('button[name="settings"]');
+    this.settingsElement = document.getElementById('settings');
+    this.settingsCloseXButton = this.settingsElement.querySelector('button[name="close-x"]');
+    this.settingsVolumeSlider = this.settingsElement.querySelector('input[name="volume"]');
     this.dropdownMenuElement = document.getElementById('dropdownMenu');
     this.dialogElement = document.getElementById('dialog');
     this.dialogCloseXButton = this.dialogElement.querySelector('button[name="close-x"]');
@@ -39,11 +45,14 @@ class GUI extends EventTarget {
     this.actionSuggestion = this.actionElement.querySelector('p[name="suggestion"]');
     this.actionLast = this.actionElement.querySelector('p[name="last"]');
 
-    this.fullscreenButton.addEventListener('click', Options.toggleFullscreen);
     this.logoutButton.addEventListener('click', this.onClickLogout);
+    this.fullscreenButton.addEventListener('click', Options.toggleFullscreen);
     this.zoomInButton.addEventListener('click', this.onZoomIn);
     this.zoomOutButton.addEventListener('click', this.onZoomOut);
     this.audioButton.addEventListener('click', this._onToggleAudio);
+    this.settingsButton.addEventListener('click', this._onToggleSettings);
+    this.settingsCloseXButton.addEventListener('click', this.closeSettings);
+    this.settingsVolumeSlider.addEventListener('input', Options.changeVolume);
     this.dialogCloseXButton.addEventListener('click', this.closeDialog);
     this.dialogCloseButton.addEventListener('click', this.closeDialog);
 
@@ -56,9 +65,11 @@ class GUI extends EventTarget {
     this.element.oncontextmenu = () => false; // disable default right click
     this.closeDialog();
     this.closeDropdownMenu();
+    this.closeSettings();
     this.actionSuggestion.innerHTML = '';
     this.actionLast.innerHTML = '';
     this._updateAudioIcon();
+    this.settingsVolumeSlider.value = Options.audioSliderValue;
   }
 
   show() {
@@ -239,7 +250,21 @@ class GUI extends EventTarget {
     Options.toggleAudio();
     this._updateAudioIcon();
   }
-
+  _onToggleSettings() {
+    const isOpen = !this.settingsElement.hasAttribute('hidden');
+    if (isOpen) {
+      this.closeSettings();
+    }
+    else {
+      this.openSettings();
+    }
+  }
+  openSettings() {
+    this.settingsElement.removeAttribute('hidden');
+  }
+  closeSettings() {
+    this.settingsElement.setAttribute('hidden', 'hidden');
+  }
   _updateAudioIcon() {
     const iconElement = this.audioButton.querySelector('i');
     if (Options.audioEnabled) {
@@ -256,9 +281,13 @@ class GUI extends EventTarget {
     this.element.setAttribute('hidden', 'hidden');
 
     this.logoutButton.removeEventListener('click', this.onClickLogout);
+    this.fullscreenButton.removeEventListener('click', Options.toggleFullscreen);
     this.zoomInButton.removeEventListener('click', this.onZoomIn);
     this.zoomOutButton.removeEventListener('click', this.onZoomOut);
     this.audioButton.removeEventListener('click', this._onToggleAudio);
+    this.settingsButton.removeEventListener('click', this._onToggleSettings);
+    this.settingsCloseXButton.removeEventListener('click', this.closeSettings);
+    this.settingsVolumeSlider.removeEventListener('input', Options.changeVolume);
     this.dialogCloseXButton.removeEventListener('click', this.closeDialog);
     this.dialogCloseButton.removeEventListener('click', this.closeDialog);
 

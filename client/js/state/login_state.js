@@ -18,6 +18,7 @@ class LoginState extends State {
 
     this.loginElement.querySelector('button[name="fullscreen"]').addEventListener('click', Options.toggleFullscreen);
     this.loginElement.querySelector('button[name="audio"]').addEventListener('click', this.toggleAudio);
+    this.loginElement.querySelector('input[name="volume"]').addEventListener('input', Options.changeVolume);
 
     this.loginCancel = document.getElementById('loginCancel');
     this.loginCancel.setAttribute('hidden', 'hidden');
@@ -44,6 +45,7 @@ class LoginState extends State {
     this.loginForm.addEventListener('submit', this.login);
 
     this._updateAudioButton();
+    this.loginElement.querySelector('input[name="volume"]').value = Options.audioSliderValue;
     ResourceManager.playMusic('menu');
   }
 
@@ -116,6 +118,7 @@ class LoginState extends State {
     this.loginCancelButton.removeEventListener('click', this.cancelLogin);
     this.loginElement.querySelector('button[name="fullscreen"]').removeEventListener('click', Options.toggleFullscreen);
     this.loginElement.querySelector('button[name="audio"]').removeEventListener('click', this.toggleAudio);
+    this.loginElement.querySelector('input[name="volume"]').removeEventListener('input', Options.changeVolume);
     this.loginElement.setAttribute('hidden', 'hidden');
   }
 }

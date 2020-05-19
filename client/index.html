@@ -45,6 +45,7 @@
       ><br>
       > <button name="fullscreen">Toggle Fullscreen</button><br>
       > <button name="audio">Enable Audio</button><br>
+      > Volume <input name="volume" type="range" min="0" max="100"><br>
       ><br>
       > Login with any credentials.<br>
       > A new user is created on login and deleted on logout.<br>
@@ -79,6 +80,7 @@
       > - Icons, Font Awesome <a href="https://fontawesome.com">https://fontawesome.com</a><br>
       > - Music, Shinsei <a href="https://opengameart.org/content/shinsei">https://opengameart.org/content/shinsei</a><br>
       > - Music, Loading Screen Loop <a href="https://opengameart.org/content/loading-screen-loop">https://opengameart.org/content/loading-screen-loop</a><br>
+      > (Music files are currently highly compressed with reduced quality)
     </p>
   </div>
 
@@ -110,7 +112,7 @@
       <button name="equipment" disabled><i class="icon-user"></i></button>
       <button name="inventory" disabled><i class="icon-briefcase"></i></button>
       <button name="skills" disabled><i class="icon-chart-bar"></i></button>
-      <button name="settings" disabled><i class="icon-cog"></i></button>
+      <button name="settings"><i class="icon-cog"></i></button>
     </div>
 
     <ul id="dropdownMenu" hidden="hidden"></ul>
@@ -124,6 +126,13 @@
       <button name="close-x" class="close"><i class="icon-cancel"></i></button>
       <p name="content"></p>
       <button name="close">Close</button>
+    </div>
+
+    <div id="settings" hidden="hidden">
+      <button name="close-x" class="close"><i class="icon-cancel"></i></button>
+      <p>Settings</p>
+      <label>Volume</label>
+      <input type="range" min="0" max="100" name="volume">
     </div>
   </div>
 

@@ -62,7 +62,6 @@ class ResourceManager {
 
     this._audioEnabled = false;
     this._audioContext = new AudioContext();
-    this.audioVolume = 0.5; // 0 ... 1
 
     const audioDir = '../res';
     this._audioClips = [
@@ -174,8 +173,10 @@ class ResourceManager {
     }
   }
 
-  static setVolume(value) {
-
+  static updateVolume() {
+    this._audioClips.forEach(ac => {
+      ac.volume = Options.audioVolume;
+    });
   }
 
   static playMusic(name) {
@@ -207,14 +208,14 @@ class ResourceManager {
       progress = Math.min(elapsedTime / this._crossfadeDuration, 1);
     }
     // Use an equal-power crossfading curve
-    var gain1 = Math.cos(progress * 0.5 * Math.PI) * this.audioVolume;
-    var gain2 = Math.cos((1.0 - progress) * 0.5 * Math.PI) * this.audioVolume;
+    var gain1 = Math.cos(progress * 0.5 * Math.PI) * Options.audioVolume;
+    var gain2 = Math.cos((1.0 - progress) * 0.5 * Math.PI) * Options.audioVolume;
 
     if (this._currentMusic && this._currentMusic.isReady) {
-      this._currentMusic.gain.value = gain1;
+      this._currentMusic.volume = gain1;
     }
     if (this._nextMusic.isReady) {
-      this._nextMusic.gain.value = gain2;
+      this._nextMusic.volume = gain2;
     }
 
     if (progress === 1) {
@@ -232,6 +233,7 @@ class AudioClip {
   constructor(name, url) {
     this._name = name;
     this._url = url;
+    this._volume = Options.audioVolume;
 
     this._audioSource = null; // AudioBufferSourceNode, AudioScheduledSourceNode interface
     this._gainNode = null; // GainNode
@@ -247,9 +249,13 @@ class AudioClip {
     return this._name;
   }
 
-  get gain() {
-    return this._gainNode.gain;
+  set volume(value) {
+    this._volume = value;
+    if (this._gainNode) {
+      this._gainNode.gain.value = this._volume;
+    }
   }
+
   get isReady() {
     return this._isReady;
   }
@@ -262,7 +268,7 @@ class AudioClip {
       this._gainNode = ResourceManager.audioContext.createGain();
       this._audioSource.connect(this._gainNode);
       this._gainNode.connect(ResourceManager.audioContext.destination);
-      this._gainNode.gain.value = ResourceManager.audioVolume;
+      this._gainNode.gain.value = this._volume;
       this._audioSource.start(0);
     }
     else {

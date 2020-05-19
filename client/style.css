@@ -39,6 +39,12 @@ body {
   font-family: 'Minecraft Regular', 'Courier New', Courier, monospace;
   padding: 0 4px;
 }
+#login input[type=range] {
+  border: none;
+  background-color: transparent;
+  position: absolute;
+  width: 160px;
+}
 button:hover {
   color: #012009; /* dark green */
   background: yellowgreen;
@@ -96,7 +102,7 @@ i {
   content: ' ';
   margin:0.25em;
 }
-#dialog {
+#dialog, #settings {
   position: absolute;
   left: 0;
   top: 0;
@@ -110,10 +116,16 @@ i {
   border: 2px solid yellowgreen;
   overflow-y: scroll;
 }
-#dialog button.close {
+#settings {
+  z-index: 6;
+}
+#dialog .close, #settings .close {
   position: absolute;
   top: 0;
   left: 0;
+  width: 6vmin;
+  height: 6vmin;
+  border: none;
 }
 #action {
   position: absolute;
@@ -126,6 +138,44 @@ i {
 }
 #action p {
   margin: 0;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  background-color: transparent;
+  width: 40%;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  cursor: pointer;
+  background:#012009;
+  border: 2px solid greenyellow;
+}
+input[type=range]::-webkit-slider-thumb {
+  border: 2px solid greenyellow;
+  background:#012009;
+  cursor: pointer;
+  -webkit-appearance: none;
+  border-radius: 0;
+  height: 1em
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background:#012009;
+}
+input[type=range]::-moz-range-track {
+  cursor: pointer;
+  background:#012009;
+  border: 2px solid greenyellow;
+}
+input[type=range]::-moz-range-thumb {
+  border: 2px solid greenyellow;
+  background:#012009;
+  cursor: pointer;
+  border-radius: 0;
+  height: 1em;
 }
 
 /* Large devices (desktops, 992px and up) */
