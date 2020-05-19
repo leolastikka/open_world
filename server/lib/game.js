@@ -78,7 +78,6 @@ class Game {
       case 'link':
         const target = user.area.getEntityByNetworkId(data.target);
         if (!target) {
-          user.connection.close();
           return;
         }
         else {
