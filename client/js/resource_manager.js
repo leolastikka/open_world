@@ -66,7 +66,8 @@ class ResourceManager {
     const audioDir = '../res';
     this._audioClips = [
       new AudioClip('menu', `${audioDir}/Loop-Menu.mp3`),
-      new AudioClip('start', `${audioDir}/Shinsei.mp3`)
+      new AudioClip('start', `${audioDir}/Shinsei.mp3`),
+      new AudioClip('factory', `${audioDir}/Factory.mp3`)
     ];
     this._currentMusic = null;
     this._nextMusic = null;

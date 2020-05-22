@@ -45,7 +45,8 @@ class Game {
       floor: user.area.floor,
       walls: user.area.walls,
       walkable: user.area.navigator.getWalkabilityData(),
-      entities: user.area.spawnedEntities
+      entities: user.area.spawnedEntities,
+      music: user.area.music
     });
 
     user.connection.send({

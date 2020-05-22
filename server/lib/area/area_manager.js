@@ -54,6 +54,7 @@ class AreaManager {
     areaFiles.forEach(areaFile => {
       const areaJson = JSON.parse(FS.readFileSync(Path.join(__dirname, `${areasDir}/${areaFile}`)));
       const areaName = areaFile.slice(0, -('.json'.length));
+      const music = areaJson.properties.find(prop => prop.name === 'music').value;
 
       const areaSize = areaJson.width;
       const tileHeight = areaJson.tileheight; // only this is used when parsing isometric object positions
@@ -84,7 +85,7 @@ class AreaManager {
       }
 
       // create new area
-      const area = new Area(areaName, areaSize, floor, walls);
+      const area = new Area(areaName, areaSize, music, floor, walls);
 
       // Use tileHeight also for x axis, because editor handles isometric object grid as squares
 

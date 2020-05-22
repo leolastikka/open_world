@@ -31,8 +31,6 @@ class GameState extends State {
     this.gui.addEventListener('action', this.onAction);
 
     this.game.connection.ws.send(JSON.stringify({type:'ready'}));
-
-    ResourceManager.playMusic('start');
   }
 
   update() {
@@ -134,6 +132,7 @@ class GameState extends State {
 
   onAreaData(data) {
     EntityManager.createArea(data);
+    ResourceManager.playMusic(data.music);
   }
 
   onStatus(data) {

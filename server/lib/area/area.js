@@ -4,9 +4,10 @@ const { NPC, Enemy, Player } = require('../entity/character');
 const { EntityVisibility } = require('../entity/entity');
 
 class Area {
-  constructor(name, size, floor, walls) {
+  constructor(name, size, music, floor, walls) {
     this._name = name;
     this._size = size;
+    this._music = music;
     this._floor = floor;
     this._walls = walls;
     this._navigator = new Navigator(this);
@@ -24,6 +25,10 @@ class Area {
 
   get size() {
     return this._size;
+  }
+
+  get music() {
+    return this._music;
   }
 
   get floor() {
