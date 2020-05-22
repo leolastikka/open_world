@@ -65,24 +65,33 @@ class Game {
   onAction = (user, data) => {
     let character = user.character;
     let action = null;
+    let target = null;
+    if (['move'].includes(data.action)) {
+      try {
+        target = Vector2.fromObject(data.target);
+      }
+      catch {
+        return;
+      }
+    }
+    if (['talk', 'attack', 'link'].includes(data.action)) {
+      target = user.area.getEntityByNetworkId(data.target);
+      if (!target) {
+        return;
+      }
+    }
     switch(data.action) {
       case 'move':
-        action = new MoveAction(Vector2.fromObject(data.target));
+        action = new MoveAction(target);
         break;
       case 'talk':
-        action = new TalkAction(character, user.area.getEntityByNetworkId(data.target), 1);
+        action = new TalkAction(character, target, 1);
         break;
       case 'attack':
-        action = new AttackAction(character, user.area.getEntityByNetworkId(data.target), 1);
+        action = new AttackAction(character, target, 1);
         break;
       case 'link':
-        const target = user.area.getEntityByNetworkId(data.target);
-        if (!target) {
-          return;
-        }
-        else {
-          action = new AreaLinkAction(character, target, 1);
-        }
+        action = new AreaLinkAction(character, target, 1);
         break;
       default:
         user.connection.close();
