@@ -52,7 +52,7 @@ class Display {
   }
 
   isInViewport(worldPos) {
-    const maxTiles = 10;
+    const maxTiles = 14;
     const diff = Vector2.sub(worldPos, this.pos);
     return diff.x > -maxTiles &&
         diff.x < maxTiles &&
