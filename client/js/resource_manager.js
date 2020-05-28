@@ -187,10 +187,14 @@ class ResourceManager {
         this._crossfading = true;
       }
       else {
-        this._currentMusic.stop();
-        this._currentMusic = null;
-        this._nextMusic.stop();
-        this._nextMusic = null;
+        if (this._currentMusic) {
+          this._currentMusic.stop();
+          this._currentMusic = null;
+        }
+        if (this._nextMusic) {
+          this._nextMusic.stop();
+          this._nextMusic = null;
+        }
       }
 
       this._crossfadeStartTime = Time.totalTime;
