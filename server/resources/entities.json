@@ -46,6 +46,13 @@
     "speed": 0.75
   },
   {
+    "description": "City Worker",
+    "type": "npc_city_worker",
+    "baseType": "npc",
+    
+    "speed": 0.75
+  },
+  {
     "description": "Start Area Info Cleric",
     "type": "npc_info",
     "baseType": "npc"
