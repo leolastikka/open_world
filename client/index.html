@@ -10,7 +10,7 @@
 
   <link rel="shortcut icon" type="image/png" href="./res/favicon.png">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="./res/fontello-9908c6d7/css/fontawesome.css">
+  <link rel="stylesheet" href="./res/fontello-c7529842/css/fontawesome.css">
 
   <script src="./js/action.js"></script>
   <script src="./js/connection.js"></script>
@@ -112,8 +112,8 @@
       <button name="zoomIn"><i class="icon-zoom-in"></i></button>
       <button name="zoomOut"><i class="icon-zoom-out"></i></button>
       <button name="audio"><i class="icon-volume-up"></i></button>
-      <button name="equipment" disabled><i class="icon-user"></i></button>
-      <button name="inventory" disabled><i class="icon-briefcase"></i></button>
+      <button name="log" disabled><i class="icon-doc-text"></i></button>
+      <button name="equipment"><i class="icon-user"></i></button>
       <button name="skills" disabled><i class="icon-chart-bar"></i></button>
       <button name="settings"><i class="icon-cog"></i></button>
     </div>
@@ -131,12 +131,27 @@
       <button name="close">Close</button>
     </div>
 
+    <div id="equipment" hidden="hidden">
+      <button name="close-x" class="close"><i class="icon-cancel"></i></button>
+      <p>Equipment</p>
+      <p>
+        Armor:<br>
+        Weapon:<br>
+        Ammo:<br>
+      </p>
+      <p>Inventory</p>
+      <p>
+        1 x Training Pistol<br>
+        50 x Pistol Ammo
+      </p>
+    </div>
+
     <div id="settings" hidden="hidden">
       <button name="close-x" class="close"><i class="icon-cancel"></i></button>
       <p>Settings</p>
       <label>Volume</label>
       <input type="range" min="0" max="100" name="volume"><br>
-      <label>Draw distance in tiles (<span name="distanceNumeric"></span>)</label>
+      <label>Draw distance (<span name="distanceNumeric"></span>)</label>
       <input type="range" min="7" max="25" name="distance">
     </div>
   </div>

@@ -15,6 +15,8 @@ class GUI extends EventTarget {
     this.onZoomIn = this.onZoomIn.bind(this);
     this.onZoomOut = this.onZoomOut.bind(this);
     this._onToggleAudio = this._onToggleAudio.bind(this);
+    this._onToggleEquipment = this._onToggleEquipment.bind(this);
+    this.closeEquipment = this.closeEquipment.bind(this);
     this._onToggleSettings = this._onToggleSettings.bind(this);
     this.closeSettings = this.closeSettings.bind(this);
     this._onChangeDistance = this._onChangeDistance.bind(this);
@@ -34,14 +36,14 @@ class GUI extends EventTarget {
     this.zoomInButton = this.menuElement.querySelector('button[name="zoomIn"]');
     this.zoomOutButton = this.menuElement.querySelector('button[name="zoomOut"]');
     this.audioButton = this.menuElement.querySelector('button[name="audio"]');
+    this.equipmentButton = this.menuElement.querySelector('button[name="equipment"]');
+    this.equipmentElement = document.getElementById('equipment');
     this.settingsButton = this.menuElement.querySelector('button[name="settings"]');
     this.settingsElement = document.getElementById('settings');
-    this.settingsCloseXButton = this.settingsElement.querySelector('button[name="close-x"]');
     this.settingsVolumeSlider = this.settingsElement.querySelector('input[name="volume"]');
     this.settingsDistanceSlider = this.settingsElement.querySelector('input[name="distance"]');
     this.dropdownMenuElement = document.getElementById('dropdownMenu');
     this.dialogElement = document.getElementById('dialog');
-    this.dialogCloseXButton = this.dialogElement.querySelector('button[name="close-x"]');
     this.dialogCloseButton = this.dialogElement.querySelector('button[name="close"]');
     this.actionElement = document.getElementById('action');
     this.actionSuggestion = this.actionElement.querySelector('p[name="suggestion"]');
@@ -52,11 +54,13 @@ class GUI extends EventTarget {
     this.zoomInButton.addEventListener('click', this.onZoomIn);
     this.zoomOutButton.addEventListener('click', this.onZoomOut);
     this.audioButton.addEventListener('click', this._onToggleAudio);
+    this.equipmentButton.addEventListener('click', this._onToggleEquipment);
+    this.equipmentElement.querySelector('button[name="close-x"]').addEventListener('click', this.closeEquipment);
     this.settingsButton.addEventListener('click', this._onToggleSettings);
-    this.settingsCloseXButton.addEventListener('click', this.closeSettings);
+    this.settingsElement.querySelector('button[name="close-x"]').addEventListener('click', this.closeSettings);
     this.settingsVolumeSlider.addEventListener('input', Options.changeVolume);
     this.settingsDistanceSlider.addEventListener('input', this._onChangeDistance);
-    this.dialogCloseXButton.addEventListener('click', this.closeDialog);
+    this.dialogElement.querySelector('button[name="close-x"]').addEventListener('click', this.closeDialog);
     this.dialogCloseButton.addEventListener('click', this.closeDialog);
 
     this.element.addEventListener('mousedown', this.onClick);
@@ -68,6 +72,7 @@ class GUI extends EventTarget {
     this.element.oncontextmenu = () => false; // disable default right click
     this.closeDialog();
     this.closeDropdownMenu();
+    this.closeEquipment();
     this.closeSettings();
     this.actionSuggestion.innerHTML = '';
     this.actionLast.innerHTML = '';
@@ -263,6 +268,21 @@ class GUI extends EventTarget {
       this.openSettings();
     }
   }
+  _onToggleEquipment() {
+    const isOpen = !this.equipmentElement.hasAttribute('hidden');
+    if (isOpen) {
+      this.closeEquipment();
+    }
+    else {
+      this.openEquipment();
+    }
+  }
+  openEquipment() {
+    this.equipmentElement.removeAttribute('hidden');
+  }
+  closeEquipment() {
+    this.equipmentElement.setAttribute('hidden', 'hidden');
+  }
   _onChangeDistance(event) {
     this.game.display.drawDistance = parseInt(event.target.value);
     this._updateDistanceNumeric();
@@ -300,11 +320,13 @@ class GUI extends EventTarget {
     this.zoomInButton.removeEventListener('click', this.onZoomIn);
     this.zoomOutButton.removeEventListener('click', this.onZoomOut);
     this.audioButton.removeEventListener('click', this._onToggleAudio);
+    this.equipmentButton.removeEventListener('click', this._onToggleEquipment);
+    this.equipmentElement.querySelector('button[name="close-x"]').removeEventListener('click', this.closeEquipment);
     this.settingsButton.removeEventListener('click', this._onToggleSettings);
-    this.settingsCloseXButton.removeEventListener('click', this.closeSettings);
+    this.settingsElement.querySelector('button[name="close-x"]').removeEventListener('click', this.closeSettings);
     this.settingsVolumeSlider.removeEventListener('input', Options.changeVolume);
     this.settingsDistanceSlider.removeEventListener('input', this._onChangeDistance);
-    this.dialogCloseXButton.removeEventListener('click', this.closeDialog);
+    this.dialogElement.querySelector('button[name="close-x"]').removeEventListener('click', this.closeDialog);
     this.dialogCloseButton.removeEventListener('click', this.closeDialog);
 
     this.element.removeEventListener('mousedown', this.onClick);

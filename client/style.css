@@ -106,7 +106,7 @@ i {
   content: ' ';
   margin:0.25em;
 }
-#dialog, #settings {
+#dialog, #settings, #equipment {
   position: absolute;
   left: 0;
   top: 0;
@@ -123,7 +123,7 @@ i {
 #settings {
   z-index: 6;
 }
-#dialog .close, #settings .close {
+.close {
   position: absolute;
   top: 0;
   left: 0;
