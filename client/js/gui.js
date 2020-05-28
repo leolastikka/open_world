@@ -17,6 +17,7 @@ class GUI extends EventTarget {
     this._onToggleAudio = this._onToggleAudio.bind(this);
     this._onToggleSettings = this._onToggleSettings.bind(this);
     this.closeSettings = this.closeSettings.bind(this);
+    this._onChangeDistance = this._onChangeDistance.bind(this);
     this.onClick = this.onClick.bind(this);
     this.onTouchStart = this.onTouchStart.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
@@ -37,6 +38,7 @@ class GUI extends EventTarget {
     this.settingsElement = document.getElementById('settings');
     this.settingsCloseXButton = this.settingsElement.querySelector('button[name="close-x"]');
     this.settingsVolumeSlider = this.settingsElement.querySelector('input[name="volume"]');
+    this.settingsDistanceSlider = this.settingsElement.querySelector('input[name="distance"]');
     this.dropdownMenuElement = document.getElementById('dropdownMenu');
     this.dialogElement = document.getElementById('dialog');
     this.dialogCloseXButton = this.dialogElement.querySelector('button[name="close-x"]');
@@ -53,6 +55,7 @@ class GUI extends EventTarget {
     this.settingsButton.addEventListener('click', this._onToggleSettings);
     this.settingsCloseXButton.addEventListener('click', this.closeSettings);
     this.settingsVolumeSlider.addEventListener('input', Options.changeVolume);
+    this.settingsDistanceSlider.addEventListener('input', this._onChangeDistance);
     this.dialogCloseXButton.addEventListener('click', this.closeDialog);
     this.dialogCloseButton.addEventListener('click', this.closeDialog);
 
@@ -69,6 +72,7 @@ class GUI extends EventTarget {
     this.actionSuggestion.innerHTML = '';
     this.actionLast.innerHTML = '';
     this._updateAudioIcon();
+    this._updateDistanceNumeric();
     this.settingsVolumeSlider.value = Options.audioSliderValue;
   }
 
@@ -259,6 +263,10 @@ class GUI extends EventTarget {
       this.openSettings();
     }
   }
+  _onChangeDistance(event) {
+    this.game.display.drawDistance = parseInt(event.target.value);
+    this._updateDistanceNumeric();
+  }
   openSettings() {
     this.settingsElement.removeAttribute('hidden');
   }
@@ -276,6 +284,9 @@ class GUI extends EventTarget {
       iconElement.classList.add('icon-volume-off');
     }
   }
+  _updateDistanceNumeric() {
+    this.settingsElement.querySelector('span[name="distanceNumeric"]').innerHTML = this.game.display.drawDistance;
+  }
 
   dispose() {
     this.element.setAttribute('hidden', 'hidden');
@@ -288,6 +299,7 @@ class GUI extends EventTarget {
     this.settingsButton.removeEventListener('click', this._onToggleSettings);
     this.settingsCloseXButton.removeEventListener('click', this.closeSettings);
     this.settingsVolumeSlider.removeEventListener('input', Options.changeVolume);
+    this.settingsDistanceSlider.removeEventListener('input', this._onChangeDistance);
     this.dialogCloseXButton.removeEventListener('click', this.closeDialog);
     this.dialogCloseButton.removeEventListener('click', this.closeDialog);
 

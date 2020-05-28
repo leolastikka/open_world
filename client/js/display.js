@@ -5,7 +5,7 @@ class Display {
     this.zoomOut = this.zoomOut.bind(this);
 
     this.pos = new Vector2();
-    this.maxTiles = 14;
+    this.drawDistance = 14;
 
     this.maxInZoom = 1;
     this.maxOutZoom = 3;
@@ -24,8 +24,7 @@ class Display {
     ];
     const isMobile = mobileUserAgents.some(ua => navigator.userAgent.match(ua));
     if(isMobile) {
-      console.log('isMobile');
-      this.maxTiles = 9; // show less tiles on mobile to increase performance
+      this.drawDistance = 10; // show less tiles on mobile to increase performance
     }
   }
 
@@ -62,10 +61,10 @@ class Display {
 
   isInViewport(worldPos) {
     const diff = Vector2.sub(worldPos, this.pos);
-    return diff.x > -this.maxTiles &&
-        diff.x < this.maxTiles &&
-        diff.y > -this.maxTiles &&
-        diff.y < this.maxTiles;
+    return diff.x > -this.drawDistance &&
+        diff.x < this.drawDistance &&
+        diff.y > -this.drawDistance &&
+        diff.y < this.drawDistance;
   }
 
   getRenderPos(worldPos) {
