@@ -106,7 +106,7 @@ i {
   content: ' ';
   margin:0.25em;
 }
-#dialog, #settings, #equipment {
+#dialog, #settings, #equipment, #log {
   position: absolute;
   left: 0;
   top: 0;

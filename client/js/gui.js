@@ -15,6 +15,8 @@ class GUI extends EventTarget {
     this.onZoomIn = this.onZoomIn.bind(this);
     this.onZoomOut = this.onZoomOut.bind(this);
     this._onToggleAudio = this._onToggleAudio.bind(this);
+    this._onToggleLog = this._onToggleLog.bind(this);
+    this.closeLog = this.closeLog.bind(this);
     this._onToggleEquipment = this._onToggleEquipment.bind(this);
     this.closeEquipment = this.closeEquipment.bind(this);
     this._onToggleSettings = this._onToggleSettings.bind(this);
@@ -36,6 +38,8 @@ class GUI extends EventTarget {
     this.zoomInButton = this.menuElement.querySelector('button[name="zoomIn"]');
     this.zoomOutButton = this.menuElement.querySelector('button[name="zoomOut"]');
     this.audioButton = this.menuElement.querySelector('button[name="audio"]');
+    this.logButton = this.menuElement.querySelector('button[name="log"]');
+    this.logElement = document.getElementById('log');
     this.equipmentButton = this.menuElement.querySelector('button[name="equipment"]');
     this.equipmentElement = document.getElementById('equipment');
     this.settingsButton = this.menuElement.querySelector('button[name="settings"]');
@@ -54,6 +58,8 @@ class GUI extends EventTarget {
     this.zoomInButton.addEventListener('click', this.onZoomIn);
     this.zoomOutButton.addEventListener('click', this.onZoomOut);
     this.audioButton.addEventListener('click', this._onToggleAudio);
+    this.logButton.addEventListener('click', this._onToggleLog);
+    this.logElement.querySelector('button[name="close-x"]').addEventListener('click', this.closeLog);
     this.equipmentButton.addEventListener('click', this._onToggleEquipment);
     this.equipmentElement.querySelector('button[name="close-x"]').addEventListener('click', this.closeEquipment);
     this.settingsButton.addEventListener('click', this._onToggleSettings);
@@ -72,6 +78,7 @@ class GUI extends EventTarget {
     this.element.oncontextmenu = () => false; // disable default right click
     this.closeDialog();
     this.closeDropdownMenu();
+    this.closeLog();
     this.closeEquipment();
     this.closeSettings();
     this.actionSuggestion.innerHTML = '';
@@ -259,14 +266,20 @@ class GUI extends EventTarget {
     Options.toggleAudio();
     this._updateAudioIcon();
   }
-  _onToggleSettings() {
-    const isOpen = !this.settingsElement.hasAttribute('hidden');
+  _onToggleLog() {
+    const isOpen = !this.logElement.hasAttribute('hidden');
     if (isOpen) {
-      this.closeSettings();
+      this.closeLog();
     }
     else {
-      this.openSettings();
+      this.openLog();
     }
+  }
+  openLog() {
+    this.logElement.removeAttribute('hidden');
+  }
+  closeLog() {
+    this.logElement.setAttribute('hidden', 'hidden');
   }
   _onToggleEquipment() {
     const isOpen = !this.equipmentElement.hasAttribute('hidden');
@@ -283,15 +296,24 @@ class GUI extends EventTarget {
   closeEquipment() {
     this.equipmentElement.setAttribute('hidden', 'hidden');
   }
-  _onChangeDistance(event) {
-    this.game.display.drawDistance = parseInt(event.target.value);
-    this._updateDistanceNumeric();
+  _onToggleSettings() {
+    const isOpen = !this.settingsElement.hasAttribute('hidden');
+    if (isOpen) {
+      this.closeSettings();
+    }
+    else {
+      this.openSettings();
+    }
   }
   openSettings() {
     this.settingsElement.removeAttribute('hidden');
   }
   closeSettings() {
     this.settingsElement.setAttribute('hidden', 'hidden');
+  }
+  _onChangeDistance(event) {
+    this.game.display.drawDistance = parseInt(event.target.value);
+    this._updateDistanceNumeric();
   }
   _updateAudioIcon() {
     const iconElement = this.audioButton.querySelector('i');
@@ -320,6 +342,8 @@ class GUI extends EventTarget {
     this.zoomInButton.removeEventListener('click', this.onZoomIn);
     this.zoomOutButton.removeEventListener('click', this.onZoomOut);
     this.audioButton.removeEventListener('click', this._onToggleAudio);
+    this.logButton.removeEventListener('click', this._onToggleLog);
+    this.logElement.querySelector('button[name="close-x"]').removeEventListener('click', this.closeLog);
     this.equipmentButton.removeEventListener('click', this._onToggleEquipment);
     this.equipmentElement.querySelector('button[name="close-x"]').removeEventListener('click', this.closeEquipment);
     this.settingsButton.removeEventListener('click', this._onToggleSettings);
