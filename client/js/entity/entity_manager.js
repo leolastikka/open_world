@@ -3,6 +3,8 @@ class EntityManager {
     this._game = game;
     this._gameState = gameState;
     this._entities = [];
+    this._upperEntities = []; // characters and walls
+    this._lowerEntities = []; // floors
     this._entityRemoved = false;
   }
 
@@ -13,9 +15,15 @@ class EntityManager {
 
     // delete removed entities if needed
     if (this._entityRemoved) {
-      this._entities  = this._entities.filter(ent => {
+      this._entities = this._entities.filter(ent => {
         if (!ent._removed) {
           return true;
+        }
+        if (ent instanceof Character || ent instanceof WallTile) {
+          this._upperEntities = this._upperEntities.filter(e => e != ent);
+        }
+        else {
+          this._lowerEntities = this._lowerEntities.filter(e => e != ent);
         }
         ent.dispose();
         return false;
@@ -23,30 +31,15 @@ class EntityManager {
       this._entityRemoved = false;
     }
 
-    // sort entities
-    this._entities.sort((a, b) => {
-      const layer = a.renderer.layer - b.renderer.layer;
-      if (layer != 0) {
-        return layer;
-      }
-      const posA = Vector2.clone(a.pos);
-      const posB = Vector2.clone(b.pos);
-      if (a instanceof Tile && b instanceof Character && posA.x <= posB.x && posA.y >= posB.y) {
-        posA.add(new Vector2(-0.5, -0.5));
-      }
-      else if (b instanceof Tile && a instanceof Character && posB.x <= posA.x && posB.y >= posA.y) {
-        posB.add(new Vector2(-0.5, -0.5));
-      }
-      const y = posA.y - posB.y;
-      if (y != 0) {
-        return y;
-      }
-      return posA.x - posB.x;
-    });
+    // sort entities that may have changed position
+    this._sort(this._upperEntities);
   }
 
   static render(gameState) {
-    this._entities.forEach(ent => {
+    this._lowerEntities.forEach(ent => {
+      ent.render(this._game.display);
+    });
+    this._upperEntities.forEach(ent => {
       ent.render(this._game.display);
     });
 
@@ -86,6 +79,12 @@ class EntityManager {
 
   static _add(entity) {
     this._entities.push(entity);
+    if (entity instanceof Character || entity instanceof WallTile) {
+      this._upperEntities.push(entity);
+    }
+    else {
+      this._lowerEntities.push(entity);
+    }
   }
 
   static createArea(data) {
@@ -133,6 +132,10 @@ class EntityManager {
         });
       }
     }
+
+    // sort everything
+    this._sort(this._lowerEntities);
+    this._sort(this._upperEntities);
   }
 
   static createTile(pos, type, isWalkable) {
@@ -150,7 +153,7 @@ class EntityManager {
         ResourceManager.texture,
         ResourceManager.getSpriteRectByIndex(type)
         );
-      this._add(new Tile(null, pos, renderer, isWalkable));
+      this._add(new WallTile(null, pos, renderer, isWalkable));
     }
   }
 
@@ -233,6 +236,28 @@ class EntityManager {
   static getEntitiesNearPosition(pos, range) {
     return this._entities.filter(ent => {
       return ent.pos.isInRange(pos, range);
+    });
+  }
+
+  static _sort(entityList) {
+    entityList.sort((a, b) => {
+      const layer = a.renderer.layer - b.renderer.layer;
+      if (layer != 0) {
+        return layer;
+      }
+      const posA = Vector2.clone(a.pos);
+      const posB = Vector2.clone(b.pos);
+      if (a instanceof Tile && b instanceof Character && posA.x <= posB.x && posA.y >= posB.y) {
+        posA.add(new Vector2(-0.5, -0.5));
+      }
+      else if (b instanceof Tile && a instanceof Character && posB.x <= posA.x && posB.y >= posA.y) {
+        posB.add(new Vector2(-0.5, -0.5));
+      }
+      const y = posA.y - posB.y;
+      if (y != 0) {
+        return y;
+      }
+      return posA.x - posB.x;
     });
   }
 

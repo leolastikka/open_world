@@ -90,6 +90,12 @@ class Tile extends Entity {
   }
 }
 
+class WallTile extends Tile {
+  constructor(networkId, pos, renderer, isWalkable) {
+    super(networkId, pos, renderer, isWalkable);
+  }
+}
+
 class Character extends Entity {
   constructor(networkId, pos, renderer, name, actions) {
     super(networkId, pos, renderer);
@@ -189,9 +195,9 @@ class Character extends Entity {
   attack() {}
 }
 
-class AreaLink extends Entity {
+class AreaLink extends WallTile {
   constructor(networkId, pos, renderer, name, actions) {
-    super(networkId, pos, renderer);
+    super(networkId, pos, renderer, true);
     this.name = name;
     this._actions = actions;
   }
