@@ -29,25 +29,19 @@ class EntityManager {
       if (layer != 0) {
         return layer;
       }
-      const y = a.pos.y - b.pos.y;
+      const posA = Vector2.clone(a.pos);
+      const posB = Vector2.clone(b.pos);
+      if (a instanceof Tile && b instanceof Character && posA.x <= posB.x && posA.y >= posB.y) {
+        posA.add(new Vector2(-0.5, -0.5));
+      }
+      else if (b instanceof Tile && a instanceof Character && posB.x <= posA.x && posB.y >= posA.y) {
+        posB.add(new Vector2(-0.5, -0.5));
+      }
+      const y = posA.y - posB.y;
       if (y != 0) {
         return y;
       }
-      return a.pos.x - b.pos.x;
-      // const posA = Vector2.clone(a.pos);
-      // const posB = Vector2.clone(b.pos);
-      // if (a instanceof Tile) {
-      //   posA.add(new Vector2(-0.5, -0.5));
-      // }
-      // if (b instanceof Tile) {
-      //   posB.add(new Vector2(-0.5, -0.5));
-      // }
-      // const y = posA.y - posB.y;
-
-      // if (y != 0) {
-      //   return y;
-      // }
-      // return posA.x - posB.x;
+      return posA.x - posB.x;
     });
   }
 
