@@ -24,7 +24,7 @@ class Display {
     ];
     const isMobile = mobileUserAgents.some(ua => navigator.userAgent.match(ua));
     if(isMobile) {
-      this.drawDistance = 10; // show less tiles on mobile to increase performance
+      this.drawDistance = 7; // show less tiles on mobile to increase performance
     }
   }
 

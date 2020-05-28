@@ -285,7 +285,11 @@ class GUI extends EventTarget {
     }
   }
   _updateDistanceNumeric() {
-    this.settingsElement.querySelector('span[name="distanceNumeric"]').innerHTML = this.game.display.drawDistance;
+    let value = this.game.display.drawDistance;
+    if (value < 10) {
+      value = ` ${value}`;
+    } 
+    this.settingsElement.querySelector('span[name="distanceNumeric"]').innerHTML = value;
   }
 
   dispose() {
