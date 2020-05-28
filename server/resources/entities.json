@@ -9,6 +9,16 @@
     "type": "npc_station_guard",
     "baseType": "npc",
 
+    "equipment": {
+      "weapon": { "id": 1, "name": "Training Baton" },
+      "armor": { "id": 3, "name": "Training Armor" }
+    }
+  },
+  {
+    "description": "City Guard",
+    "type": "npc_city_guard",
+    "baseType": "npc",
+
     "respawnTime": 15,
     "speed": 1,
 
@@ -43,6 +53,14 @@
   {
     "description": "Training Enemy",
     "type": "enemy_training",
+    "baseType": "enemy",
+
+    "respawnTime": 3,
+    "speed": 0.75
+  },
+  {
+    "description": "Easy Enemy",
+    "type": "enemy_easy",
     "baseType": "enemy",
 
     "respawnTime": 3,

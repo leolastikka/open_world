@@ -176,7 +176,7 @@ class EntityManager {
     const pos = Vector2.fromObject(data.pos);
     let renderer = null;
 
-    if (['npc_station_guard'].includes(data.type)) {
+    if (['npc_station_guard', 'npc_city_guard'].includes(data.type)) {
       renderer = new AnimatedSpriteRenderer(
         RenderLayer.Walls,
         ResourceManager.texture,
