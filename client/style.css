@@ -128,10 +128,16 @@ i {
 }
 #quests button, #messages button {
   width: 100%;
+  font-size: 1em;
 }
 #quests .content, #messages .content {
   border: 2px solid yellowgreen;
   margin-top: 0;
+  overflow: hidden;
+}
+.content .closed {
+  height: 0;
+  margin: 0;
 }
 .close {
   position: absolute;

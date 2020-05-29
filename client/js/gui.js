@@ -326,8 +326,18 @@ class GUI extends EventTarget {
       titleButton.innerHTML = msg.title;
       message.appendChild(titleButton);
       const text = document.createElement('p');
+      text.classList.add('closed');
       text.innerHTML = msg.text;
       message.appendChild(text);
+      titleButton.addEventListener('click', () => {
+        const textElement = text;
+        if (textElement.classList.contains('closed')) {
+          textElement.classList.remove('closed');
+        }
+        else {
+          textElement.classList.add('closed');
+        }
+      });
       this.logMessagesElement.appendChild(message);
     });
   }
