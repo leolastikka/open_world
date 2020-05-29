@@ -1,12 +1,12 @@
 [
   {
-    "id": "intro",
+    "key": "intro",
     "name": "Intro",
     "text": "You have arrived to your first work station. Now you should gear up",
     "conditions": null,
     "stages": [
       {
-        "id": "intro_00",
+        "key": "intro_00",
         "conditions": [
           {
             "type": "talk",
@@ -16,7 +16,7 @@
         ]
       },
       {
-        "id": "intro_01",
+        "key": "intro_01",
         "conditions": [
           
         ]

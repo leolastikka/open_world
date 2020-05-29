@@ -16,6 +16,10 @@ class GameState extends State {
     this.isLoading = true;
 
     this.playerEntity = null;
+    this.log = {
+      messages: [],
+      quests: []
+    };
 
     this.loadingElement = document.getElementById('loading');
     this.loadingElement.removeAttribute('hidden');
@@ -127,6 +131,9 @@ class GameState extends State {
       case 'logData':
         this.onLogData(data);
         break;
+      case 'logUpdate':
+        this.onLogUpdate(data);
+        break;
       case 'changeArea':
         this.onChangeArea();
         break;
@@ -212,7 +219,24 @@ class GameState extends State {
   }
 
   onLogData(data) {
-    
+    if (data.messages) {
+      this.log.messages = data.messages;
+    }
+    if (data.quests) {
+      this.log.quests = data.quests;
+    }
+    this.gui.updateLog();
+  }
+
+  onLogUpdate(data) {
+    if (data.item.type === 'message') {
+      this.log.messages.push(data.item);
+    }
+    else if (data.item.type === 'quest') {
+      this.log.quests = this.log.quests.filter(q => q.key !== data.item.key);
+      this.log.quests.shift(data.item);
+    }
+    this.gui.updateLog();
   }
 
   onWsClose(event) {

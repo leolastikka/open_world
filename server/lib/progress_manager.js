@@ -1,15 +1,20 @@
 const StoryManager = require('./story_manager');
 
 class ProgressCondition {
-  constructor(progressItem, condition) {
+  constructor(progressItem, condition, done = false) {
     this._progressItem = progressItem;
     this._type = condition.type;
     this._value = condition.value;
-    this._progressItem.eventEmitter.addListener(this._type, this._onEvent);
+    this._text = condition.text;
+    if (!done) {
+      this._progressItem.eventEmitter.addListener(this._type, this._onEvent);
+    }
+    this._done = done;
   }
 
   _onEvent = (value) => {
     if (value === this._value) {
+      this._done = true;
       this._progressItem.passCondition(this);
     }
   }
@@ -17,6 +22,13 @@ class ProgressCondition {
   dispose() {
     this._progressItem.eventEmitter.removeListener(this._type, this._onEvent);
     this._progressItem = null;
+  }
+
+  toJSON() {
+    return {
+      text: this._text,
+      done: this._done
+    }; 
   }
 }
 
@@ -45,9 +57,7 @@ class ProgressItem {
     }
   }
 
-  _onConditionsPassed() {
-
-  }
+  _onConditionsPassed() {}
 
   dispose() {
     this._user = null;
@@ -57,6 +67,15 @@ class ProgressItem {
 class Quest extends ProgressItem {
   constructor(user, data) {
     super (user, data);
+  }
+
+  toJSON() {
+    return {
+      type: 'quest',
+      title: this._title,
+      text: this._text,
+      conditions: this._conditions
+    };
   }
 }
 
@@ -78,10 +97,19 @@ class Message extends ProgressItem {
     });
     this._shown = true;
 
-    // user.connection.send({
-    //   type: 'logUpdate/message',
-    //   value: 'key'
-    // });
+    this._user.connection.send({
+      type: 'logUpdate',
+      item: this
+    });
+  }
+
+  toJSON() {
+    return {
+      type: 'message',
+      key: this._key,
+      title: this._title,
+      text: this._text
+    };
   }
 }
 
@@ -101,7 +129,7 @@ class ProgressManager {
     return this._quests;
   }
 
-  get shownMessages() {
+  get messages() {
     return this._messages.filter(msg => msg.shown);
   }
 

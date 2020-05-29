@@ -40,6 +40,8 @@ class GUI extends EventTarget {
     this.audioButton = this.menuElement.querySelector('button[name="audio"]');
     this.logButton = this.menuElement.querySelector('button[name="log"]');
     this.logElement = document.getElementById('log');
+    this.logMessagesElement = document.getElementById('messages');
+    this.logQuestsElement = document.getElementById('quests');
     this.equipmentButton = this.menuElement.querySelector('button[name="equipment"]');
     this.equipmentElement = document.getElementById('equipment');
     this.settingsButton = this.menuElement.querySelector('button[name="settings"]');
@@ -290,6 +292,44 @@ class GUI extends EventTarget {
   }
   closeLog() {
     this.logElement.setAttribute('hidden', 'hidden');
+  }
+  updateLog() {
+    this.logMessagesElement.innerHTML = '';
+    this.logQuestsElement.innerHTML = '';
+
+    this.game.state.log.quests.forEach(q => {
+      const quest = document.createElement('div');
+      quest.classList.add('content');
+      const titleButton = document.createElement('button');
+      titleButton.innerHTML = q.title;
+      quest.appendChild(titleButton);
+      const text = document.createElement('p');
+      text.innerHTML = q.text;
+      quest.appendChild(text);
+      const conditions = document.createElement('ul');
+      q.conditions.forEach(cond => {
+        const condition = document.createElement('li');
+        condition.innerHTML = cond.text;
+        if (cond.done) {
+          condition.classList.add('done');
+        }
+        conditions.appendChild(condition);
+      });
+      quest.appendChild(conditions);
+      this.logQuestsElement.appendChild(quest);
+    });
+
+    this.game.state.log.messages.forEach(msg => {
+      const message = document.createElement('div');
+      message.classList.add('content');
+      const titleButton = document.createElement('button');
+      titleButton.innerHTML = msg.title;
+      message.appendChild(titleButton);
+      const text = document.createElement('p');
+      text.innerHTML = msg.text;
+      message.appendChild(text);
+      this.logMessagesElement.appendChild(message);
+    });
   }
   _onToggleEquipment() {
     const isOpen = !this.equipmentElement.hasAttribute('hidden');

@@ -129,7 +129,7 @@ i {
 #quests button, #messages button {
   width: 100%;
 }
-#quests .content {
+#quests .content, #messages .content {
   border: 2px solid yellowgreen;
   margin-top: 0;
 }
