@@ -1,5 +1,9 @@
-class User {
+const EventEmitter = require('events');
+const ProgressManager = require('./progress_manager');
+
+class User extends EventEmitter {
   constructor(id, username) {
+    super();
     this._id = id;
     this._username = username;
 
@@ -9,13 +13,7 @@ class User {
     this.area = null;
     this.character = null;
 
-    this._spawnMessageShown = false;
-    this._spawnMessage = `Hello ${username}!<br><br>` +
-        'Welcome to your first work station.<br>' +
-        'Here you will learn how to get the best out of your new mechanical body with our latest training methods and equipment.<br>' +
-        'As you already know, the more you benefit our cause, the more you benefit yourself.<br>' +
-        'Please follow the green line on the floor to the main building.<br><br>' +
-        'Sincerely yours<br>-<br>Research Artificial Intelligence Department';
+    this._progressManager = new ProgressManager(this);
   }
 
   get id() {
@@ -26,15 +24,12 @@ class User {
     return this._username;
   }
 
-  get spawnMessage() {
-    if (!this._spawnMessageShown) {
-      this._spawnMessageShown = true;
-      return this._spawnMessage;
-    }
-    return null;
+  get progressManager() {
+    return this._progressManager;
   }
 
   dispose() {
+    this._progressManager.dispose();
     this._connection = null;
   }
 }

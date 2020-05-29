@@ -1,0 +1,26 @@
+[
+  {
+    "id": "intro",
+    "name": "Intro",
+    "text": "You have arrived to your first work station. Now you should gear up",
+    "conditions": null,
+    "stages": [
+      {
+        "id": "intro_00",
+        "conditions": [
+          {
+            "type": "talk",
+            "target": "npc_info",
+            "text": "Talk to station info for more advice."
+          }
+        ]
+      },
+      {
+        "id": "intro_01",
+        "conditions": [
+          
+        ]
+      }
+    ]
+  }
+]

@@ -123,13 +123,27 @@ i {
 #settings {
   z-index: 6;
 }
+#quests, #messages {
+  margin: 1em 0.5em;
+}
+#quests button, #messages button {
+  width: 100%;
+}
+#quests .content {
+  border: 2px solid yellowgreen;
+  margin-top: 0;
+}
 .close {
   position: absolute;
   top: 0;
-  left: 0;
+  right: 0;
   width: 6vmin;
   height: 6vmin;
   border: none;
+  background-color: transparent;
+}
+.done {
+  text-decoration: line-through;
 }
 #action {
   position: absolute;

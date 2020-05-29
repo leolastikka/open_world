@@ -242,6 +242,11 @@ class GUI extends EventTarget {
   openDialog(text) {
     this.dialogElement.querySelector('p[name="content"]').innerHTML = text;
     this.dialogElement.removeAttribute('hidden');
+
+    this.closeDropdownMenu();
+    this.closeLog();
+    this.closeEquipment();
+    this.closeSettings();
   }
 
   closeDialog() {
@@ -277,6 +282,11 @@ class GUI extends EventTarget {
   }
   openLog() {
     this.logElement.removeAttribute('hidden');
+
+    this.closeDialog();
+    this.closeDropdownMenu();
+    this.closeEquipment();
+    this.closeSettings();
   }
   closeLog() {
     this.logElement.setAttribute('hidden', 'hidden');
@@ -292,6 +302,11 @@ class GUI extends EventTarget {
   }
   openEquipment() {
     this.equipmentElement.removeAttribute('hidden');
+
+    this.closeDialog();
+    this.closeDropdownMenu();
+    this.closeLog();
+    this.closeSettings();
   }
   closeEquipment() {
     this.equipmentElement.setAttribute('hidden', 'hidden');
@@ -307,6 +322,11 @@ class GUI extends EventTarget {
   }
   openSettings() {
     this.settingsElement.removeAttribute('hidden');
+
+    this.closeDialog();
+    this.closeDropdownMenu();
+    this.closeLog();
+    this.closeEquipment();
   }
   closeSettings() {
     this.settingsElement.setAttribute('hidden', 'hidden');

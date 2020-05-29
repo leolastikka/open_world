@@ -103,11 +103,8 @@ class GameState extends State {
   onWsMessage(msg) {
     let data = JSON.parse(msg.data);
     switch(data.type){
-      case 'player':
-        this.onPlayer(data);
-        break;
-      case 'mapData':
-        this.onAreaData(data);
+      case 'move':
+        this.onMove(data);
         break;
       case 'status':
         this.onStatus(data);
@@ -118,11 +115,17 @@ class GameState extends State {
       case 'remove':
         this.onRemove(data);
         break;
-      case 'move':
-        this.onMove(data);
-        break;
       case 'dialog':
         this.onDialog(data);
+        break;
+      case 'player':
+        this.onPlayer(data);
+        break;
+      case 'areaData':
+        this.onAreaData(data);
+        break;
+      case 'logData':
+        this.onLogData(data);
         break;
       case 'changeArea':
         this.onChangeArea();
@@ -206,6 +209,10 @@ class GameState extends State {
     EntityManager.dispose();
     EntityManager.init(this.game, this);
     this.game.connection.ws.send(JSON.stringify({type:'ready'}));
+  }
+
+  onLogData(data) {
+    
   }
 
   onWsClose(event) {

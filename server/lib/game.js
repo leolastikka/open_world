@@ -3,6 +3,7 @@ const { EntityManager } = require('./entity/entity_manager');
 const { Vector2 } = require('./math');
 const { Time } = require('./time');
 const ConnectionManager = require('./connection').ConnectionManager;
+const StoryManager = require('./story_manager');
 const { MoveAction, TalkAction, AttackAction, AreaLinkAction } = require('./action');
 
 class Game {
@@ -19,6 +20,7 @@ class Game {
     //ItemManager.init(); // load item related information from disk
     EntityManager.init(); // load entity related data from disk
     AreaManager.init(); // load all areas from disk
+    StoryManager.init(); // load messages, dialogs and quests from disk
 
     // start server update loop
     this.update();
@@ -41,7 +43,7 @@ class Game {
 
   onReady = (user) => {
     user.connection.send({
-      type: 'mapData',
+      type: 'areaData',
       floor: user.area.floor,
       walls: user.area.walls,
       walkable: user.area.navigator.getWalkabilityData(),
@@ -50,17 +52,17 @@ class Game {
     });
 
     user.connection.send({
+      type: 'logData',
+      quests: user.progressManager.quests,
+      messages: user.progressManager.messages
+    });
+
+    user.connection.send({
       type: 'player',
       entity: user.character
     });
 
-    const spawnMessage = user.spawnMessage;
-    if (spawnMessage) {
-      user.connection.send({
-        type: 'dialog',
-        text: spawnMessage
-      });
-    }
+    user.emit('enterArea', user.area.name);
   }
 
   onAction = (user, data) => {

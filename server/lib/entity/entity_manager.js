@@ -14,7 +14,7 @@ class EntityManager {
   }
 
   static _loadEntityData() {
-    let entitiesFile = FS.readFileSync(Path.join(__dirname, '../../resources/entities.json'));
+    const entitiesFile = FS.readFileSync(Path.join(__dirname, '../../resources/entities.json'));
     this._entityData = JSON.parse(entitiesFile);
     this._entityData.forEach(entity => Object.freeze(entity));
   }

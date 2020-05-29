@@ -1,4 +1,11 @@
 { "compressionlevel":-1,
+ "editorsettings":
+    {
+     "export":
+        {
+         "target":"."
+        }
+    },
  "height":64,
  "infinite":false,
  "layers":[
@@ -37,7 +44,7 @@
                  "name":"Enter City 0",
                  "point":true,
                  "rotation":0,
-                 "type":"exit_city_00",
+                 "type":"exit_city_0",
                  "visible":true,
                  "width":0,
                  "x":473.0625,
@@ -49,7 +56,7 @@
                  "name":"Exit From City 0",
                  "point":true,
                  "rotation":0,
-                 "type":"enter_city_00",
+                 "type":"enter_city_0",
                  "visible":true,
                  "width":0,
                  "x":491.4375,
@@ -61,7 +68,7 @@
                  "name":"Enter City 0",
                  "point":true,
                  "rotation":0,
-                 "type":"exit_city_00",
+                 "type":"exit_city_0",
                  "visible":true,
                  "width":0,
                  "x":487.1875,

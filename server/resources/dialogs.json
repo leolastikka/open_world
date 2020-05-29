@@ -1,0 +1,12 @@
+[
+  {
+    "name": "npc_info",
+    "dialogs": [
+      {
+        "key": "default",
+        "conditions": null,
+        "text": "Hello"
+      }
+    ]
+  }
+]
