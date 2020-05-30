@@ -53,8 +53,13 @@
     "speed": 0.75
   },
   {
-    "description": "Start Area Info Cleric",
+    "description": "Start Area Info",
     "type": "npc_info",
+    "baseType": "npc"
+  },
+  {
+    "description": "Gear Provider Npc",
+    "type": "npc_gear",
     "baseType": "npc"
   },
   {

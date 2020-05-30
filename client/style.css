@@ -259,4 +259,11 @@ input[type=range]::-moz-range-thumb {
   .scroller::-webkit-scrollbar {
     width: 0.8em;
   }
+  .close {
+    right: 1em;
+  }
+  #dialog, #settings, #equipment, #log {
+    width: 100%;
+    margin: 0;
+  }
 }

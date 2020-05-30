@@ -180,7 +180,7 @@ class EntityManager {
         ResourceManager.getAnimationsByType('npc_guard')
         );
     }
-    else if (['npc_info', 'npc_station_worker', 'npc_city_worker'].includes(data.type)) {
+    else if (['npc_info', 'npc_station_worker', 'npc_city_worker', 'npc_gear'].includes(data.type)) {
       renderer = new AnimatedSpriteRenderer(
         RenderLayer.Walls,
         ResourceManager.texture,

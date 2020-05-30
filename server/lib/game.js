@@ -53,8 +53,8 @@ class Game {
 
     user.connection.send({
       type: 'logData',
-      quests: user.progressManager.quests,
-      messages: user.progressManager.messages
+      quests: user.progress.quests,
+      messages: user.progress.messages
     });
 
     user.connection.send({

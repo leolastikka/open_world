@@ -180,9 +180,10 @@ class GUI extends EventTarget {
   }
 
   onWheel(event) {
+    const dontScrollOver = [this.dialogElement, this.logElement, this.settingsElement, this.equipmentElement];
     // prevent zoom when scrolling in dialog window
-    if (event.target !== this.dialogElement &&
-        event.target.parentElement !== this.dialogElement) {
+    if (!dontScrollOver.includes(event.target) &&
+        !dontScrollOver.includes(event.target.parentElement)) {
       if (event.deltaY < 0) {
         this.onZoomIn();
       }
@@ -306,28 +307,38 @@ class GUI extends EventTarget {
       const text = document.createElement('p');
       text.innerHTML = q.text;
       quest.appendChild(text);
-      const conditions = document.createElement('ul');
-      q.conditions.forEach(cond => {
-        const condition = document.createElement('li');
-        condition.innerHTML = cond.text;
-        if (cond.done) {
-          condition.classList.add('done');
-        }
-        conditions.appendChild(condition);
+      const stages = document.createElement('div');
+      q.stages.forEach(s => {
+        const stage = document.createElement('div');
+        stage.classList.add('content');
+        const sText = document.createElement('p');
+        sText.innerHTML = s.text;
+        stage.appendChild(sText);
+        const conditions = document.createElement('ul');
+        s.conditions.forEach(c => {
+          const condition = document.createElement('li');
+          condition.innerHTML = c.text;
+          if (c.done) {
+            condition.classList.add('done');
+          }
+          conditions.appendChild(condition);
+        });
+        stage.appendChild(conditions);
+        stages.appendChild(stage);
       });
-      quest.appendChild(conditions);
+      quest.appendChild(stages);
       this.logQuestsElement.appendChild(quest);
     });
 
-    this.game.state.log.messages.forEach(msg => {
+    this.game.state.log.messages.forEach(m => {
       const message = document.createElement('div');
       message.classList.add('content');
       const titleButton = document.createElement('button');
-      titleButton.innerHTML = msg.title;
+      titleButton.innerHTML = m.title;
       message.appendChild(titleButton);
       const text = document.createElement('p');
       text.classList.add('closed');
-      text.innerHTML = msg.text;
+      text.innerHTML = m.text;
       message.appendChild(text);
       titleButton.addEventListener('click', () => {
         const textElement = text;

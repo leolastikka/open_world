@@ -234,7 +234,7 @@ class GameState extends State {
     }
     else if (data.item.type === 'quest') {
       this.log.quests = this.log.quests.filter(q => q.key !== data.item.key);
-      this.log.quests.shift(data.item);
+      this.log.quests.unshift(data.item);
     }
     this.gui.updateLog();
   }

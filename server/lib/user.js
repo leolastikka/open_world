@@ -1,5 +1,5 @@
 const EventEmitter = require('events');
-const ProgressManager = require('./progress_manager');
+const Progress = require('./progress');
 
 class User extends EventEmitter {
   constructor(id, username) {
@@ -13,7 +13,7 @@ class User extends EventEmitter {
     this.area = null;
     this.character = null;
 
-    this._progressManager = new ProgressManager(this);
+    this._progress = new Progress(this);
   }
 
   get id() {
@@ -24,12 +24,12 @@ class User extends EventEmitter {
     return this._username;
   }
 
-  get progressManager() {
-    return this._progressManager;
+  get progress() {
+    return this._progress;
   }
 
   dispose() {
-    this._progressManager.dispose();
+    this._progress.dispose();
     this._connection = null;
   }
 }

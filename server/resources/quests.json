@@ -1,25 +1,44 @@
 [
   {
     "key": "intro",
-    "name": "Intro",
-    "text": "You have arrived to your first work station. Now you should gear up",
-    "conditions": null,
+    "title": "Intro",
+    "text": "You have arrived to your first work station. Now you should gear up and find out more about what to do in here.",
     "stages": [
       {
-        "key": "intro_00",
+        "key": "requirements",
+        "text": "Requirements",
         "conditions": [
+          {
+            "type": "enterArea",
+            "target": "start",
+            "text": "Enter Start Area"
+          },
           {
             "type": "talk",
             "target": "npc_info",
-            "text": "Talk to station info for more advice."
+            "text": "Talk to info personnel"
           }
         ]
       },
       {
-        "key": "intro_01",
+        "key": "intro_0",
+        "text": "",
         "conditions": [
-          
+          {
+            "type": "enterArea",
+            "target": "city_0",
+            "text": "Enter City 0"
+          },
+          {
+            "type": "talk",
+            "target": "npc_gear",
+            "text": "Talk to info personnel"
+          }
         ]
+      },
+      {
+        "key": "completed",
+        "text": "Quest completed!"
       }
     ]
   }
