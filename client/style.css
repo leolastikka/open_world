@@ -218,6 +218,23 @@ input[type=range]::-moz-range-thumb {
   background-color: greenyellow;
 }
 
+.flashing {
+  animation: flash 3s infinite;
+}
+@keyframes flash {
+  0% {
+    color: greenyellow;
+    background: #012009;
+  }
+  50% {
+    color: #012009;
+    background: greenyellow;
+  }
+  100% {
+    color: greenyellow;
+    background: #012009;
+  }
+}
 /* Large devices (desktops, 992px and up) */
 
 /* Medium devices (tablets, 768px and up) */

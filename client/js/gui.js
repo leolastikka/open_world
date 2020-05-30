@@ -286,6 +286,9 @@ class GUI extends EventTarget {
     }
     else {
       this.openLog();
+      if (this.logButton.classList.contains('flashing')) {
+        this.logButton.classList.remove('flashing');
+      }
     }
   }
   openLog() {
@@ -371,6 +374,11 @@ class GUI extends EventTarget {
       });
       this.logMessagesElement.appendChild(message);
     });
+  }
+  flashLog() {
+    if (this.logElement.hasAttribute('hidden')) {
+      this.logButton.classList.add('flashing');
+    }
   }
   _onToggleEquipment() {
     const isOpen = !this.equipmentElement.hasAttribute('hidden');

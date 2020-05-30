@@ -237,6 +237,7 @@ class GameState extends State {
       this.log.quests.unshift(data.item);
     }
     this.gui.updateLog();
+    this.gui.flashLog();
   }
 
   onWsClose(event) {
