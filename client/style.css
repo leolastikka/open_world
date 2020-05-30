@@ -135,7 +135,7 @@ i {
   margin-top: 0;
   overflow: hidden;
 }
-.content .closed {
+.content .closed, .content .closed p {
   height: 0;
   margin: 0;
 }

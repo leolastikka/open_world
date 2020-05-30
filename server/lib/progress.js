@@ -48,6 +48,10 @@ class ProgressItem {
     this._text = data.text;
   }
 
+  get key() {
+    return this._key;
+  }
+
   get eventEmitter() {
     return this._eventEmitter;
   }
@@ -67,12 +71,17 @@ class Quest extends ProgressItem {
     data.stages.forEach(s => {
       this._stages.push(new QuestStage(eventEmitter, this, s));
     });
+    this._done = false;
   }
 
   stageDone(stage) {
-    let stageIndex = this._stages.findIndex(s => s.key = stage.key);
+    let stageIndex = this._stages.findIndex(s => s.key === stage.key);
     let nextStage = this._stages[stageIndex + 1];
     nextStage.show = true;
+
+    if (nextStage.key === 'completed') {
+      this._done = true;
+    }
 
     this._eventEmitter.connection.send({
       type: 'logUpdate',
@@ -85,7 +94,8 @@ class Quest extends ProgressItem {
       type: 'quest',
       title: this._title,
       text: this._text,
-      stages: this._stages.filter(s => s.show)
+      stages: this._stages.filter(s => s.show),
+      done: this._done
     };
   }
 

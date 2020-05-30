@@ -209,6 +209,8 @@ class Character extends Entity {
         type: 'dialog',
         text: `Talking with ${this._action.targetEntity.name}`
       });
+
+      this.typeData.connection.user.emit('talk', this._action.targetEntity.typeData.type);
   
       this._action.finish();
       this._action = null;

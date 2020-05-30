@@ -12,7 +12,13 @@
             "type": "enterArea",
             "target": "start",
             "text": "Enter Start Area"
-          },
+          }
+        ]
+      },
+      {
+        "key": "intro_0",
+        "text": "You can interact with characters with left click or right click and choose a correct option. (Tap and long hold on mobile)",
+        "conditions": [
           {
             "type": "talk",
             "target": "npc_info",
@@ -21,8 +27,8 @@
         ]
       },
       {
-        "key": "intro_0",
-        "text": "",
+        "key": "intro_1",
+        "text": "Acquire your starting gear.",
         "conditions": [
           {
             "type": "enterArea",
@@ -32,7 +38,7 @@
           {
             "type": "talk",
             "target": "npc_gear",
-            "text": "Talk to info personnel"
+            "text": "Talk to gear provider"
           }
         ]
       },

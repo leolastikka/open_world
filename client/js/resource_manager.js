@@ -284,7 +284,9 @@ class AudioClip {
 
   stop() {
     if (this._isReady) {
-      this._audioSource.stop(0);
+      if (this._audioSource) {
+        this._audioSource.stop(0);
+      }
       this._audioSource = null;
       this._gainNode = null;
     }

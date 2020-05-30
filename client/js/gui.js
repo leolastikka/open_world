@@ -181,15 +181,20 @@ class GUI extends EventTarget {
 
   onWheel(event) {
     const dontScrollOver = [this.dialogElement, this.logElement, this.settingsElement, this.equipmentElement];
-    // prevent zoom when scrolling in dialog window
-    if (!dontScrollOver.includes(event.target) &&
-        !dontScrollOver.includes(event.target.parentElement)) {
-      if (event.deltaY < 0) {
-        this.onZoomIn();
+    let target = event.target;
+    while (target) {
+      // prevent zoom when scrolling in dialog window
+      if (dontScrollOver.includes(target)) {
+        return;
       }
-      else if (event.deltaY > 0) {
-        this.onZoomOut();
-      }
+      target = target.parentElement;
+    }
+
+    if (event.deltaY < 0) {
+      this.onZoomIn();
+    }
+    else if (event.deltaY > 0) {
+      this.onZoomOut();
     }
   }
 
@@ -303,10 +308,15 @@ class GUI extends EventTarget {
       quest.classList.add('content');
       const titleButton = document.createElement('button');
       titleButton.innerHTML = q.title;
+      if (q.done) {
+        titleButton.classList.add('done');
+      }
       quest.appendChild(titleButton);
+      const questContent = document.createElement('div');
+      //questContent.classList.add('closed');
       const text = document.createElement('p');
       text.innerHTML = q.text;
-      quest.appendChild(text);
+      questContent.appendChild(text);
       const stages = document.createElement('div');
       q.stages.forEach(s => {
         const stage = document.createElement('div');
@@ -326,7 +336,17 @@ class GUI extends EventTarget {
         stage.appendChild(conditions);
         stages.appendChild(stage);
       });
-      quest.appendChild(stages);
+      questContent.appendChild(stages);
+      quest.appendChild(questContent);
+      titleButton.addEventListener('click', () => {
+        const contentElement = questContent;
+        if (contentElement.classList.contains('closed')) {
+          contentElement.classList.remove('closed');
+        }
+        else {
+          contentElement.classList.add('closed');
+        }
+      });
       this.logQuestsElement.appendChild(quest);
     });
 
@@ -341,12 +361,12 @@ class GUI extends EventTarget {
       text.innerHTML = m.text;
       message.appendChild(text);
       titleButton.addEventListener('click', () => {
-        const textElement = text;
-        if (textElement.classList.contains('closed')) {
-          textElement.classList.remove('closed');
+        const contentElement = text;
+        if (contentElement.classList.contains('closed')) {
+          contentElement.classList.remove('closed');
         }
         else {
-          textElement.classList.add('closed');
+          contentElement.classList.add('closed');
         }
       });
       this.logMessagesElement.appendChild(message);
