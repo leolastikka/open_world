@@ -82,7 +82,7 @@ class Game {
       if (!target) { // if target does not exist
         return;
       }
-      const path = user.area.navigator.findPath(character.lastPos, target.lastPos);
+      const path = user.area.navigator.findPath(character.lastIntPos, target.lastIntPos);
       if (!path) { // if target is not reachable
         return;
       }
