@@ -79,7 +79,11 @@ class Game {
     }
     if (['talk', 'attack', 'link'].includes(data.action)) {
       target = user.area.getEntityByNetworkId(data.target);
-      if (!target) {
+      if (!target) { // if target does not exist
+        return;
+      }
+      const path = user.area.navigator.findPath(character.lastPos, target.lastPos);
+      if (!path) { // if target is not reachable
         return;
       }
     }
