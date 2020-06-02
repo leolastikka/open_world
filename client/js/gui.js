@@ -86,7 +86,7 @@ class GUI extends EventTarget {
     this.actionSuggestion.innerHTML = '';
     this.actionLast.innerHTML = '';
     this._updateAudioIcon();
-    this._updateDistanceNumeric();
+    this._updateDrawDistance();
     this.settingsVolumeSlider.value = Options.audioSliderValue;
   }
 
@@ -247,7 +247,8 @@ class GUI extends EventTarget {
     this.dropdownMenuElement.innerHTML = '';
   }
 
-  openDialog(text) {
+  openDialog(title, text) {
+    this.dialogElement.querySelector('h3[name="title"]').innerHTML = title;
     this.dialogElement.querySelector('p[name="content"]').innerHTML = text;
     this.dialogElement.removeAttribute('hidden');
 
@@ -422,7 +423,7 @@ class GUI extends EventTarget {
   }
   _onChangeDistance(event) {
     this.game.display.drawDistance = parseInt(event.target.value);
-    this._updateDistanceNumeric();
+    this._updateDrawDistance();
   }
   _updateAudioIcon() {
     const iconElement = this.audioButton.querySelector('i');
@@ -435,12 +436,13 @@ class GUI extends EventTarget {
       iconElement.classList.add('icon-volume-off');
     }
   }
-  _updateDistanceNumeric() {
+  _updateDrawDistance() {
     let value = this.game.display.drawDistance;
     if (value < 10) {
       value = ` ${value}`;
     } 
     this.settingsElement.querySelector('span[name="distanceNumeric"]').innerHTML = value;
+    this.settingsDistanceSlider.value = this.game.display.drawDistance;
   }
 
   dispose() {

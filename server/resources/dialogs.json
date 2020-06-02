@@ -1,9 +1,71 @@
 [
   {
-    "name": "npc_info",
+    "type": "npc_info",
     "dialogs": [
       {
-        "key": "default",
+        "conditions": [
+          {
+            "quest": "intro",
+            "stage": "intro_0"
+          }
+        ],
+        "text": "Hello ... please follow the green line on the floor to the main building and talk to a gear provider."
+      },
+      {
+        "conditions": null,
+        "text": "Hello"
+      }
+    ]
+  },
+  {
+    "type": "npc_gear",
+    "dialogs": [
+      {
+        "conditions": [
+          {
+            "quest": "intro",
+            "stage": "intro_0"
+          }
+        ],
+        "text": "Hello ... you should talk to info personnel."
+      },
+      {
+        "conditions": [
+          {
+            "quest": "intro",
+            "stage": "intro_1"
+          }
+        ],
+        "text": "Hello ... you are ready now."
+      },
+      {
+        "conditions": null,
+        "text": "Hello"
+      }
+    ]
+  },
+  {
+    "type": "npc_station_guard",
+    "dialogs": [
+      {
+        "conditions": null,
+        "text": "Hello"
+      }
+    ]
+  },
+  {
+    "type": "npc_city_guard",
+    "dialogs": [
+      {
+        "conditions": null,
+        "text": "Hello"
+      }
+    ]
+  },
+  {
+    "type": "npc_city_worker",
+    "dialogs": [
+      {
         "conditions": null,
         "text": "Hello"
       }

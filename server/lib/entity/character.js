@@ -2,6 +2,7 @@ const { Entity } = require('./entity');
 const { Time } = require('../time');
 const { Vector2 } = require('../math');
 const { MoveAction, InteractAction, TalkAction, AttackAction, AreaLinkAction } = require('../action');
+const StoryManager = require('../story_manager');
 
 class Character extends Entity {
   constructor(area, typeData, name, pos) {
@@ -207,7 +208,11 @@ class Character extends Entity {
     else if (this._action instanceof TalkAction) {
       this.typeData.connection.send({
         type: 'dialog',
-        text: `Talking with ${this._action.targetEntity.name}`
+        title: this._action.targetEntity.name,
+        text: StoryManager.getDialogForNpc(
+          this._action.targetEntity.typeData.type,
+          this.typeData.connection.user.progress
+          )
       });
 
       this.typeData.connection.user.emit('talk', this._action.targetEntity.typeData.type);

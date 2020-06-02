@@ -116,7 +116,7 @@ i {
   height: 80vh;
   text-align: center;
   color: yellowgreen;
-  background-color: rgba(1, 32, 9, 0.75); /* dark green transparent */
+  background-color: rgba(1, 32, 9, 0.90); /* dark green transparent */
   border: 2px solid yellowgreen;
   overflow-y: scroll;
 }

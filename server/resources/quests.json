@@ -22,7 +22,7 @@
           {
             "type": "talk",
             "target": "npc_info",
-            "text": "Talk to info personnel"
+            "text": "Talk to info personnel in the start area"
           }
         ]
       },
@@ -38,7 +38,7 @@
           {
             "type": "talk",
             "target": "npc_gear",
-            "text": "Talk to gear provider"
+            "text": "Talk to a gear provider"
           }
         ]
       },

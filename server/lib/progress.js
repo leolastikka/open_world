@@ -20,11 +20,23 @@ class ProgressCondition {
     if (value === this._target) {
       this._done = true;
       this._progressItem.conditionDone(this);
+      this._removeListener();
     }
   }
 
-  dispose() {
+  _removeListener() {
     this._progressItem.eventEmitter.removeListener(this._type, this._onEvent);
+  }
+
+  /**
+   * Called when parent ProgressItem is completed eg. a quest stage is done
+   */
+  finish() {
+    this._removeListener();
+  }
+
+  dispose() {
+    this._removeListener();
     this._progressItem = null;
   }
 
@@ -71,15 +83,21 @@ class Quest extends ProgressItem {
     data.stages.forEach(s => {
       this._stages.push(new QuestStage(eventEmitter, this, s));
     });
+    this._currentStage = this._stages[0];
+    this._currentStage.start(); // show requirements stage
     this._done = false;
+  }
+
+  get currentStageKey() {
+    return this._currentStage.key;
   }
 
   stageDone(stage) {
     let stageIndex = this._stages.findIndex(s => s.key === stage.key);
-    let nextStage = this._stages[stageIndex + 1];
-    nextStage.show = true;
+    this._currentStage = this._stages[stageIndex + 1];
+    this._currentStage.start();
 
-    if (nextStage.key === 'completed') {
+    if (this._currentStage.key === 'completed') {
       this._done = true;
     }
 
@@ -92,6 +110,7 @@ class Quest extends ProgressItem {
   toJSON() {
     return {
       type: 'quest',
+      key: this._key,
       title: this._title,
       text: this._text,
       stages: this._stages.filter(s => s.show),
@@ -111,13 +130,22 @@ class QuestStage extends ProgressItem {
     super(eventEmitter, data);
     this._quest = quest;
     this._conditions = [];
-    if (data.conditions) {
-      data.conditions.forEach(c => {
+    this._conditionsData = data.conditions;
+    this._show = this._key === 'requirements'; // always show requirements
+    this._done = false;
+  }
+
+  get show() {
+    return this._show;
+  }
+
+  start() {
+    if (this._conditionsData) {
+      this._conditionsData.forEach(c => {
         this._conditions.push(new ProgressCondition(this, c));
       });
     }
-    this.show = this._key === 'requirements'; // always show requirements
-    this._done = false;
+    this._show = true;
   }
 
   conditionDone(condition) {
@@ -169,7 +197,7 @@ class Message extends ProgressItem {
 
   conditionDone(condition) {
     this._conditions = this._conditions.filter(c => c != condition);
-    condition.dispose();
+    condition.finish();
 
     if (this._conditions.length === 0) {
       this._onConditionsDone();
@@ -230,6 +258,10 @@ class Progress {
 
   get messages() {
     return this._messages.filter(m => m.show);
+  }
+
+  getQuestStage(questKey) {
+    return this._quests.find(q => q.key === questKey).currentStageKey;
   }
 
   dispose() {

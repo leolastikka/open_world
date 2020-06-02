@@ -205,7 +205,7 @@ class GameState extends State {
   }
 
   onDialog(data) {
-    this.gui.openDialog(data.text);
+    this.gui.openDialog(data.title, data.text);
   }
 
   onChangeArea() {
