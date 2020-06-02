@@ -83,7 +83,7 @@ class Game {
         return;
       }
       const path = user.area.navigator.findPath(character.lastIntPos, target.lastIntPos);
-      if (!path) { // if target is not reachable
+      if (!path || !path.length) { // if target is not reachable
         return;
       }
     }
