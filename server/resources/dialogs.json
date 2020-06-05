@@ -70,5 +70,14 @@
         "text": "Hello"
       }
     ]
+  },
+  {
+    "type": "npc_reconstructor",
+    "dialogs": [
+      {
+        "conditions": null,
+        "text": "You can use a reconstructor to set your respawn point here in case you end up getting destroyed while doing important research in the wastelands. You can also insure a piece of armor and a weapon that will be copied and given to you after your reconstruction."
+      }
+    ]
   }
 ]

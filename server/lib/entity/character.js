@@ -1,7 +1,16 @@
 const { Entity } = require('./entity');
 const { Time } = require('../time');
 const { Vector2 } = require('../math');
-const { MoveAction, InteractAction, TalkAction, AttackAction, AreaLinkAction } = require('../action');
+const {
+  MoveAction,
+  OptionAction,
+  CloseAction,
+  InteractAction,
+  TalkAction,
+  AttackAction,
+  AreaLinkAction,
+  ConfigureAction
+} = require('../action');
 const StoryManager = require('../story_manager');
 
 class Character extends Entity {
@@ -107,6 +116,48 @@ class Character extends Entity {
       this._action = action;
       this._startInteractAction();
     }
+    else if (action instanceof ConfigureAction) {
+      if (this._action instanceof ConfigureAction &&
+          this._action.targetEntity.networkId === action.targetEntity.networkId) { // if already doing same action
+        return;
+      }
+      else if (this._action instanceof InteractAction) {
+        this.finishAction();
+      }
+      else if (this._action instanceof MoveAction) {
+        this.finishAction();
+      }
+
+      this._action = action;
+      this._startInteractAction();
+
+    }
+    else if (action instanceof OptionAction) {
+      if (this._action instanceof ConfigureAction && this._action.clientGuiOpened) { // if option action can be received
+        if (action.option === 'setSpawn') {
+          this.typeData.connection.user.spawnLink = this._action.targetEntity.typeData.areaLink;
+          this.typeData.connection.send({
+            type: 'reconstructor',
+            insuredGear: {
+              armor: null,
+              weapon: null
+            },
+            insurableGear: [],
+            spawnSetHere: true
+          });
+        }
+      }
+    }
+    else if (action instanceof CloseAction) {
+      if (this._action && this._action.clientGuiOpened) {
+        if (this._action instanceof ConfigureAction && action.target === 'reconstructor') {
+          this.finishAction();
+        }
+        else if (this._action instanceof TalkAction && action.target === 'dialog') {
+          this.finishAction();
+        }
+      }
+    }
   }
 
   finishAction() {
@@ -206,19 +257,18 @@ class Character extends Entity {
       this._action = null;
     }
     else if (this._action instanceof TalkAction) {
-      this.typeData.connection.send({
-        type: 'dialog',
-        title: this._action.targetEntity.name,
-        text: StoryManager.getDialogForNpc(
-          this._action.targetEntity.typeData.type,
-          this.typeData.connection.user.progress
-          )
-      });
-
-      this.typeData.connection.user.emit('talk', this._action.targetEntity.typeData.type);
-  
-      this._action.finish();
-      this._action = null;
+        if (!this._action.clientGuiOpened) {
+        this.typeData.connection.send({
+          type: 'dialog',
+          title: this._action.targetEntity.name,
+          text: StoryManager.getDialogForNpc(
+            this._action.targetEntity.typeData.type,
+            this.typeData.connection.user.progress
+            )
+        });
+        this._action.clientGuiOpened = true;
+        this.typeData.connection.user.emit('talk', this._action.targetEntity.typeData.type);
+      }
     }
     else if (this._action instanceof AttackAction) {
       this._combatController.attack();
@@ -227,7 +277,7 @@ class Character extends Entity {
       }
     }
     else if (this._action instanceof AreaLinkAction) {
-      const { AreaManager } = require('../area/area_manager'); // require here because otherwise undefined
+      const AreaManager = require('../area/area_manager'); // define here, otherwise undefined
       AreaManager.changeEntityArea(
         this,
         AreaManager.getByName(this._action.targetEntity.typeData.targetName
@@ -237,6 +287,23 @@ class Character extends Entity {
       });
       this._action.finish();
       this._action = null;
+    }
+    else if (this._action instanceof ConfigureAction) {
+      const type = this._action.targetEntity.typeData.baseType;
+      if (type === 'reconstructor') {
+        if (!this._action.clientGuiOpened) {
+          this.typeData.connection.send({
+            type: 'reconstructor',
+            insuredGear: {
+              armor: null,
+              weapon: null
+            },
+            insurableGear: [],
+            spawnSetHere: this._action.targetEntity.typeData.areaLink === this.typeData.connection.user.spawnLink
+          });
+          this._action.clientGuiOpened = true;
+        }
+      }
     }
   }
 

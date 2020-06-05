@@ -22,13 +22,15 @@ class GUI extends EventTarget {
     this._onToggleSettings = this._onToggleSettings.bind(this);
     this.closeSettings = this.closeSettings.bind(this);
     this._onChangeDistance = this._onChangeDistance.bind(this);
+    this.closeDropdownMenu = this.closeDropdownMenu.bind(this);
+    this.closeDialog = this.closeDialog.bind(this);
+    this.closeReconstructor = this.closeReconstructor.bind(this);
+    this._onSetSpawn = this._onSetSpawn.bind(this);
     this.onClick = this.onClick.bind(this);
     this.onTouchStart = this.onTouchStart.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.onLongTouch = this.onLongTouch.bind(this);
     this.onWheel = this.onWheel.bind(this);
-    this.closeDropdownMenu = this.closeDropdownMenu.bind(this);
-    this.closeDialog = this.closeDialog.bind(this);
     this.onPointerMove = this.onPointerMove.bind(this);
 
     this.element = document.getElementById('gui');
@@ -51,6 +53,7 @@ class GUI extends EventTarget {
     this.dropdownMenuElement = document.getElementById('dropdownMenu');
     this.dialogElement = document.getElementById('dialog');
     this.dialogCloseButton = this.dialogElement.querySelector('button[name="close"]');
+    this.reconstructorElement = document.getElementById('reconstructor');
     this.actionElement = document.getElementById('action');
     this.actionSuggestion = this.actionElement.querySelector('p[name="suggestion"]');
     this.actionLast = this.actionElement.querySelector('p[name="last"]');
@@ -70,6 +73,7 @@ class GUI extends EventTarget {
     this.settingsDistanceSlider.addEventListener('input', this._onChangeDistance);
     this.dialogElement.querySelector('button[name="close-x"]').addEventListener('click', this.closeDialog);
     this.dialogCloseButton.addEventListener('click', this.closeDialog);
+    this.reconstructorElement.querySelector('button[name="close-x"]').addEventListener('click', this.closeReconstructor);
 
     this.element.addEventListener('mousedown', this.onClick);
     this.element.addEventListener('pointermove', this.onPointerMove);
@@ -78,11 +82,6 @@ class GUI extends EventTarget {
     this.element.addEventListener('wheel', this.onWheel);
 
     this.element.oncontextmenu = () => false; // disable default right click
-    this.closeDialog();
-    this.closeDropdownMenu();
-    this.closeLog();
-    this.closeEquipment();
-    this.closeSettings();
     this.actionSuggestion.innerHTML = '';
     this.actionLast.innerHTML = '';
     this._updateAudioIcon();
@@ -256,10 +255,18 @@ class GUI extends EventTarget {
     this.closeLog();
     this.closeEquipment();
     this.closeSettings();
+    this.closeReconstructor();
   }
 
   closeDialog() {
     this.dialogElement.setAttribute('hidden', 'hidden');
+    if (this.game.state.sendWsAction) {
+      this.game.state.sendWsAction({
+        type: 'action',
+        action: 'close',
+        target: 'dialog'
+      });
+    }
   }
 
   setLastAction(text) {
@@ -299,6 +306,7 @@ class GUI extends EventTarget {
     this.closeDropdownMenu();
     this.closeEquipment();
     this.closeSettings();
+    this.closeReconstructor();
   }
   closeLog() {
     this.logElement.setAttribute('hidden', 'hidden');
@@ -397,6 +405,7 @@ class GUI extends EventTarget {
     this.closeDropdownMenu();
     this.closeLog();
     this.closeSettings();
+    this.closeReconstructor();
   }
   closeEquipment() {
     this.equipmentElement.setAttribute('hidden', 'hidden');
@@ -417,6 +426,7 @@ class GUI extends EventTarget {
     this.closeDropdownMenu();
     this.closeLog();
     this.closeEquipment();
+    this.closeReconstructor();
   }
   closeSettings() {
     this.settingsElement.setAttribute('hidden', 'hidden');
@@ -444,9 +454,64 @@ class GUI extends EventTarget {
     this.settingsElement.querySelector('span[name="distanceNumeric"]').innerHTML = value;
     this.settingsDistanceSlider.value = this.game.display.drawDistance;
   }
+  openReconstructor(data) {
+    this.reconstructorElement.querySelector('span[name="armor"]').innerHTML = data.armor ? data.armor.name : 'none';
+    this.reconstructorElement.querySelector('span[name="weapon"]').innerHTML = data.weapon ? data.weapon.name : 'none';
+
+    const spawnElement = this.reconstructorElement.querySelector('p[name="spawn"]');
+    spawnElement.innerHTML = '';
+    if (data.spawnSetHere) {
+      spawnElement.innerHTML = 'Respawn point is set here';
+    }
+    else {
+      const spawnButton = document.createElement('button');
+      spawnButton.innerHTML = 'Set respawn point here';
+      spawnButton.addEventListener('click', this._onSetSpawn);
+      spawnElement.appendChild(spawnButton);
+    }
+    
+
+    const insurableList = this.reconstructorElement.querySelector('ul');
+    insurableList.innerHTML = '';
+    data.insurableGear.forEach(ig => {
+      const li = document.createElement('li');
+      li.innerHTML = ig.name;
+      insurableList.appendChild(li);
+    });
+
+    this.reconstructorElement.removeAttribute('hidden');
+
+    this.closeDialog();
+    this.closeDropdownMenu();
+    this.closeLog();
+    this.closeEquipment();
+    this.closeSettings();
+  }
+  closeReconstructor() {
+    this.reconstructorElement.setAttribute('hidden', 'hidden');
+    if (this.game.state.sendWsAction) {
+      this.game.state.sendWsAction({
+        type: 'action',
+        action: 'close',
+        target: 'reconstructor'
+      });
+    }
+  }
+  _onSetSpawn() {
+    this.game.state.sendWsAction({
+      type: 'action',
+      action: 'option',
+      target: 'setSpawn'
+    });
+  }
 
   dispose() {
     this.element.setAttribute('hidden', 'hidden');
+    this.closeDialog();
+    this.closeDropdownMenu();
+    this.closeLog();
+    this.closeEquipment();
+    this.closeSettings();
 
     this.logoutButton.removeEventListener('click', this.onClickLogout);
     this.fullscreenButton.removeEventListener('click', Options.toggleFullscreen);
@@ -463,6 +528,7 @@ class GUI extends EventTarget {
     this.settingsDistanceSlider.removeEventListener('input', this._onChangeDistance);
     this.dialogElement.querySelector('button[name="close-x"]').removeEventListener('click', this.closeDialog);
     this.dialogCloseButton.removeEventListener('click', this.closeDialog);
+    this.reconstructorElement.querySelector('button[name="close-x"]').removeEventListener('click', this.closeReconstructor);
 
     this.element.removeEventListener('mousedown', this.onClick);
     this.element.removeEventListener('pointermove', this.onPointerMove);

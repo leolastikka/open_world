@@ -64,9 +64,9 @@ class AreaManager {
       const floorLayer = areaJson.layers.find(layer => layer.name === 'floor');
       const wallsLayer = areaJson.layers.find(layer => layer.name === 'walls');
       const linksLayer = areaJson.layers.find(layer => layer.name === 'links');
-      const objectsLayer = areaJson.layers.find(layer => layer.name === 'objects');
       const charactersLayer = areaJson.layers.find(layer => layer.name === 'characters');
       const movementAreasLayer = areaJson.layers.find(layer => layer.name === 'movementAreas');
+      const interactablesLayer = areaJson.layers.find(layer => layer.name === 'interactables');
 
       // handle tiles
       for(let i = 0; i < floorLayer.data.length; i += floorLayer.width) {
@@ -126,17 +126,20 @@ class AreaManager {
         });
       }
 
-      // handle objects
-      if (objectsLayer) {
-        objectsLayer.objects.forEach(obj => {
-          if (obj.type === 'container') {
+      // handle interactables
+      if (interactablesLayer) {
+        interactablesLayer.objects.forEach(obj => {
+          if (obj.type === 'reconstructor') {
             const pos = new Vector2(
               Math.floor(obj.x / tileHeight),
               Math.floor(obj.y / tileHeight)
             );
-            const typeData = EntityManager.getDataByType(obj.type);
+            const typeData = {
+              type: obj.type,
+              baseType: obj.type,
+              areaLink: area.getLinkByType('enter_reconstructor')
+            };
             area.addEntity(typeData, obj.name, pos);
-            area.navigator.setWalkableAt(pos, false);
           }
         });
       }
@@ -163,6 +166,4 @@ class AreaManager {
   }
 }
 
-module.exports = {
-  AreaManager
-};
+module.exports = AreaManager;

@@ -24,6 +24,20 @@ class MoveAction extends Action {
   }
 }
 
+class OptionAction extends Action {
+  constructor(option) {
+    super();
+    this.option = option;
+  }
+}
+
+class CloseAction extends Action {
+  constructor(target) {
+    super();
+    this.target = target;
+  }
+}
+
 class InteractAction extends Action {
   constructor(ownerEntity, targetEntity, range) {
     super();
@@ -63,6 +77,7 @@ class InteractAction extends Action {
 class TalkAction extends InteractAction {
   constructor(ownerObject, targetObject, range) {
     super(ownerObject, targetObject, range);
+    this.clientGuiOpened = false;
   }
 }
 
@@ -84,8 +99,11 @@ class AreaLinkAction extends InteractAction {
   }
 }
 
-class DialogController {
-
+class ConfigureAction extends InteractAction {
+  constructor(ownerObject, targetObject, range) {
+    super(ownerObject, targetObject, range);
+    this.clientGuiOpened = false;
+  }
 }
 
 class CombatController {
@@ -151,12 +169,14 @@ class CombatController {
 
 module.exports = {
   MoveAction,
+  OptionAction,
+  CloseAction,
   InteractAction,
   TalkAction,
   TradeAction,
   AttackAction,
   AreaLinkAction,
+  ConfigureAction,
 
-  DialogController,
   CombatController
 };

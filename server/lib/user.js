@@ -12,6 +12,7 @@ class User extends EventEmitter {
 
     this.area = null;
     this.character = null;
+    this.spawnLink = null;
 
     this._progress = new Progress(this);
   }

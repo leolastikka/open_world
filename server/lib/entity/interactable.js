@@ -14,6 +14,35 @@ class AreaLink extends Entity {
     return ['goto'];
   }
 
+  get interactPositions() {
+    return [this.lastIntPos];
+  }
+
+  toJSON() {
+    return {
+      networkId: this._networkId,
+      type: this._typeData.type,
+      baseType: this._typeData.baseType,
+      name: this._name,
+      pos: this.pos,
+      actions: this.actions
+    };
+  }
+}
+
+class Reconstructor extends Entity {
+  constructor(area, typeData, name, pos) {
+    super(area, typeData, name, pos); 
+  }
+
+  get actions() {
+    return ['configure'];
+  }
+
+  get interactPositions() {
+    return [this.lastIntPos];
+  }
+
   toJSON() {
     return {
       networkId: this._networkId,
@@ -41,5 +70,6 @@ class Container extends Entity {
 
 module.exports = {
   AreaLink,
+  Reconstructor,
   Container
 };

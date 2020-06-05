@@ -63,6 +63,11 @@
     "baseType": "npc"
   },
   {
+    "description": "Reconstructor Assistant",
+    "type":"npc_reconstructor",
+    "baseType": "npc"
+  },
+  {
     "description": "Training Enemy",
     "type": "enemy_training",
     "baseType": "enemy",

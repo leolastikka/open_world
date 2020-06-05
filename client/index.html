@@ -157,13 +157,13 @@
 
     <div id="equipment" class="scroller" hidden="hidden">
       <button name="close-x" class="close"><i class="icon-cancel"></i></button>
-      <p>Equipment</p>
+      <h3>Equipment</h3>
       <p>
         Armor:<br>
         Weapon:<br>
         Ammo:<br>
       </p>
-      <p>Inventory</p>
+      <h3>Inventory</h3>
       <p>
         1 x Training Pistol<br>
         50 x Pistol Ammo
@@ -172,11 +172,27 @@
 
     <div id="settings" class="scroller" hidden="hidden">
       <button name="close-x" class="close"><i class="icon-cancel"></i></button>
-      <p>Settings</p>
+      <h3>Settings</h3>
       <label>Volume</label>
       <input type="range" min="0" max="100" name="volume"><br>
       <label>Draw distance (<span name="distanceNumeric"></span>)</label>
       <input type="range" min="7" max="25" name="distance">
+    </div>
+
+    <div id="reconstructor" class="scroller" hidden="hidden">
+      <button name="close-x" class="close"><i class="icon-cancel"></i></button>
+      <h3>Reconstructor Interface</h3>
+      <p name="spawn"></p>
+      <h3>Insured Gear</h3>
+      <p>
+        Armor: <span name="armor"></span><br>
+        Weapon: <span name="weapon"></span><br>
+      </p>
+      <h3>Insurable Gear</h3>
+      <ul>
+        <li>Item 1</li>
+        <li>Item 2</li>
+      </ul>
     </div>
   </div>
 

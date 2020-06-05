@@ -1,10 +1,18 @@
-const { AreaManager } = require('./area/area_manager');
+const AreaManager = require('./area/area_manager');
 const { EntityManager } = require('./entity/entity_manager');
 const { Vector2 } = require('./math');
 const { Time } = require('./time');
 const ConnectionManager = require('./connection').ConnectionManager;
 const StoryManager = require('./story_manager');
-const { MoveAction, TalkAction, AttackAction, AreaLinkAction } = require('./action');
+const {
+  MoveAction,
+  OptionAction,
+  CloseAction,
+  TalkAction,
+  AttackAction,
+  AreaLinkAction,
+  ConfigureAction
+} = require('./action');
 
 class Game {
   constructor(db, wss) {
@@ -70,20 +78,15 @@ class Game {
     let action = null;
     let target = null;
     if (['move'].includes(data.action)) {
-      try {
-        target = Vector2.fromObject(data.target);
-      }
-      catch {
-        return;
-      }
+      target = Vector2.fromObject(data.target);
     }
-    if (['talk', 'attack', 'link'].includes(data.action)) {
+    else if (['talk', 'attack', 'link', 'configure'].includes(data.action)) {
       target = user.area.getEntityByNetworkId(data.target);
       if (!target) { // if target does not exist
         return;
       }
       const path = user.area.navigator.findPath(character.lastIntPos, target.lastIntPos);
-      if (!path || !path.length) { // if target is not reachable
+      if (!path) { // if target is not reachable
         return;
       }
     }
@@ -98,7 +101,16 @@ class Game {
         action = new AttackAction(character, target, 1);
         break;
       case 'link':
-        action = new AreaLinkAction(character, target, 1);
+        action = new AreaLinkAction(character, target, 0);
+        break;
+      case 'configure':
+        action = new ConfigureAction(character, target, 0);
+        break;
+      case 'option':
+        action = new OptionAction(data.target);
+        break;
+      case 'close':
+        action = new CloseAction(data.target);
         break;
       default:
         user.connection.close();
@@ -131,6 +143,7 @@ class Game {
     area.addConnection(connection);
     connection.user.area = area;
     connection.user.character = player;
+    connection.user.spawnLink = startLink;
 
     area.broadcastToOthers(connection, {
       type: 'add',

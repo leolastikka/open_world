@@ -121,6 +121,9 @@ class EntityManager {
         case 'link':
           created = this.createLink(ent);
           break;
+        case 'reconstructor':
+          created = this.createReconstructor(ent);
+          break;
       }
 
       if(created && ent.path) { // if object is moving
@@ -180,7 +183,13 @@ class EntityManager {
         ResourceManager.getAnimationsByType('npc_guard')
         );
     }
-    else if (['npc_info', 'npc_station_worker', 'npc_city_worker', 'npc_gear'].includes(data.type)) {
+    else if ([
+      'npc_info',
+      'npc_station_worker',
+      'npc_city_worker',
+      'npc_gear',
+      'npc_reconstructor'
+    ].includes(data.type)) {
       renderer = new AnimatedSpriteRenderer(
         RenderLayer.Walls,
         ResourceManager.texture,
@@ -198,9 +207,19 @@ class EntityManager {
     const renderer = new SpriteRenderer(
       RenderLayer.Walls,
       ResourceManager.texture,
-      ResourceManager.getSpriteRectByIndex(ResourceManager.linkTile)
+      ResourceManager.getSpriteRectByIndex(ResourceManager.greenGlowTile)
       );
     this._add(new AreaLink(data.networkId, pos, renderer, data.name, data.actions));
+  }
+
+  static createReconstructor(data) {
+    const pos = Vector2.fromObject(data.pos);
+    const renderer = new SpriteRenderer(
+      RenderLayer.Walls,
+      ResourceManager.texture,
+      ResourceManager.getSpriteRectByIndex(ResourceManager.blueGlowTile)
+      );
+    this._add(new Reconstructor(data.networkId, pos, renderer, data.name, data.actions));
   }
 
   static createEnemy(data) {

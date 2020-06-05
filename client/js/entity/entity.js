@@ -212,3 +212,21 @@ class AreaLink extends WallTile {
     return actions;
   }
 }
+
+class Reconstructor extends WallTile {
+  constructor(networkId, pos, renderer, name, actions) {
+    super(networkId, pos, renderer, true);
+    this.name = name;
+    this._actions = actions;
+  }
+
+  get actions() {
+    let actions = [];
+    this._actions.forEach(a => {
+      if (a === 'configure') {
+        actions.push(new ConfigureAction('Configure Reconstructor', this.networkId));
+      }
+    });
+    return actions;
+  }
+}

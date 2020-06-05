@@ -1,5 +1,5 @@
 const { Navigator } = require('../navigator');
-const { AreaLink, Container } = require('../entity/interactable');
+const { AreaLink, Reconstructor } = require('../entity/interactable');
 const { NPC, Enemy, Player } = require('../entity/character');
 const { EntityVisibility } = require('../entity/entity');
 
@@ -84,9 +84,6 @@ class Area {
     let entity = null;
   
     switch (typeData.baseType) {
-      case 'container':
-        entity = new Container(this, typeData, name, pos);
-        break;
       case 'enemy':
         entity = new Enemy(this, typeData, name, pos);
         break;
@@ -98,6 +95,9 @@ class Area {
         break;
       case 'link':
         entity = new AreaLink(this, typeData, name, pos);
+        break;
+      case 'reconstructor':
+        entity = new Reconstructor(this, typeData, name, pos);
         break;
       default:
         throw new Error(`Unknown Entity Type: ${typeData.baseType}, for: ${name}`);

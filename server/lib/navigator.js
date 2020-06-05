@@ -4,7 +4,7 @@ const { Vector2 } = require('./math');
 class Navigator {
   constructor(area) {
     this._area = area;
-    this._walkableTiles = [1,2,3,4, 32,33]; // walkable tile indexes
+    this._walkableTiles = [1,2,3,4,5, 32,33]; // walkable tile indexes
 
     this._grid = new PF.Grid(area.size, area.size);
     this._finder = new PF.AStarFinder({
@@ -29,6 +29,10 @@ class Navigator {
     let grid = this._grid.clone();
     let path = [];
     let arr = this._finder.findPath(startPos.x, startPos.y, endPos.x, endPos.y, grid);
+    if (!arr.length && Vector2.sub(endPos, startPos).lengthSquared) {
+      // if endPos is unreachable, an empty array is returned but distance is greater than 0
+      return null;
+    }
     for (let i=1; i<arr.length; i++) {
       path.push(new Vector2(arr[i][0], arr[i][1]));
     }

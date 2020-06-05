@@ -97,6 +97,13 @@ class GameState extends State {
         target: action.networkId
       });
     }
+    else if (action instanceof ConfigureAction) {
+      this.sendWsAction({
+        type: 'action',
+        action: 'configure',
+        target: action.networkId
+      });
+    }
     this.gui.setLastAction(event.action.text);
   }
 
@@ -136,6 +143,12 @@ class GameState extends State {
         break;
       case 'changeArea':
         this.onChangeArea();
+        break;
+      case 'reconstructor':
+        this.onReconstructor(data);
+        break;
+      case 'option':
+        console.log(data);
         break;
     }
   }
@@ -238,6 +251,10 @@ class GameState extends State {
     }
     this.gui.updateLog();
     this.gui.flashLog();
+  }
+
+  onReconstructor(data) {
+    this.gui.openReconstructor(data);
   }
 
   onWsClose(event) {

@@ -106,12 +106,13 @@ i {
   content: ' ';
   margin:0.25em;
 }
-#dialog, #settings, #equipment, #log {
+#dialog, #settings, #equipment, #log, #reconstructor {
   position: absolute;
   left: 0;
   top: 0;
   z-index: 5;
-  margin: 10vh 10vw;
+  margin: 8vh 8vw;
+  padding: 1vh 1vw;
   width: 80vw;
   height: 80vh;
   text-align: center;

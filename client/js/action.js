@@ -20,21 +20,30 @@ class InteractAction extends Action {
 
 class TalkAction extends InteractAction {
   constructor(text, networkId) {
-    super(text);
-    this.networkId = networkId;
+    super(text, networkId);
   }
 }
 
 class AttackAction extends InteractAction {
   constructor(text, networkId) {
-    super(text);
-    this.networkId = networkId;
+    super(text, networkId);
   }
 }
 
 class AreaLinkAction extends InteractAction {
   constructor(text, networkId) {
-    super(text);
-    this.networkId = networkId;
+    super(text, networkId);
+  }
+}
+
+class ConfigureAction extends InteractAction {
+  constructor(text, networkId) {
+    super(text, networkId);
+  }
+}
+
+class ConfigureOptionAction extends InteractAction {
+  constructor(text, networkId) {
+    super(text, networkId);
   }
 }
