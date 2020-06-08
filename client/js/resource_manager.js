@@ -11,7 +11,7 @@ class ResourceManager {
     this._spriteHeight = 48;
     
     this._floorTiles = [0,1,2,3,4,5];
-    this._wallsTiles = [13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43];
+    this._wallsTiles = [13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46];
     this._greenGlowTile = 13;
     this._blueGlowTile = 12;
 
@@ -22,41 +22,41 @@ class ResourceManager {
       enemy: [
         {
           name: 'idle',
-          frames: [[Rect(50), 1]]
+          frames: [[Rect(67), 1]]
         },
         {
           name: 'walk',
-          frames: [[Rect(50), 0.2], [Rect(66), 0.2]]
+          frames: [[Rect(67), 0.2], [Rect(83), 0.2]]
         }
       ],
       npc_guard: [
         {
           name: 'idle',
-          frames: [[Rect(51), 1]]
+          frames: [[Rect(68), 1]]
         },
         {
           name: 'walk',
-          frames: [[Rect(51), 0.2], [Rect(67), 0.2]]
+          frames: [[Rect(68), 0.2], [Rect(84), 0.2]]
         }
       ],
       npc_worker: [
         {
           name: 'idle',
-          frames: [[Rect(49), 1]]
+          frames: [[Rect(66), 1]]
         },
         {
           name: 'walk',
-          frames: [[Rect(49), 0.3], [Rect(65), 0.3]]
+          frames: [[Rect(66), 0.3], [Rect(82), 0.3]]
         }
       ],
       player: [
         {
           name: 'idle',
-          frames: [[Rect(48), 1]]
+          frames: [[Rect(65), 1]]
         },
         {
           name: 'walk',
-          frames: [[Rect(48), 0.2], [Rect(64), 0.2]]
+          frames: [[Rect(65), 0.2], [Rect(81), 0.2]]
         }
       ]
     };
@@ -322,13 +322,5 @@ class AudioClip {
       alert('BufferLoader: XHR error');
     }
     request.send();
-  }
-}
-
-class AudioShort extends AudioClip {
-}
-
-class AudioLong extends AudioClip {
-  constructor(name, audioSource, gainNode, loop) {
   }
 }

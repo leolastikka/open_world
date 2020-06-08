@@ -4,7 +4,7 @@ const { Vector2 } = require('./math');
 class Navigator {
   constructor(area) {
     this._area = area;
-    this._walkableTiles = [1,2,3,4,5, 32,33]; // walkable tile indexes
+    this._walkableTiles = [1,2,3,4,5, 32,33, 46]; // walkable tile indexes
 
     this._grid = new PF.Grid(area.size, area.size);
     this._finder = new PF.AStarFinder({

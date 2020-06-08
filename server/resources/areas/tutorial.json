@@ -264,11 +264,11 @@
         {
          "columns":16,
          "firstgid":1,
-         "image":"..\/..\/..\/editors\/map_editor_tiles.png",
+         "image":"..\/..\/..\/client\/res\/tiles.png",
          "imageheight":512,
          "imagewidth":512,
          "margin":0,
-         "name":"map_editor_tiles",
+         "name":"tiles",
          "spacing":0,
          "tilecount":160,
          "tileheight":48,

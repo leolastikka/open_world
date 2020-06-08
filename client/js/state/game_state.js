@@ -108,7 +108,9 @@ class GameState extends State {
   }
 
   sendWsAction(data) {
-    this.game.connection.ws.send(JSON.stringify(data));
+    if (this.game.connection.ws) {
+      this.game.connection.ws.send(JSON.stringify(data));
+    }
   }
 
   onWsMessage(msg) {
