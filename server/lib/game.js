@@ -8,7 +8,6 @@ const { ItemManager, Equipment } = require('./item');
 const {
   MoveAction,
   OptionAction,
-  CloseAction,
   EquipmentAction,
   TalkAction,
   AttackAction,
@@ -118,9 +117,6 @@ class Game {
         break;
       case 'option':
         action = new OptionAction(data.target);
-        break;
-      case 'close':
-        action = new CloseAction(data.target);
         break;
       default:
         user.connection.close();

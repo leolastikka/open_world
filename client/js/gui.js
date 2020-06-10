@@ -260,9 +260,6 @@ class GUI extends EventTarget {
 
   closeDialog() {
     this.dialogElement.setAttribute('hidden', 'hidden');
-    if (this.game.state.closeDialog) {
-      this.game.state.closeDialog();
-    }
   }
 
   setLastAction(text) {
@@ -563,9 +560,6 @@ class GUI extends EventTarget {
   }
   closeReconstructor() {
     this.reconstructorElement.setAttribute('hidden', 'hidden');
-    if (this.game.state.closeReconstructor) {
-      this.game.state.closeReconstructor();
-    }
   }
   _onSetSpawn() {
     this.game.state.sendWsAction({

@@ -237,13 +237,6 @@ class GameState extends State {
   onDialog(data) {
     this.gui.openDialog(data.title, data.text);
   }
-  closeDialog() {
-    this.sendWsAction({
-      type: 'action',
-      action: 'close',
-      target: 'dialog'
-    });
-  }
 
   onChangeArea() {
     this.loadingElement.removeAttribute('hidden');
@@ -308,13 +301,6 @@ class GameState extends State {
 
   onReconstructor(data) {
     this.gui.openReconstructor(data);
-  }
-  closeReconstructor() {
-    this.sendWsAction({
-      type: 'action',
-      action: 'close',
-      target: 'reconstructor'
-    });
   }
 
   onWsClose(event) {

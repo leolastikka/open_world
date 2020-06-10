@@ -31,13 +31,6 @@ class OptionAction extends Action {
   }
 }
 
-class CloseAction extends Action {
-  constructor(target) {
-    super();
-    this.target = target;
-  }
-}
-
 class EquipmentAction extends Action {
   constructor(actionType, itemType) {
     super();
@@ -178,7 +171,6 @@ class CombatController {
 module.exports = {
   MoveAction,
   OptionAction,
-  CloseAction,
   EquipmentAction,
   InteractAction,
   TalkAction,

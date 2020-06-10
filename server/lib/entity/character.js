@@ -4,7 +4,6 @@ const { Vector2 } = require('../math');
 const {
   MoveAction,
   OptionAction,
-  CloseAction,
   EquipmentAction,
   InteractAction,
   TalkAction,
@@ -75,7 +74,12 @@ class Character extends Entity {
     else if (action instanceof TalkAction) {
       if (this._action instanceof TalkAction &&
           this._action.targetEntity.networkId === action.targetEntity.networkId) { // if already doing same action
-        return;
+        if (this._action.clientGuiOpened) {
+          this.finishAction();
+        }
+        else {
+          return;
+        }
       }
       else if (this._action instanceof InteractAction) { // end previous action if needed
         this.finishAction();
@@ -122,7 +126,12 @@ class Character extends Entity {
     else if (action instanceof ConfigureAction) {
       if (this._action instanceof ConfigureAction &&
           this._action.targetEntity.networkId === action.targetEntity.networkId) { // if already doing same action
-        return;
+        if (this._action.clientGuiOpened) {
+          this.finishAction();
+        }
+        else {
+          return;
+        }
       }
       else if (this._action instanceof InteractAction) {
         this.finishAction();
@@ -148,16 +157,6 @@ class Character extends Entity {
             insurableGear: [],
             spawnSetHere: true
           });
-        }
-      }
-    }
-    else if (action instanceof CloseAction) {
-      if (this._action && this._action.clientGuiOpened) {
-        if (this._action instanceof ConfigureAction && action.target === 'reconstructor') {
-          this.finishAction();
-        }
-        else if (this._action instanceof TalkAction && action.target === 'dialog') {
-          this.finishAction();
         }
       }
     }
