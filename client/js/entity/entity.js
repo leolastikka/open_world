@@ -111,6 +111,17 @@ class Character extends Entity {
     this._hp = null;
   }
 
+  changeRenderer(armorType, weaponType) {
+    const animationName = this.renderer.currentAnimationName;
+    this.renderer = new AnimatedSpriteRenderer(
+      RenderLayer.Walls,
+      ResourceManager.texture,
+      ResourceManager.getAnimationsByType(armorType)
+      );
+    this.renderer.entity = this;
+    this.renderer.setAnimation(animationName);
+  }
+
   setPath(path) {
     this.state = 'moving';
     this.path = path;

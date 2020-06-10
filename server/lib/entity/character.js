@@ -5,6 +5,7 @@ const {
   MoveAction,
   OptionAction,
   CloseAction,
+  EquipmentAction,
   InteractAction,
   TalkAction,
   AttackAction,
@@ -12,12 +13,14 @@ const {
   ConfigureAction
 } = require('../action');
 const StoryManager = require('../story_manager');
+const { Equipment } = require('../item');
 
 class Character extends Entity {
-  constructor(area, typeData, name, pos) {
-    super(area, typeData, name, pos);
-    this.movementArea = null;
+  constructor(area, data, name, pos) {
+    super(area, data, name, pos);
+    this.equipment = new Equipment(data.equipment);
 
+    this.movementArea = null;
     this._nextSpawnTime = Time.totalTime;
     this._nextMoveTime = Time.totalTime;
 
@@ -31,7 +34,7 @@ class Character extends Entity {
   }
 
   get speed() {
-    return this._typeData.speed;
+    return this._data.speed;
   }
 
   update() {
@@ -103,7 +106,7 @@ class Character extends Entity {
           this._action.targetEntity.networkId === action.targetEntity.networkId) { // if already doing same action
         return;
       }
-      else if (this.area.name === action.targetEntity.typeData.targetName) { // if already in the same area
+      else if (this.area.name === action.targetEntity.data.targetName) { // if already in the same area
         return;
       }
       else if (this._action instanceof InteractAction) {
@@ -135,8 +138,8 @@ class Character extends Entity {
     else if (action instanceof OptionAction) {
       if (this._action instanceof ConfigureAction && this._action.clientGuiOpened) { // if option action can be received
         if (action.option === 'setSpawn') {
-          this.typeData.connection.user.spawnLink = this._action.targetEntity.typeData.areaLink;
-          this.typeData.connection.send({
+          this.data.connection.user.spawnLink = this._action.targetEntity.data.areaLink;
+          this.data.connection.send({
             type: 'reconstructor',
             insuredGear: {
               armor: null,
@@ -156,6 +159,31 @@ class Character extends Entity {
         else if (this._action instanceof TalkAction && action.target === 'dialog') {
           this.finishAction();
         }
+      }
+    }
+    else if (action instanceof EquipmentAction) {
+      let equipmentUpdated = false;
+      if (action.actionType === 'equip') {
+        equipmentUpdated = this.equipment.equip(action.itemType);
+      }
+      else if (action.actionType === 'unequip') {
+        equipmentUpdated = this.equipment.unequip(action.itemType);
+      }
+      else if (action.actionType === 'use') {
+        equipmentUpdated = this.equipment.use(action.itemType);
+      }
+
+      if (equipmentUpdated) {
+        this.data.connection.send({
+          type: 'equipment',
+          equipment: this.equipment
+        });
+
+        this.area.broadcast({
+          type: 'update',
+          networkId: this.networkId,
+          armorType: this.equipment.armor ? this.equipment.armor.type : 'none'
+        });
       }
     }
   }
@@ -258,16 +286,16 @@ class Character extends Entity {
     }
     else if (this._action instanceof TalkAction) {
         if (!this._action.clientGuiOpened) {
-        this.typeData.connection.send({
+        this.data.connection.send({
           type: 'dialog',
           title: this._action.targetEntity.name,
           text: StoryManager.getDialogForNpc(
-            this._action.targetEntity.typeData.type,
-            this.typeData.connection.user.progress
+            this._action.targetEntity.data.type,
+            this.data.connection.user.progress
             )
         });
         this._action.clientGuiOpened = true;
-        this.typeData.connection.user.emit('talk', this._action.targetEntity.typeData.type);
+        this.data.connection.user.emit('talk', this._action.targetEntity.data.type);
       }
     }
     else if (this._action instanceof AttackAction) {
@@ -280,26 +308,26 @@ class Character extends Entity {
       const AreaManager = require('../area/area_manager'); // define here, otherwise undefined
       AreaManager.changeEntityArea(
         this,
-        AreaManager.getByName(this._action.targetEntity.typeData.targetName
+        AreaManager.getByName(this._action.targetEntity.data.targetName
         ));
-      this.typeData.connection.send({
+      this.data.connection.send({
         type: 'changeArea'
       });
       this._action.finish();
       this._action = null;
     }
     else if (this._action instanceof ConfigureAction) {
-      const type = this._action.targetEntity.typeData.baseType;
+      const type = this._action.targetEntity.data.baseType;
       if (type === 'reconstructor') {
         if (!this._action.clientGuiOpened) {
-          this.typeData.connection.send({
+          this.data.connection.send({
             type: 'reconstructor',
             insuredGear: {
               armor: null,
               weapon: null
             },
             insurableGear: [],
-            spawnSetHere: this._action.targetEntity.typeData.areaLink === this.typeData.connection.user.spawnLink
+            spawnSetHere: this._action.targetEntity.data.areaLink === this.data.connection.user.spawnLink
           });
           this._action.clientGuiOpened = true;
         }
@@ -371,7 +399,7 @@ class Character extends Entity {
   despawn() {
     super.despawn();
 
-    this._nextSpawnTime = Time.totalTime + this._typeData.respawnTime;
+    this._nextSpawnTime = Time.totalTime + this._data.respawnTime;
 
     if (this.combatController) {
       this.combatController.dispose()
@@ -389,16 +417,27 @@ class Character extends Entity {
     });
   }
 
+  dispose() {
+    super.dispose();
+    this.equipment.dispose();
+    this.equipment = null;
+  }
+
   toJSON() {
     return {
       networkId: this.networkId,
-      type: this._typeData.type,
-      baseType: this._typeData.baseType,
+      type: this._data.type,
+      baseType: this._data.baseType,
       name: this._name,
       pos: this.pos,
       path: this._path,
       speed: this.speed,
-      actions: this.actions
+      actions: this.actions,
+      equipment: {
+        armor: this.equipment.armor,
+        weapon: this.equipment.weapon,
+        ammo: this.equipment.ammo
+      }
     };
   }
 }

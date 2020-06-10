@@ -5,9 +5,9 @@ const { Entity, EntityVisibility } = require('./entity');
  * Link target name is stored in typeData.
  */
 class AreaLink extends Entity {
-  constructor(area, typeData, name, pos) {
-    super(area, typeData, name, pos); 
-    this._visibleFor = typeData.direction === 'enter' ?  EntityVisibility.None : EntityVisibility.All;
+  constructor(area, data, name, pos) {
+    super(area, data, name, pos); 
+    this._visibleFor = data.direction === 'enter' ?  EntityVisibility.None : EntityVisibility.All;
   }
 
   get actions() {
@@ -21,8 +21,8 @@ class AreaLink extends Entity {
   toJSON() {
     return {
       networkId: this._networkId,
-      type: this._typeData.type,
-      baseType: this._typeData.baseType,
+      type: this._data.type,
+      baseType: this._data.baseType,
       name: this._name,
       pos: this.pos,
       actions: this.actions
@@ -31,8 +31,8 @@ class AreaLink extends Entity {
 }
 
 class Reconstructor extends Entity {
-  constructor(area, typeData, name, pos) {
-    super(area, typeData, name, pos); 
+  constructor(area, data, name, pos) {
+    super(area, data, name, pos); 
   }
 
   get actions() {
@@ -46,8 +46,8 @@ class Reconstructor extends Entity {
   toJSON() {
     return {
       networkId: this._networkId,
-      type: this._typeData.type,
-      baseType: this._typeData.baseType,
+      type: this._data.type,
+      baseType: this._data.baseType,
       name: this._name,
       pos: this.pos,
       actions: this.actions

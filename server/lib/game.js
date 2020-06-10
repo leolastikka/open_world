@@ -4,10 +4,12 @@ const { Vector2 } = require('./math');
 const { Time } = require('./time');
 const ConnectionManager = require('./connection').ConnectionManager;
 const StoryManager = require('./story_manager');
+const { ItemManager, Equipment } = require('./item');
 const {
   MoveAction,
   OptionAction,
   CloseAction,
+  EquipmentAction,
   TalkAction,
   AttackAction,
   AreaLinkAction,
@@ -25,7 +27,7 @@ class Game {
   start = (onStartCallback) => {
     Time.init();
 
-    //ItemManager.init(); // load item related information from disk
+    ItemManager.init(); // load item related information from disk
     EntityManager.init(); // load entity related data from disk
     AreaManager.init(); // load all areas from disk
     StoryManager.init(); // load messages, dialogs and quests from disk
@@ -66,6 +68,11 @@ class Game {
     });
 
     user.connection.send({
+      type: 'equipment',
+      equipment: user.character.equipment
+    });
+
+    user.connection.send({
       type: 'player',
       entity: user.character
     });
@@ -99,6 +106,9 @@ class Game {
         break;
       case 'attack':
         action = new AttackAction(character, target, 1);
+        break;
+      case 'equipment':
+        action = new EquipmentAction(data.actionType, data.itemType);
         break;
       case 'link':
         action = new AreaLinkAction(character, target, 0);
@@ -136,10 +146,18 @@ class Game {
     const area = AreaManager.getByName('start');
     const startLink = area.getLinkByType('enter_start');
 
-    const typeData = Object.assign({
-      connection: connection
+    const data = Object.assign({
+      connection: connection,
+      equipment: {
+        inventory: [
+          "survival_outfit",
+          "military_armor",
+          "worker_outfit",
+          "sairaan_nopee_outfit"
+        ]
+      }
     }, EntityManager.getDataByType('player'));
-    const player = area.addEntity(typeData, connection.user.username, Vector2.clone(startLink.pos));
+    const player = area.addEntity(data, connection.user.username, Vector2.clone(startLink.pos));
     area.addConnection(connection);
     connection.user.area = area;
     connection.user.character = player;

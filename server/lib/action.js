@@ -38,6 +38,14 @@ class CloseAction extends Action {
   }
 }
 
+class EquipmentAction extends Action {
+  constructor(actionType, itemType) {
+    super();
+    this.actionType = actionType;
+    this.itemType = itemType;
+  }
+}
+
 class InteractAction extends Action {
   constructor(ownerEntity, targetEntity, range) {
     super();
@@ -64,7 +72,7 @@ class InteractAction extends Action {
 
     if (this.ownerEntity.isSpawned) {
       this.ownerEntity.area.broadcast({
-        type: 'status',
+        type: 'update',
         networkId: this.ownerEntity.networkId,
         inCombat: false
       });
@@ -171,6 +179,7 @@ module.exports = {
   MoveAction,
   OptionAction,
   CloseAction,
+  EquipmentAction,
   InteractAction,
   TalkAction,
   TradeAction,

@@ -58,6 +58,7 @@ button:disabled {
   border: 2px solid green;
   color: green;
   background: #012009; /* dark green */
+  cursor: default;
 }
 
 #gui {
@@ -151,6 +152,14 @@ i {
 }
 .done {
   text-decoration: line-through;
+}
+table {
+  width: 100%;
+  border: 2px solid yellowgreen;
+  table-layout: fixed;
+}
+td {
+  border: 2px solid yellowgreen;
 }
 #action {
   position: absolute;

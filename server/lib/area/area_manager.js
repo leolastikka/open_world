@@ -39,7 +39,7 @@ class AreaManager {
     })
 
     if (entity instanceof Player) {
-      const conn = entity.typeData.connection;
+      const conn = entity.data.connection;
       originalArea.removeConnection(conn);
       targetArea.addConnection(conn);
       conn.user.area = targetArea;
@@ -107,10 +107,10 @@ class AreaManager {
 
       // Gather all data to temp objects that needs to be linked by editor id
       // and link them here to avoid needing editor id later
-      let movementAreas = {};
+      const movementAreas = {};
       if (movementAreasLayer) {
         movementAreasLayer.objects.forEach(movementArea => {
-          let positions = [];
+          const positions = [];
           movementArea.polygon.forEach(p => {
             positions.push(new Vector2(
               Math.floor((movementArea.x + p.x) / tileHeight),
@@ -118,8 +118,8 @@ class AreaManager {
             ));
           });
 
-          let forProperty = movementArea.properties.find(prop => prop.name === 'for');
-          let forIds = JSON.parse(forProperty.value);
+          const forProperty = movementArea.properties.find(prop => prop.name === 'for');
+          const forIds = JSON.parse(forProperty.value);
           forIds.forEach(id => {
             movementAreas[id] = positions;
           });
@@ -147,13 +147,13 @@ class AreaManager {
       // handle characters
       if (charactersLayer) {
         charactersLayer.objects.forEach(obj => {
-          let pos = new Vector2(
+          const pos = new Vector2(
             Math.floor(obj.x / tileHeight),
             Math.floor(obj.y / tileHeight)
           );
-          let typeData = EntityManager.getDataByType(obj.type);
-          let char = area.addEntity(typeData, obj.name, pos);
-          let movementArea = movementAreas[obj.id];
+          const typeData = EntityManager.getDataByType(obj.type);
+          const char = area.addEntity(typeData, obj.name, pos);
+          const movementArea = movementAreas[obj.id];
           if (movementArea && movementArea.length) {
             char.movementArea = movementArea;
           }

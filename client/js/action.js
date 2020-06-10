@@ -11,6 +11,15 @@ class WalkAction extends Action {
   }
 }
 
+class EquipmentAction extends Action {
+  constructor(text, actionType, itemSource, itemType) {
+    super(text);
+    this.actionType = actionType;
+    this.itemSource = itemSource;
+    this.itemType = itemType;
+  }
+}
+
 class InteractAction extends Action {
   constructor(text, networkId) {
     super(text);
@@ -37,12 +46,6 @@ class AreaLinkAction extends InteractAction {
 }
 
 class ConfigureAction extends InteractAction {
-  constructor(text, networkId) {
-    super(text, networkId);
-  }
-}
-
-class ConfigureOptionAction extends InteractAction {
   constructor(text, networkId) {
     super(text, networkId);
   }

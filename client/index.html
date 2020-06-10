@@ -158,16 +158,41 @@
     <div id="equipment" class="scroller" hidden="hidden">
       <button name="close-x" class="close"><i class="icon-cancel"></i></button>
       <h3>Equipment</h3>
-      <p>
-        Armor:<br>
-        Weapon:<br>
-        Ammo:<br>
-      </p>
+      <table>
+        <tr>
+          <th>Type</th>
+          <th>Name</th>
+          <th>Info</th>
+          <th>Actions</th>
+        </tr>
+        <tr>
+          <td>Armor</td>
+          <td name="armorName"></td>
+          <td name="armorInfo"></td>
+          <td><button name="armor" disabled>Unequip</button></td>
+        </tr>
+        <tr>
+          <td>Weapon</td>
+          <td name="weaponName"></td>
+          <td name="weaponInfo"></td>
+          <td><button name="weapon" disabled>Unequip</button></td>
+        </tr>
+        <tr>
+          <td>Ammo</td>
+          <td name="ammoName"></td>
+          <td name="ammoInfo"></td>
+          <td><button name="ammo" disabled>Unequip</button></td>
+        </tr>
+      </table>
       <h3>Inventory</h3>
-      <p>
-        1 x Training Pistol<br>
-        50 x Pistol Ammo
-      </p>
+      <table name="inventory">
+        <tr name="header">
+          <th>Type</th>
+          <th>Name</th>
+          <th>Info</th>
+          <th>Actions</th>
+        </tr>
+      </table>
     </div>
 
     <div id="settings" class="scroller" hidden="hidden">

@@ -10,8 +10,8 @@
     "baseType": "npc",
 
     "equipment": {
-      "weapon": { "id": 1, "name": "Training Baton" },
-      "armor": { "id": 3, "name": "Training Armor" }
+      "weapon": "training_baton",
+      "armor": "military_armor"
     }
   },
   {
@@ -23,25 +23,21 @@
     "speed": 1,
 
     "equipment": {
-      "weapon": { "id": 1, "name": "Training Baton" },
-      "armor": { "id": 3, "name": "Training Armor" }
+      "weapon": "training_baton",
+      "armor": "military_armor"
     },
     "items": [
-      { "id": "consumable_healing_kit" }
-    ]
-  },
-  {
-    "description": "Basic Crate",
-    "type": "container_crate",
-    "baseType": "container",
-    "items": [
-      { "id": "consumable_healing_kit" }
+      { "type": "healing_kit" }
     ]
   },
   {
     "description": "Station Worker",
     "type": "npc_station_worker",
     "baseType": "npc",
+
+    "equipment": {
+      "armor": "worker_outfit"
+    },
     
     "speed": 0.75
   },
@@ -49,31 +45,39 @@
     "description": "City Worker",
     "type": "npc_city_worker",
     "baseType": "npc",
-    
+
+    "equipment": {
+      "armor": "worker_outfit"
+    },
+
     "speed": 0.75
   },
   {
     "description": "Start Area Info",
     "type": "npc_info",
-    "baseType": "npc"
+    "baseType": "npc",
+
+    "equipment": {
+      "armor": "worker_outfit"
+    }
   },
   {
     "description": "Gear Provider Npc",
     "type": "npc_gear",
-    "baseType": "npc"
+    "baseType": "npc",
+
+    "equipment": {
+      "armor": "worker_outfit"
+    }
   },
   {
     "description": "Reconstructor Assistant",
     "type":"npc_reconstructor",
-    "baseType": "npc"
-  },
-  {
-    "description": "Training Enemy",
-    "type": "enemy_training",
-    "baseType": "enemy",
+    "baseType": "npc",
 
-    "respawnTime": 3,
-    "speed": 0.75
+    "equipment": {
+      "armor": "worker_outfit"
+    }
   },
   {
     "description": "Easy Enemy",

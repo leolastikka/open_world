@@ -260,12 +260,8 @@ class GUI extends EventTarget {
 
   closeDialog() {
     this.dialogElement.setAttribute('hidden', 'hidden');
-    if (this.game.state.sendWsAction) {
-      this.game.state.sendWsAction({
-        type: 'action',
-        action: 'close',
-        target: 'dialog'
-      });
+    if (this.game.state.closeDialog) {
+      this.game.state.closeDialog();
     }
   }
 
@@ -410,6 +406,85 @@ class GUI extends EventTarget {
   closeEquipment() {
     this.equipmentElement.setAttribute('hidden', 'hidden');
   }
+  updateEquipment(equipment) {
+    const armorName = this.equipmentElement.querySelector('td[name="armorName"]');
+    armorName.innerHTML = equipment.armor ? equipment.armor.name : '-';
+    const armorInfo = this.equipmentElement.querySelector('td[name="armorInfo"]');
+    armorInfo.innerHTML = equipment.armor ? equipment.armor.info : '-';
+    const armorButton = this.equipmentElement.querySelector('button[name="armor"]');
+    armorButton.disabled = equipment.armor ? false : true;
+    if (equipment.armor) {
+      armorButton.onclick = () => {
+        const itemType = equipment.armor.type;
+        this.game.state.unequipItem(itemType);
+      };
+    }
+
+    const weaponName = this.equipmentElement.querySelector('td[name="weaponName"]');
+    weaponName.innerHTML = equipment.weapon ? equipment.weapon.name : '-';
+    const weaponInfo = this.equipmentElement.querySelector('td[name="weaponInfo"]');
+    weaponInfo.innerHTML = equipment.weapon ? equipment.weapon.info : '-';
+    const weaponButton = this.equipmentElement.querySelector('button[name="weapon"]');
+    weaponButton.disabled = equipment.weapon ? false : true;
+    if (equipment.weapon) {
+      weaponButton.onclick =  () => {
+        const itemType = equipment.weapon.type;
+        this.game.state.unequipItem(itemType);
+      };
+    }
+
+    const ammoName = this.equipmentElement.querySelector('td[name="ammoName"]');
+    ammoName.innerHTML = equipment.ammo ? equipment.ammo.name : '-';
+    const ammoInfo = this.equipmentElement.querySelector('td[name="ammoInfo"]');
+    ammoInfo.innerHTML = equipment.ammo ? equipment.ammo.info : '-';
+    const ammoButton = this.equipmentElement.querySelector('button[name="ammo"]');
+    ammoButton.disabled = equipment.ammo ? false : true;
+    if (equipment.ammo) {
+      ammoButton.onclick = () => {
+        const itemType = equipment.ammo.type;
+        this.game.state.unequipItem(itemType);
+      };
+    }
+
+    const inventory = this.equipmentElement.querySelector('table[name="inventory"]');
+    // remove all rows other than header row
+    for(let i = 1; i < inventory.rows.length;) {
+      inventory.deleteRow(i);
+    }
+
+    equipment.inventory.forEach(item => {
+      const itemRow = document.createElement('tr');
+      const typeTd = document.createElement('td');
+      typeTd.innerHTML = item.baseType.charAt(0).toUpperCase() + item.baseType.substr(1);
+      const nameTd = document.createElement('td');
+      nameTd.innerHTML = item.name;
+      const infoTd = document.createElement('td');
+      infoTd.innerHTML = item.info;
+      const actionsTd = document.createElement('td');
+      const actionButton = document.createElement('button');
+      if (['armor', 'weapon', 'ammo'].includes(item.baseType)) {
+        actionButton.innerHTML = 'Equip';
+        actionButton.onclick = () => {
+          const itemType = item.type;
+          this.game.state.equipItem(itemType);
+        };
+      }
+      else if (['consumable'].includes(item.baseType)) {
+        actionButton.innerHTML = 'Use';
+        actionButton.onclick = () => {
+          const itemType = item.type;
+          this.game.state.useItem(itemType);
+        };
+      }
+      actionsTd.appendChild(actionButton);
+      itemRow.appendChild(typeTd);
+      itemRow.appendChild(nameTd);
+      itemRow.appendChild(infoTd);
+      itemRow.appendChild(actionsTd);
+      inventory.appendChild(itemRow);
+    });
+  }
+
   _onToggleSettings() {
     const isOpen = !this.settingsElement.hasAttribute('hidden');
     if (isOpen) {
@@ -469,7 +544,6 @@ class GUI extends EventTarget {
       spawnButton.addEventListener('click', this._onSetSpawn);
       spawnElement.appendChild(spawnButton);
     }
-    
 
     const insurableList = this.reconstructorElement.querySelector('ul');
     insurableList.innerHTML = '';
@@ -489,12 +563,8 @@ class GUI extends EventTarget {
   }
   closeReconstructor() {
     this.reconstructorElement.setAttribute('hidden', 'hidden');
-    if (this.game.state.sendWsAction) {
-      this.game.state.sendWsAction({
-        type: 'action',
-        action: 'close',
-        target: 'reconstructor'
-      });
+    if (this.game.state.closeReconstructor) {
+      this.game.state.closeReconstructor();
     }
   }
   _onSetSpawn() {

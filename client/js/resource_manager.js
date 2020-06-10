@@ -19,7 +19,17 @@ class ResourceManager {
 
     // animation frames = [[Rect(spriteIndex), frame time in seconds], ...]
     this._animationsData = {
-      enemy: [
+      none: [
+        {
+          name: 'idle',
+          frames: [[Rect(64), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(64), 0.2], [Rect(80), 0.2]]
+        }
+      ],
+      none_enemy: [
         {
           name: 'idle',
           frames: [[Rect(67), 1]]
@@ -29,7 +39,7 @@ class ResourceManager {
           frames: [[Rect(67), 0.2], [Rect(83), 0.2]]
         }
       ],
-      npc_guard: [
+      military_armor: [
         {
           name: 'idle',
           frames: [[Rect(68), 1]]
@@ -39,7 +49,7 @@ class ResourceManager {
           frames: [[Rect(68), 0.2], [Rect(84), 0.2]]
         }
       ],
-      npc_worker: [
+      worker_outfit: [
         {
           name: 'idle',
           frames: [[Rect(66), 1]]
@@ -49,7 +59,7 @@ class ResourceManager {
           frames: [[Rect(66), 0.3], [Rect(82), 0.3]]
         }
       ],
-      player: [
+      survival_outfit: [
         {
           name: 'idle',
           frames: [[Rect(65), 1]]
@@ -58,7 +68,17 @@ class ResourceManager {
           name: 'walk',
           frames: [[Rect(65), 0.2], [Rect(81), 0.2]]
         }
-      ]
+      ],
+      sairaan_nopee_outfit: [
+        {
+          name: 'idle',
+          frames: [[Rect(69), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(69), 0.2], [Rect(85), 0.2]]
+        }
+      ],
     };
 
     this._audioEnabled = false;

@@ -20,6 +20,12 @@ class GameState extends State {
       messages: [],
       quests: []
     };
+    this.equipment = {
+      armor: null,
+      weapon: null,
+      ammo: null,
+      inventory: []
+    };
 
     this.loadingElement = document.getElementById('loading');
     this.loadingElement.removeAttribute('hidden');
@@ -119,8 +125,8 @@ class GameState extends State {
       case 'move':
         this.onMove(data);
         break;
-      case 'status':
-        this.onStatus(data);
+      case 'update':
+        this.onEntityUpdate(data);
         break;
       case 'add':
         this.onAdd(data);
@@ -143,6 +149,9 @@ class GameState extends State {
       case 'logUpdate':
         this.onLogUpdate(data);
         break;
+      case 'equipment':
+        this.onEquipment(data);
+        break;
       case 'changeArea':
         this.onChangeArea();
         break;
@@ -160,11 +169,14 @@ class GameState extends State {
     ResourceManager.playMusic(data.music);
   }
 
-  onStatus(data) {
-    let go = EntityManager.getByNetworkId(data.networkId);
-    go._inCombat = data.inCombat;
-    if (data.hp) {
-      go._hp = data.hp;
+  onEntityUpdate(data) {
+    let entity = EntityManager.getByNetworkId(data.networkId);
+    // entity._inCombat = data.inCombat;
+    // if (data.hp) {
+    //   entity._hp = data.hp;
+    // }
+    if (data.armorType) {
+      entity.changeRenderer(data.armorType);
     }
   }
 
@@ -222,6 +234,13 @@ class GameState extends State {
   onDialog(data) {
     this.gui.openDialog(data.title, data.text);
   }
+  closeDialog() {
+    this.sendWsAction({
+      type: 'action',
+      action: 'close',
+      target: 'dialog'
+    });
+  }
 
   onChangeArea() {
     this.loadingElement.removeAttribute('hidden');
@@ -255,8 +274,44 @@ class GameState extends State {
     this.gui.flashLog();
   }
 
+  onEquipment(data) {
+    this.equipment = data.equipment;
+    this.gui.updateEquipment(data.equipment);
+  }
+  equipItem(itemType) {
+    this.sendWsAction({
+      type: 'action',
+      action: 'equipment',
+      actionType: 'equip',
+      itemType: itemType
+    });
+  }
+  unequipItem(itemType) {
+    this.sendWsAction({
+      type: 'action',
+      action: 'equipment',
+      actionType: 'unequip',
+      itemType: itemType
+    });
+  }
+  useItem(itemType) {
+    this.sendWsAction({
+      type: 'action',
+      action: 'equipment',
+      actionType: 'use',
+      itemType: itemType
+    });
+  }
+
   onReconstructor(data) {
     this.gui.openReconstructor(data);
+  }
+  closeReconstructor() {
+    this.sendWsAction({
+      type: 'action',
+      action: 'close',
+      target: 'reconstructor'
+    });
   }
 
   onWsClose(event) {

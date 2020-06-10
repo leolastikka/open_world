@@ -53,7 +53,7 @@ class Area {
 
   getLinkByType(type) {
     return this._entities.find((ent) => {
-      return ent.typeData.type === type;
+      return ent.data.type === type;
     });
   }
 
@@ -80,27 +80,27 @@ class Area {
   /**
    * Called when entity is added to area
    */
-  addEntity(typeData, name, pos) {
+  addEntity(data, name, pos) {
     let entity = null;
   
-    switch (typeData.baseType) {
+    switch (data.baseType) {
       case 'enemy':
-        entity = new Enemy(this, typeData, name, pos);
+        entity = new Enemy(this, data, name, pos);
         break;
       case 'npc':
-        entity = new NPC(this, typeData, name, pos);
+        entity = new NPC(this, data, name, pos);
         break;
       case 'player':
-        entity = new Player(this, typeData, name, pos);
+        entity = new Player(this, data, name, pos);
         break;
       case 'link':
-        entity = new AreaLink(this, typeData, name, pos);
+        entity = new AreaLink(this, data, name, pos);
         break;
       case 'reconstructor':
-        entity = new Reconstructor(this, typeData, name, pos);
+        entity = new Reconstructor(this, data, name, pos);
         break;
       default:
-        throw new Error(`Unknown Entity Type: ${typeData.baseType}, for: ${name}`);
+        throw new Error(`Unknown Entity Type: ${data.baseType}, for: ${name}`);
     }
 
     this._entities.push(entity);

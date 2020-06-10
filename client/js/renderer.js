@@ -56,8 +56,13 @@ class SpriteRenderer extends Renderer {
 class AnimatedSpriteRenderer extends SpriteRenderer {
   constructor(layer, texture, animations) {
     super(layer, texture, null);
+    this._currentAnimationName = 'idle';
     this._animations = animations;
-    this._animation = animations['idle'];
+    this._animation = animations[this._currentAnimationName];
+  }
+
+  get currentAnimationName() {
+    return this._currentAnimationName;
   }
 
   get rect() {
@@ -65,7 +70,8 @@ class AnimatedSpriteRenderer extends SpriteRenderer {
   }
 
   setAnimation(name) {
-    this._animation = this._animations[name];
+    this._currentAnimationName = name;
+    this._animation = this._animations[this._currentAnimationName];
   }
 }
 

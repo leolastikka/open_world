@@ -1,37 +1,54 @@
 [
   {
-    "id": "weapon_training_baton",
+    "type": "training_baton",
+    "baseType": "weapon",
     "name": "Training Baton",
-    "type": "weapon",
     "damage": 3,
     "speed": 0.75,
     "range": 1
   },
   {
-    "id": "weapon_training_pistol",
+    "type": "training_pistol",
+    "baseType": "weapon",
     "name": "Training Pistol",
-    "type": "weapon",
-    "weaponType": "ranged",
     "damage": 1,
     "speed": 1,
     "range": 4
   },
   {
-    "id": "armor_training",
-    "name": "Training Armor",
-    "type": "armor",
+    "type": "worker_outfit",
+    "baseType": "armor",
+    "name": "Worker Outfit",
     "defence": 1
   },
   {
-    "id": "ammo_training",
+    "type": "survival_outfit",
+    "baseType": "armor",
+    "name": "Survival Outfit",
+    "defence": 2
+  },
+  {
+    "type": "military_armor",
+    "baseType": "armor",
+    "name": "Military Armor",
+    "defence": 3
+  },
+  {
+    "type": "sairaan_nopee_outfit",
+    "baseType": "armor",
+    "name": "\"Sairaan Nopee\" Outfit",
+    "defence": 1
+  },
+  {
+    "type": "training_ammo",
+    "baseType": "ammo",
     "name": "Training Ammo",
-    "type": "ammo",
     "damage": 1
   },
   {
-    "id": "consumable_healing_kit",
+    "type": "healing_kit",
+    "baseType": "consumable",
     "name": "Healing Kit",
-    "type": "consumable",
     "heal": 5
   }
 ]

@@ -162,10 +162,11 @@ class EntityManager {
 
   static createPlayer(data) {
     const pos = Vector2.fromObject(data.pos);
+    const armorType = data.equipment.armor ? data.equipment.armor.type : 'none'; 
     const renderer = new AnimatedSpriteRenderer(
       RenderLayer.Walls,
       ResourceManager.texture,
-      ResourceManager.getAnimationsByType('player')
+      ResourceManager.getAnimationsByType(armorType)
       );
     const player = new Character(data.networkId, pos, renderer, data.name, data.actions);
     this._add(player);
@@ -174,29 +175,12 @@ class EntityManager {
 
   static createNPC(data) {
     const pos = Vector2.fromObject(data.pos);
-    let renderer = null;
-
-    if (['npc_station_guard', 'npc_city_guard'].includes(data.type)) {
-      renderer = new AnimatedSpriteRenderer(
-        RenderLayer.Walls,
-        ResourceManager.texture,
-        ResourceManager.getAnimationsByType('npc_guard')
-        );
-    }
-    else if ([
-      'npc_info',
-      'npc_station_worker',
-      'npc_city_worker',
-      'npc_gear',
-      'npc_reconstructor'
-    ].includes(data.type)) {
-      renderer = new AnimatedSpriteRenderer(
-        RenderLayer.Walls,
-        ResourceManager.texture,
-        ResourceManager.getAnimationsByType('npc_worker')
-        );
-    }
-
+    const armorType = data.equipment.armor ? data.equipment.armor.type : 'none'; 
+    const renderer = new AnimatedSpriteRenderer(
+      RenderLayer.Walls,
+      ResourceManager.texture,
+      ResourceManager.getAnimationsByType(armorType)
+      );
     const npc = new Character(data.networkId, pos, renderer, data.name, data.actions);
     this._add(npc, false);
     return npc;
@@ -227,7 +211,7 @@ class EntityManager {
     const renderer = new AnimatedSpriteRenderer(
       RenderLayer.Walls,
       ResourceManager.texture,
-      ResourceManager.getAnimationsByType('enemy')
+      ResourceManager.getAnimationsByType('none_enemy')
       );
     let enemy = new Character(data.networkId, pos, renderer, data.name, data.actions);
     this._add(enemy, false);

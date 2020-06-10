@@ -7,9 +7,9 @@ const EntityVisibility = Object.freeze({
 });
 
 class Entity {
-  constructor(area, typeData, name, pos) {
+  constructor(area, data, name, pos) {
     this.area = area;
-    this._typeData = typeData;
+    this._data = data;
     this._name = name; // name set from editor
     this._networkId = EntityManager.getNewNetworkId();
     this._isSpawned = false;
@@ -31,8 +31,8 @@ class Entity {
     return this._visibleFor;
   }
 
-  get typeData() {
-    return this._typeData;
+  get data() {
+    return this._data;
   }
 
   get actions() {
@@ -84,8 +84,8 @@ class Entity {
   toJSON() {
     return {
       networkId: this._networkId,
-      type: this._typeData.type,
-      baseType: this._typeData.baseType,
+      type: this._data.type,
+      baseType: this._data.baseType,
       name: this._name,
       pos: this.pos
     };
