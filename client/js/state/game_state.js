@@ -178,6 +178,9 @@ class GameState extends State {
     if (data.armorType) {
       entity.changeRenderer(data.armorType);
     }
+    if (data.speed) {
+      entity.speed = data.speed;
+    }
   }
 
   onPlayer(data) {

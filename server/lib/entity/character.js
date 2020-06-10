@@ -13,7 +13,7 @@ const {
   ConfigureAction
 } = require('../action');
 const StoryManager = require('../story_manager');
-const { Equipment } = require('../item');
+const { Equipment, ItemManager } = require('../item');
 
 class Character extends Entity {
   constructor(area, data, name, pos) {
@@ -163,6 +163,8 @@ class Character extends Entity {
     }
     else if (action instanceof EquipmentAction) {
       let equipmentUpdated = false;
+      const item = ItemManager.getByType(action.itemType);
+
       if (action.actionType === 'equip') {
         equipmentUpdated = this.equipment.equip(action.itemType);
       }
@@ -179,11 +181,14 @@ class Character extends Entity {
           equipment: this.equipment
         });
 
-        this.area.broadcast({
-          type: 'update',
-          networkId: this.networkId,
-          armorType: this.equipment.armor ? this.equipment.armor.type : 'none'
-        });
+        if (item.baseType === 'armor') {
+          this.area.broadcast({
+            type: 'update',
+            networkId: this.networkId,
+            armorType: this.equipment.armor ? this.equipment.armor.type : 'none',
+            speed: this.speed
+          });
+        }
       }
     }
   }
@@ -443,12 +448,16 @@ class Character extends Entity {
 }
 
 class Player extends Character {
-  constructor(area, type, name, pos, equipment) {
+  constructor(area, type, name, pos) {
     super(area, type, name, pos);
-    this._equipment = equipment;
   }
 
   get speed() {
+    if (this.equipment.armor) {
+      if (this.equipment.armor.type === 'sairaan_nopee_outfit') {
+        return 5;
+      }
+    }
     return 2;
   }
 
