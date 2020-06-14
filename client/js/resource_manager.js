@@ -56,7 +56,7 @@ class ResourceManager {
         },
         {
           name: 'walk',
-          frames: [[Rect(66), 0.3], [Rect(82), 0.3]]
+          frames: [[Rect(66), 0.2], [Rect(82), 0.2]]
         }
       ],
       survival_outfit: [
