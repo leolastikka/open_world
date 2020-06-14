@@ -12,6 +12,10 @@ class Entity {
   dispose() {
     this._removed = true;
     EntityManager._entityRemoved = true;
+    if (this.renderer) {
+      this.renderer.dispose();
+      this.renderer = null;
+    }
   }
 
   update(game) {}
@@ -109,17 +113,6 @@ class Character extends Entity {
 
     this._inCombat = false;
     this._hp = null;
-  }
-
-  changeRenderer(armorType, weaponType) {
-    const animationName = this.renderer.currentAnimationName;
-    this.renderer = new AnimatedSpriteRenderer(
-      RenderLayer.Walls,
-      ResourceManager.texture,
-      ResourceManager.getAnimationsByType(armorType)
-      );
-    this.renderer.entity = this;
-    this.renderer.setAnimation(animationName);
   }
 
   setPath(path) {

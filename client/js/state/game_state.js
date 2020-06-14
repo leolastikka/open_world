@@ -176,7 +176,10 @@ class GameState extends State {
     //   entity._hp = data.hp;
     // }
     if (data.armorType) {
-      entity.changeRenderer(data.armorType);
+      entity.renderer.setArmor(data.armorType);
+    }
+    if (data.weaponType) {
+      entity.renderer.setWeapon(data.weaponType);
     }
     if (data.speed) {
       entity.speed = data.speed;

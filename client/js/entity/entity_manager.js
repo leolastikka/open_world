@@ -162,12 +162,9 @@ class EntityManager {
 
   static createPlayer(data) {
     const pos = Vector2.fromObject(data.pos);
-    const armorType = data.equipment.armor ? data.equipment.armor.type : 'none'; 
-    const renderer = new AnimatedSpriteRenderer(
-      RenderLayer.Walls,
-      ResourceManager.texture,
-      ResourceManager.getAnimationsByType(armorType)
-      );
+    const armorType = data.equipment.armor ? data.equipment.armor.type : 'none';
+    const weaponType = data.equipment.weapon ? data.equipment.weapon.type : 'none';
+    const renderer = new CharacterRenderer(armorType, weaponType);
     const player = new Character(data.networkId, pos, renderer, data.name, data.actions);
     this._add(player);
     return player;
@@ -175,12 +172,9 @@ class EntityManager {
 
   static createNPC(data) {
     const pos = Vector2.fromObject(data.pos);
-    const armorType = data.equipment.armor ? data.equipment.armor.type : 'none'; 
-    const renderer = new AnimatedSpriteRenderer(
-      RenderLayer.Walls,
-      ResourceManager.texture,
-      ResourceManager.getAnimationsByType(armorType)
-      );
+    const armorType = data.equipment.armor ? data.equipment.armor.type : 'none';
+    const weaponType = data.equipment.weapon ? data.equipment.weapon.type : 'none';
+    const renderer = new CharacterRenderer(armorType, weaponType);
     const npc = new Character(data.networkId, pos, renderer, data.name, data.actions);
     this._add(npc, false);
     return npc;

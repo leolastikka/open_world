@@ -10,7 +10,7 @@
     "baseType": "npc",
 
     "equipment": {
-      "weapon": "training_baton",
+      "weapon": "standard_baton",
       "armor": "military_armor"
     }
   },
@@ -23,7 +23,7 @@
     "speed": 1,
 
     "equipment": {
-      "weapon": "training_baton",
+      "weapon": "standard_baton",
       "armor": "military_armor"
     },
     "items": [

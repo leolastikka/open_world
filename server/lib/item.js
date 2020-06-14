@@ -74,6 +74,10 @@ class Equipment {
     return this._armor;
   }
 
+  get weapon() {
+    return this._weapon;
+  }
+
   get damage() {
     if (this._weapon) {
       return this._weapon.damage;
@@ -235,7 +239,7 @@ class Weapon extends Item {
       type: this._type,
       baseType: this._baseType,
       name: this._name,
-      info: `Damage ${this._damage}`
+      info: `Damage ${this._damage}<br>Speed ${this._speed}<br>Range ${this._range}`
     };
   }
 }

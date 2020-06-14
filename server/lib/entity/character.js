@@ -188,6 +188,13 @@ class Character extends Entity {
             speed: this.speed
           });
         }
+        else if (item.baseType === 'weapon') {
+          this.area.broadcast({
+            type: 'update',
+            networkId: this.networkId,
+            weaponType: this.equipment.weapon ? this.equipment.weapon.type : 'none'
+          });
+        }
       }
     }
   }

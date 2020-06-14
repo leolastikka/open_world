@@ -1,18 +1,50 @@
 [
   {
-    "type": "training_baton",
+    "type": "standard_baton",
     "baseType": "weapon",
-    "name": "Training Baton",
+    "name": "Standard Baton",
     "damage": 3,
     "speed": 0.75,
     "range": 1
   },
   {
-    "type": "training_pistol",
+    "type": "standard_mace",
     "baseType": "weapon",
-    "name": "Training Pistol",
-    "damage": 1,
+    "name": "Standard Mace",
+    "damage": 5,
+    "speed": 1.25,
+    "range": 1
+  },
+  {
+    "type": "standard_pole_hammer",
+    "baseType": "weapon",
+    "name": "Standard Pole Hammer",
+    "damage": 8,
+    "speed": 2,
+    "range": 2
+  },
+  {
+    "type": "electric_mace",
+    "baseType": "weapon",
+    "name": "Electric Mace",
+    "damage": 6,
+    "speed": 1.25,
+    "range": 1
+  },
+  {
+    "type": "standard_pistol",
+    "baseType": "weapon",
+    "name": "Standard Pistol",
+    "damage": 3,
     "speed": 1,
+    "range": 4
+  },
+  {
+    "type": "standard_smg",
+    "baseType": "weapon",
+    "name": "Standard SMG",
+    "damage": 3,
+    "speed": 0.5,
     "range": 4
   },
   {

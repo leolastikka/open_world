@@ -146,10 +146,15 @@ class Game {
       connection: connection,
       equipment: {
         inventory: [
-          "survival_outfit",
-          "military_armor",
-          "worker_outfit",
-          "sairaan_nopee_outfit"
+          'survival_outfit',
+          'military_armor',
+          'worker_outfit',
+          'sairaan_nopee_outfit',
+          'standard_baton',
+          'standard_mace',
+          'standard_pole_hammer',
+          'standard_pistol',
+          'standard_smg'
         ]
       }
     }, EntityManager.getDataByType('player'));

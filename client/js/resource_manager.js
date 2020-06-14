@@ -79,6 +79,56 @@ class ResourceManager {
           frames: [[Rect(69), 0.2], [Rect(85), 0.2]]
         }
       ],
+      standard_baton: [
+        {
+          name: 'idle',
+          frames: [[Rect(70), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(70), 0.2], [Rect(86), 0.2]]
+        }
+      ],
+      standard_mace: [
+        {
+          name: 'idle',
+          frames: [[Rect(71), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(71), 0.2], [Rect(87), 0.2]]
+        }
+      ],
+      standard_pole_hammer: [
+        {
+          name: 'idle',
+          frames: [[Rect(72), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(72), 0.2], [Rect(88), 0.2]]
+        }
+      ],
+      standard_pistol: [
+        {
+          name: 'idle',
+          frames: [[Rect(73), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(73), 0.2], [Rect(89), 0.2]]
+        }
+      ],
+      standard_smg: [
+        {
+          name: 'idle',
+          frames: [[Rect(74), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(74), 0.2], [Rect(90), 0.2]]
+        }
+      ]
     };
 
     this._audioEnabled = false;

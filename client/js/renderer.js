@@ -54,9 +54,9 @@ class SpriteRenderer extends Renderer {
 }
 
 class AnimatedSpriteRenderer extends SpriteRenderer {
-  constructor(layer, texture, animations) {
+  constructor(layer, texture, animations, startAnimationName = 'idle') {
     super(layer, texture, null);
-    this._currentAnimationName = 'idle';
+    this._currentAnimationName = startAnimationName;
     this._animations = animations;
     this._animation = animations[this._currentAnimationName];
   }
@@ -72,6 +72,101 @@ class AnimatedSpriteRenderer extends SpriteRenderer {
   setAnimation(name) {
     this._currentAnimationName = name;
     this._animation = this._animations[this._currentAnimationName];
+    this._animation.reset();
+  }
+}
+
+class CharacterRenderer {
+  constructor(armorType, weaponType) {
+    this._entity = null;
+    this.armorRenderer = null;
+    this.weaponRenderer = null;
+
+    this.setArmor(armorType);
+    this.setWeapon(weaponType);
+  }
+
+  get layer() {
+    return this.armorRenderer.layer;
+  }
+
+  set entity(entity) {
+    this._entity = entity;
+    this.armorRenderer.entity = entity;
+    if (this.weaponRenderer) {
+      this.weaponRenderer.entity = entity;
+    }
+  }
+
+  get entity() {
+    return this._entity;
+  }
+
+  setAnimation(name) {
+    this.armorRenderer.setAnimation(name);
+    if (this.weaponRenderer) {
+      this.weaponRenderer.setAnimation(name);
+    }
+  }
+
+  setArmor(armorType) {
+    if (this.armorRenderer) {
+      this.armorRenderer.dispose();
+    }
+
+    const currentAnimationName = this.armorRenderer ? this.armorRenderer.currentAnimationName : 'idle';
+    this.armorRenderer = new AnimatedSpriteRenderer(
+      RenderLayer.Walls,
+      ResourceManager.texture,
+      ResourceManager.getAnimationsByType(armorType)
+      );
+    this.armorRenderer.entity = this.entity;
+    // sync armor and weapon animations
+    this.armorRenderer.setAnimation(currentAnimationName);
+    if (this.weaponRenderer) {
+      this.weaponRenderer.setAnimation(currentAnimationName);
+    }
+  }
+
+  setWeapon(weaponType) {
+    if (this.weaponRenderer) {
+      this.weaponRenderer.dispose();
+    }
+
+    if (weaponType !== 'none') {
+      const currentAnimationName = this.armorRenderer ? this.armorRenderer.currentAnimationName : 'idle';
+      this.weaponRenderer = new AnimatedSpriteRenderer(
+        RenderLayer.Walls,
+        ResourceManager.texture,
+        ResourceManager.getAnimationsByType(weaponType)
+        );
+      this.weaponRenderer.entity = this.entity;
+      // sync armor and weapon animations
+      this.weaponRenderer.setAnimation(currentAnimationName);
+      this.armorRenderer.setAnimation(currentAnimationName);
+    }
+    else {
+      this.weaponRenderer = null;
+    }
+  }
+
+  render(display) {
+    this.armorRenderer.render(display);
+    if (this.weaponRenderer) {
+      this.weaponRenderer.render(display);
+    }
+  }
+
+  dispose() {
+    this.entity = null;
+    if (this.armorRenderer) {
+      this.armorRenderer.dispose();
+      this.armorRenderer = null;
+    }
+    if (this.weaponRenderer) {
+      this.weaponRenderer.dispose();
+      this.weaponRenderer = null;
+    }
   }
 }
 
@@ -108,5 +203,9 @@ class Animation {
       }
     }
     return this._frames[i];
+  }
+
+  reset() {
+    this._animationTime = 0;
   }
 }
