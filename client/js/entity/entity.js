@@ -151,7 +151,9 @@ class Character extends Entity {
   move() {
     if (!this.path) {
       this.state = 'idle';
-      this.renderer.setAnimation('idle');
+      if (this.renderer) {
+        this.renderer.setAnimation('idle');
+      }
       return;
     }
 
@@ -185,7 +187,9 @@ class Character extends Entity {
         }
         else {
           this.state = 'idle';
-          this.renderer.setAnimation('idle');
+          if (this.renderer) {
+            this.renderer.setAnimation('idle');
+          }
           this.path = null;
           return;
         }
