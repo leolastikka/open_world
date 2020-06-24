@@ -371,6 +371,12 @@ class Interactable extends Entity {
       this.data.connection.send({
         type: 'changeArea'
       });
+
+      this._targetOfEntities.forEach(entity => {
+        entity.finishAction();
+      });
+      this._targetOfEntities = [];
+
       this._action.dispose();
       this._action = null;
     }
