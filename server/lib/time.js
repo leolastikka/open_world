@@ -23,6 +23,4 @@ class Time {
   }
 }
 
-module.exports = {
-  Time
-};
+module.exports = Time;

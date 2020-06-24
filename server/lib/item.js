@@ -18,7 +18,8 @@ class ItemManager {
           item.name,
           item.damage,
           item.speed,
-          item.range
+          item.range,
+          item.skill
         ));
       }
       else if (item.baseType === "ammo") {
@@ -46,9 +47,10 @@ class ItemManager {
 }
 
 class Equipment {
-  constructor(equipmentData) {
+  constructor(ownerEntity, equipmentData) {
+    this._ownerEntity = ownerEntity;
     this._armor = null;
-    this._weapon = null;
+    this._weapon = ItemManager.getByType('unarmed');
     this._ammo = null;
     this._inventory = [];
 
@@ -76,17 +78,6 @@ class Equipment {
 
   get weapon() {
     return this._weapon;
-  }
-
-  get damage() {
-    if (this._weapon) {
-      return this._weapon.damage;
-    }
-    return 1; // unarmed damage?
-  }
-
-  get defence() {
-    return this._armor ? this._armor.defence : 0;
   }
 
   hasItemInInventory(itemType, count = 1) {
@@ -146,7 +137,7 @@ class Equipment {
       this._armor = null;
     }
     else if (item.baseType === 'weapon' && this._weapon.type === itemType) {
-      this._weapon = null;
+      this._weapon = ItemManager.getByType('unarmed');
     }
     else if (item.baseType === 'ammo' && this._ammo.type === itemType) {
       this._ammo = null;
@@ -155,7 +146,9 @@ class Equipment {
       return false;
     }
 
-    this.addToInventory(item.type);
+    if (item.type !== 'unarmed') {
+      this.addToInventory(item.type);
+    }
     return true;
   }
 
@@ -164,7 +157,7 @@ class Equipment {
   }
 
   dispose() {
-    this._character = null;
+    this._ownerEntity = null;
     this._armor = null;
     this._weapon = null;
     this._ammo = null;
@@ -215,11 +208,12 @@ class Item {
 }
 
 class Weapon extends Item {
-  constructor(type, baseType, name, damage, speed, range) {
+  constructor(type, baseType, name, damage, speed, range, skill) {
     super(type, baseType, name);
     this._damage = damage;
     this._speed = speed;
     this._range = range;
+    this._skill = skill;
   }
 
   get damage() {
@@ -232,6 +226,10 @@ class Weapon extends Item {
 
   get range() {
     return this._range;
+  }
+
+  get skill() {
+    return this._skill;
   }
 
   toJSON() {

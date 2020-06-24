@@ -32,48 +32,39 @@ class Entity {
 
   renderGUI(display) {
     if (this.renderer && this instanceof Character && display.isInViewport(this.pos)) {
-      let pos = display.getRenderPos(this.pos);
+      const pos = display.getRenderPos(this.pos);
       pos.add(new Vector2(
         ResourceManager.spriteWidth / 2 * display.zoomLevel,
         ResourceManager.spriteHeight / 6 * display.zoomLevel
         ));
 
-      // let hpPos = camera.getRenderPos(this.pos);
-      // hpPos.add(new Vector2(0, -camera.pixelsPerUnit * 0.25));
-
       display.context.font = `${10 * display.zoomLevel}px 'Minecraft Regular', monospace`;
-      display.context.fillStyle = 'greenyellow';
+      let fillStyle = 'greenyellow';
+      if (this instanceof Player) { fillStyle = 'white'; }
+      else if (this instanceof Enemy) { fillStyle = 'red' }
+      display.context.fillStyle = fillStyle;
       display.context.textAlign = 'center';
       display.context.fillText(this.name, pos.x, pos.y);
 
-      // this.renderer.renderGUI(canvasContext, {
-      //   pos: pos,
-      //   text: this.name,
-      //   inCombat: this._inCombat,
-      //   hp: this._hp,
-      //   hpPos: hpPos,
-      //   size: camera.pixelsPerUnit
-      // });
-      // if (data.inCombat)
-      // {
-      //   canvasContext.beginPath();
-      //   canvasContext.fillStyle = 'red';
-      //   canvasContext.fillRect(
-      //     data.hpPos.x - data.size / 2,
-      //     data.hpPos.y - data.size / 2,
-      //     data.size,
-      //     data.size / 5);
-      //   canvasContext.fill();
+      const hpPos = display.getRenderPos(this.pos);
+      const size = ResourceManager.spriteWidth * display.zoomLevel;
+      hpPos.add(new Vector2(size / 2, size / 5));
 
-      //   canvasContext.beginPath();
-      //   canvasContext.fillStyle = 'yellowgreen';
-      //   canvasContext.fillRect(
-      //     data.hpPos.x - data.size / 2,
-      //     data.hpPos.y - data.size / 2,
-      //     data.size * (data.hp / 10),
-      //     data.size / 5);
-      //   canvasContext.fill();
-      // }
+      if (this.inCombat) {
+        display.context.fillStyle = 'red';
+        display.context.fillRect(
+          hpPos.x - size / 2,
+          hpPos.y - size / 2,
+          size,
+          size / 8);
+
+        display.context.fillStyle = 'yellowgreen';
+        display.context.fillRect(
+          hpPos.x - size / 2,
+          hpPos.y - size / 2,
+          size * (this.health.value / this.health.max),
+          size / 8);
+      }
     }
   }
 }
@@ -201,6 +192,24 @@ class Character extends Entity {
   }
 
   attack() {}
+}
+
+class Player extends Character {
+  constructor(networkId, pos, renderer, name, actions) {
+    super(networkId, pos, renderer, name, actions);
+  }
+}
+
+class NPC extends Character {
+  constructor(networkId, pos, renderer, name, actions) {
+    super(networkId, pos, renderer, name, actions);
+  }
+}
+
+class Enemy extends NPC {
+  constructor(networkId, pos, renderer, name, actions) {
+    super(networkId, pos, renderer, name, actions);
+  }
 }
 
 class AreaLink extends WallTile {

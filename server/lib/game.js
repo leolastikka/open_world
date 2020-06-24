@@ -1,10 +1,10 @@
 const AreaManager = require('./area/area_manager');
 const { EntityManager } = require('./entity/entity_manager');
 const { Vector2 } = require('./math');
-const { Time } = require('./time');
+const Time = require('./time');
 const ConnectionManager = require('./connection').ConnectionManager;
 const StoryManager = require('./story_manager');
-const { ItemManager, Equipment } = require('./item');
+const { ItemManager } = require('./item');
 const {
   MoveAction,
   OptionAction,
@@ -145,6 +145,7 @@ class Game {
     const data = Object.assign({
       connection: connection,
       equipment: {
+        weapon: 'unarmed',
         inventory: [
           'survival_outfit',
           'military_armor',
@@ -163,11 +164,6 @@ class Game {
     connection.user.area = area;
     connection.user.character = player;
     connection.user.spawnLink = startLink;
-
-    area.broadcastToOthers(connection, {
-      type: 'add',
-      entity: player
-    });
   }
 }
 

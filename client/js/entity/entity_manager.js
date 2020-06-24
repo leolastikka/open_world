@@ -163,9 +163,9 @@ class EntityManager {
   static createPlayer(data) {
     const pos = Vector2.fromObject(data.pos);
     const armorType = data.equipment.armor ? data.equipment.armor.type : 'none';
-    const weaponType = data.equipment.weapon ? data.equipment.weapon.type : 'none';
+    const weaponType = data.equipment.weapon.type;
     const renderer = new CharacterRenderer(armorType, weaponType);
-    const player = new Character(data.networkId, pos, renderer, data.name, data.actions);
+    const player = new Player(data.networkId, pos, renderer, data.name, data.actions);
     this._add(player);
     return player;
   }
@@ -175,7 +175,7 @@ class EntityManager {
     const armorType = data.equipment.armor ? data.equipment.armor.type : 'none';
     const weaponType = data.equipment.weapon ? data.equipment.weapon.type : 'none';
     const renderer = new CharacterRenderer(armorType, weaponType);
-    const npc = new Character(data.networkId, pos, renderer, data.name, data.actions);
+    const npc = new NPC(data.networkId, pos, renderer, data.name, data.actions);
     this._add(npc, false);
     return npc;
   }
@@ -207,7 +207,7 @@ class EntityManager {
       ResourceManager.texture,
       ResourceManager.getAnimationsByType('none_enemy')
       );
-    let enemy = new Character(data.networkId, pos, renderer, data.name, data.actions);
+    let enemy = new Enemy(data.networkId, pos, renderer, data.name, data.actions);
     this._add(enemy, false);
     return enemy;
   }

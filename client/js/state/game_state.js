@@ -134,6 +134,9 @@ class GameState extends State {
       case 'remove':
         this.onRemove(data);
         break;
+      case 'attack':
+        this.onAttack(data);
+        break;
       case 'dialog':
         this.onDialog(data);
         break;
@@ -171,10 +174,14 @@ class GameState extends State {
 
   onEntityUpdate(data) {
     let entity = EntityManager.getByNetworkId(data.networkId);
-    // entity._inCombat = data.inCombat;
-    // if (data.hp) {
-    //   entity._hp = data.hp;
-    // }
+    if (!entity) {
+      return;
+    }
+
+    entity.inCombat = data.inCombat;
+    if (data.health) {
+      entity.health = data.health;
+    }
     if (data.armorType) {
       entity.renderer.setArmor(data.armorType);
     }
@@ -235,6 +242,11 @@ class GameState extends State {
     }
 
     ent.dispose();
+  }
+
+  onAttack(data) {
+    let ent = EntityManager.getByNetworkId(data.networkId);
+    ent.renderer.playAnimationOnce('attack');
   }
 
   onDialog(data) {

@@ -2,7 +2,9 @@
   {
     "description": "Common Player Data",
     "type": "player",
-    "baseType": "player"
+    "baseType": "player",
+
+    "respawnTime": 0.5
   },
   {
     "description": "Station Guard",

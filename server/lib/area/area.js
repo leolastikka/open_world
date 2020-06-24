@@ -1,5 +1,5 @@
 const { Navigator } = require('../navigator');
-const { AreaLink, Reconstructor } = require('../entity/interactable');
+const { AreaLink, Reconstructor } = require('../entity/interactables');
 const { NPC, Enemy, Player } = require('../entity/character');
 const { EntityVisibility } = require('../entity/entity');
 

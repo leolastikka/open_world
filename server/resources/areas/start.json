@@ -204,6 +204,42 @@
                  "width":0,
                  "x":215.636363636364,
                  "y":200
+                }, 
+                {
+                 "height":0,
+                 "id":15,
+                 "name":"Test Enemy",
+                 "point":true,
+                 "rotation":0,
+                 "type":"enemy_easy",
+                 "visible":true,
+                 "width":0,
+                 "x":104.909090909091,
+                 "y":152.545454545455
+                }, 
+                {
+                 "height":0,
+                 "id":16,
+                 "name":"Test Enemy",
+                 "point":true,
+                 "rotation":0,
+                 "type":"enemy_easy",
+                 "visible":true,
+                 "width":0,
+                 "x":120.25,
+                 "y":118.75
+                }, 
+                {
+                 "height":0,
+                 "id":17,
+                 "name":"Test Enemy",
+                 "point":true,
+                 "rotation":0,
+                 "type":"enemy_easy",
+                 "visible":true,
+                 "width":0,
+                 "x":136.875,
+                 "y":119.125
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -285,7 +321,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":15,
+ "nextobjectid":18,
  "orientation":"isometric",
  "properties":[
         {

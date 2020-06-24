@@ -53,6 +53,9 @@ class Connection {
     this._game = game;
     this._user = null;
     this.playerObject = null;
+
+    this._areaReady = false;
+    this._playerReady = false;
   }
 
   get user() {
@@ -61,7 +64,25 @@ class Connection {
 
   send(data) {
     if (this._ws) {
+      if (data.type === 'add') {
+        if (!this._areaReady) {
+          return;
+        }
+      }
+      else if (data.type === 'player') {
+        if (!this._areaReady) {
+          return;
+        }
+      }
+
       this._ws.send(JSON.stringify(data));
+
+      if (data.type === 'player') {
+        this._playerReady = true;
+      }
+      else if (data.type === 'areaData') {
+        this._areaReady = true;
+      }
     }
   }
 
@@ -104,10 +125,7 @@ class Connection {
   }
 
   onClose = (event) => {
-    if (this._ws) {
-      this._ws.close();
-      this._ws = null;
-    }
+    this.dispose();
 
     if (this._user) {
       this._user.area.removeConnection(this);
@@ -124,9 +142,11 @@ class Connection {
     this._game = null;
   }
 
-  close() {
-    this._ws.close();
-    this._ws = null;
+  dispose() {
+    if (this._ws) {
+      this._ws.close();
+      this._ws = null;
+    }
   }
 }
 

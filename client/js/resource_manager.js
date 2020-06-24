@@ -27,6 +27,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(64), 0.2], [Rect(80), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(96), 0.25]]
         }
       ],
       none_enemy: [
@@ -37,6 +41,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(67), 0.2], [Rect(83), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(99), 0.25]]
         }
       ],
       military_armor: [
@@ -47,6 +55,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(68), 0.2], [Rect(84), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(100), 0.25]]
         }
       ],
       worker_outfit: [
@@ -57,6 +69,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(66), 0.2], [Rect(82), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(98), 0.25]]
         }
       ],
       survival_outfit: [
@@ -67,6 +83,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(65), 0.2], [Rect(81), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(97), 0.25]]
         }
       ],
       sairaan_nopee_outfit: [
@@ -77,6 +97,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(69), 0.2], [Rect(85), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(101), 0.25]]
         }
       ],
       standard_baton: [
@@ -87,6 +111,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(70), 0.2], [Rect(86), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(102), 0.25]]
         }
       ],
       standard_mace: [
@@ -97,6 +125,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(71), 0.2], [Rect(87), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(103), 0.25]]
         }
       ],
       standard_pole_hammer: [
@@ -107,6 +139,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(72), 0.2], [Rect(88), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(104), 0.25]]
         }
       ],
       standard_pistol: [
@@ -117,6 +153,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(73), 0.2], [Rect(89), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(105), 0.25]]
         }
       ],
       standard_smg: [
@@ -127,6 +167,10 @@ class ResourceManager {
         {
           name: 'walk',
           frames: [[Rect(74), 0.2], [Rect(90), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(106), 0.25]]
         }
       ]
     };

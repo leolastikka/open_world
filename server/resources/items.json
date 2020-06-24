@@ -1,19 +1,30 @@
 [
   {
+    "type": "unarmed",
+    "baseType": "weapon",
+    "name": "Unarmed",
+    "damage": 0,
+    "speed": 1,
+    "range": 1,
+    "skill": "melee"
+  },
+  {
     "type": "standard_baton",
     "baseType": "weapon",
     "name": "Standard Baton",
-    "damage": 3,
+    "damage": 1,
     "speed": 0.75,
-    "range": 1
+    "range": 1,
+    "skill": "melee"
   },
   {
     "type": "standard_mace",
     "baseType": "weapon",
     "name": "Standard Mace",
-    "damage": 5,
-    "speed": 1.25,
-    "range": 1
+    "damage": 3,
+    "speed": 1.5,
+    "range": 1,
+    "skill": "melee"
   },
   {
     "type": "standard_pole_hammer",
@@ -21,31 +32,26 @@
     "name": "Standard Pole Hammer",
     "damage": 8,
     "speed": 2,
-    "range": 2
-  },
-  {
-    "type": "electric_mace",
-    "baseType": "weapon",
-    "name": "Electric Mace",
-    "damage": 6,
-    "speed": 1.25,
-    "range": 1
+    "range": 2,
+    "skill": "melee"
   },
   {
     "type": "standard_pistol",
     "baseType": "weapon",
     "name": "Standard Pistol",
-    "damage": 3,
+    "damage": 2,
     "speed": 1,
-    "range": 4
+    "range": 4,
+    "skill": "guns"
   },
   {
     "type": "standard_smg",
     "baseType": "weapon",
     "name": "Standard SMG",
-    "damage": 3,
+    "damage": 1,
     "speed": 0.5,
-    "range": 4
+    "range": 4,
+    "skill": "guns"
   },
   {
     "type": "worker_outfit",

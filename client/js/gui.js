@@ -418,11 +418,11 @@ class GUI extends EventTarget {
     }
 
     const weaponName = this.equipmentElement.querySelector('td[name="weaponName"]');
-    weaponName.innerHTML = equipment.weapon ? equipment.weapon.name : '-';
+    weaponName.innerHTML = equipment.weapon.name;
     const weaponInfo = this.equipmentElement.querySelector('td[name="weaponInfo"]');
-    weaponInfo.innerHTML = equipment.weapon ? equipment.weapon.info : '-';
+    weaponInfo.innerHTML = equipment.weapon.info;
     const weaponButton = this.equipmentElement.querySelector('button[name="weapon"]');
-    weaponButton.disabled = equipment.weapon ? false : true;
+    weaponButton.disabled = equipment.weapon.type !== 'unarmed' ? false : true;
     if (equipment.weapon) {
       weaponButton.onclick =  () => {
         const itemType = equipment.weapon.type;

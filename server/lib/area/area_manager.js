@@ -46,6 +46,32 @@ class AreaManager {
     }
   }
 
+  static changeEntityAreaByLink(entity, targetLink) {
+    const originalArea = entity.area;
+    entity.area.removeEntity(entity);
+    entity.area.despawnEntity(entity);
+    originalArea.broadcast({
+      type: 'remove',
+      networkId: entity.networkId
+    });
+    entity.area = targetLink.area;
+    entity.pos = Vector2.clone(targetLink.pos);
+    entity.lastIntPos = Vector2.clone(targetLink.pos);
+    targetLink.area.addExistingEntity(entity);
+    targetLink.area.spawnEntity(entity);
+    targetLink.area.broadcast({
+      type: 'add',
+      entity: entity
+    })
+
+    if (entity instanceof Player) {
+      const conn = entity.data.connection;
+      originalArea.removeConnection(conn);
+      targetLink.area.addConnection(conn);
+      conn.user.area = targetLink.area;
+    }
+  }
+
   static _loadAreas() {
     const areasDir = '../../resources/areas';
     const areaFiles = FS.readdirSync(Path.join(__dirname, areasDir));
