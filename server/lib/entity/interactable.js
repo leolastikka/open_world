@@ -54,6 +54,10 @@ class Interactable extends Entity {
     return this._attackable;
   }
 
+  get action() {
+    return this._action;
+  }
+
   update() {
     if (this._isSpawned) {
       if (!this._action) {
@@ -131,6 +135,7 @@ class Interactable extends Entity {
 
       // start new action
       this._action = action;
+      this._action.targetEntity.startAsTargetOfEntity(this);
       this._startInteractAction();
     }
     else if (action instanceof AttackAction) {
@@ -151,6 +156,7 @@ class Interactable extends Entity {
       }
 
       this._action = action;
+      this._action.targetEntity.startAsTargetOfEntity(this);
       this._startAttack();
       this._startInteractAction();
     }
@@ -478,13 +484,6 @@ class Interactable extends Entity {
   }
 
   _attack() {
-    // if this is first actual attack
-    if (this._action.targetEntity.startAsTargetOfEntity(this)) {
-      // start combat for target too
-      this._action.targetEntity.startAction(
-        new AttackAction(this._action.targetEntity, this, 1)
-      );
-    }
     if (Time.totalTime >= this._nextInteractionTime) {
       const weapon = this._equipment.weapon;
       let damage = weapon.damage;
@@ -506,6 +505,16 @@ class Interactable extends Entity {
 
       this._action.targetEntity.doDamage(damage);
       this._nextInteractionTime = Time.totalTime + weapon.speed;
+
+      if (this._action) {
+        // if this is first actual attack
+        if (!this._action.targetEntity.action || !(this._action.targetEntity.action instanceof AttackAction)) {
+          // start combat for target too
+          this._action.targetEntity.startAction(
+            new AttackAction(this._action.targetEntity, this, 1)
+          );
+        }
+      }
     }
   }
 
