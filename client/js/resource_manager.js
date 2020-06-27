@@ -253,6 +253,7 @@ class ResourceManager {
 
   static getAnimationsByType(type) {
     const entityAnimations = this._animationsData[type];
+    if (!entityAnimations) console.log(type);
     let animations = {};
     for (let i = 0; i < entityAnimations.length; i++) {
       let animation = entityAnimations[i];

@@ -182,6 +182,9 @@ class GameState extends State {
     if (data.health) {
       entity.health = data.health;
     }
+    if (data.damage !== undefined) {
+      entity.showDamage(data.damage);
+    }
     if (data.armorType) {
       entity.renderer.setArmor(data.armorType);
     }
@@ -233,6 +236,9 @@ class GameState extends State {
 
   onRemove(data) {
     let ent = EntityManager.getByNetworkId(data.networkId);
+    if (!ent) {
+      return;
+    }
 
     if (ent === this.playerEntity) {
       this.loadingElement.removeAttribute('hidden');

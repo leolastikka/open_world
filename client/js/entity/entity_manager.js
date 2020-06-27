@@ -163,8 +163,7 @@ class EntityManager {
   static createPlayer(data) {
     const pos = Vector2.fromObject(data.pos);
     const armorType = data.equipment.armor ? data.equipment.armor.type : 'none';
-    const weaponType = data.equipment.weapon.type;
-    const renderer = new CharacterRenderer(armorType, weaponType);
+    const renderer = new CharacterRenderer(armorType, data.equipment.weapon.type);
     const player = new Player(data.networkId, pos, renderer, data.name, data.actions);
     this._add(player);
     return player;
@@ -173,8 +172,7 @@ class EntityManager {
   static createNPC(data) {
     const pos = Vector2.fromObject(data.pos);
     const armorType = data.equipment.armor ? data.equipment.armor.type : 'none';
-    const weaponType = data.equipment.weapon ? data.equipment.weapon.type : 'none';
-    const renderer = new CharacterRenderer(armorType, weaponType);
+    const renderer = new CharacterRenderer(armorType, data.equipment.weapon.type);
     const npc = new NPC(data.networkId, pos, renderer, data.name, data.actions);
     this._add(npc, false);
     return npc;
@@ -202,11 +200,7 @@ class EntityManager {
 
   static createEnemy(data) {
     const pos = new Vector2(data.pos.x, data.pos.y);
-    const renderer = new AnimatedSpriteRenderer(
-      RenderLayer.Walls,
-      ResourceManager.texture,
-      ResourceManager.getAnimationsByType('none_enemy')
-      );
+    const renderer = new CharacterRenderer('none_enemy', data.equipment.weapon.type);
     let enemy = new Enemy(data.networkId, pos, renderer, data.name, data.actions);
     this._add(enemy, false);
     return enemy;

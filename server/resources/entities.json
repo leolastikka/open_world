@@ -88,5 +88,17 @@
 
     "respawnTime": 3,
     "speed": 0.75
+  },
+  {
+    "description": "Medium Enemy",
+    "type": "enemy_medium",
+    "baseType": "enemy",
+
+    "equipment": {
+      "weapon": "standard_mace"
+    },
+  
+    "respawnTime": 3,
+    "speed": 0.75
   }
 ]

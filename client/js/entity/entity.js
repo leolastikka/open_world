@@ -102,8 +102,9 @@ class Character extends Entity {
     this.speed = null;
     this._actions = actions;
 
-    this._inCombat = false;
-    this._hp = null;
+    this.inCombat = false;
+    this.health = null;
+    this.latestDamage = null;
   }
 
   setPath(path) {
@@ -123,6 +124,11 @@ class Character extends Entity {
     }
     if (this.isOwned) {
       game.display.pos = Vector2.clone(this.pos);
+    }
+    if (this.latestDamage) {
+      if (Time.totalTime >= this.latestDamage.endTime) {
+        this.latestDamage = null;
+      }
     }
   }
 
@@ -191,7 +197,28 @@ class Character extends Entity {
     }
   }
 
-  attack() {}
+  showDamage(damage) {
+    this.latestDamage = {
+      damage: damage,
+      endTime: Time.totalTime + 1 // show for 1 second
+    };
+  }
+
+  renderGUI(display) {
+    super.renderGUI(display);
+
+    if (this.latestDamage) {
+      const pos = display.getRenderPos(this.pos);
+      const size = ResourceManager.spriteWidth * display.zoomLevel;
+      pos.add(new Vector2(size / 2, -size / 2));
+      display.context.font = `${10 * display.zoomLevel}px 'Minecraft Regular', monospace`;
+      const dmg = this.latestDamage.damage
+      const fillStyle = dmg ? 'red' : 'blue';
+      display.context.fillStyle = fillStyle;
+      display.context.textAlign = 'center';
+      display.context.fillText(dmg ? `-${dmg}` : dmg, pos.x, pos.y);
+    }
+  }
 }
 
 class Player extends Character {

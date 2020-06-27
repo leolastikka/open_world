@@ -58,6 +58,27 @@ class Interactable extends Entity {
     return this._action;
   }
 
+  get damage() {
+    const weapon = this._equipment.weapon;
+    let damage = weapon.damage;
+    if (weapon.skill === 'melee' || !weapon.skill) {
+      damage += this.skills.melee.level;
+    }
+    else if (weapon.skill === 'guns') {
+      damage += this.skills.guns.level;
+    }
+    return damage;
+  }
+
+  get defence() {
+    const armor = this._equipment.armor;
+    let defence = this.skills.defence.level;
+    if (armor) {
+      defence += armor.defence;
+    }
+    return defence;
+  }
+
   update() {
     if (this._isSpawned) {
       if (!this._action) {
@@ -485,15 +506,6 @@ class Interactable extends Entity {
 
   _attack() {
     if (Time.totalTime >= this._nextInteractionTime) {
-      const weapon = this._equipment.weapon;
-      let damage = weapon.damage;
-      if (weapon.skill === 'melee' || !weapon.skill) {
-        damage += this.skills.melee.level;
-      }
-      else if (weapon.skill === 'guns') {
-        damage += this.skills.guns.level;
-      }
-
       if (!this._action) { // move this?
         return;
       }
@@ -503,8 +515,8 @@ class Interactable extends Entity {
         networkId: this.networkId
       });
 
-      this._action.targetEntity.doDamage(damage);
-      this._nextInteractionTime = Time.totalTime + weapon.speed;
+      this._action.targetEntity.doDamage(this.damage);
+      this._nextInteractionTime = Time.totalTime + this._equipment.weapon.speed;
 
       if (this._action) {
         // if this is first actual attack
@@ -522,7 +534,15 @@ class Interactable extends Entity {
    * Attacking entity calls target's doDamage.
    */
   doDamage(damage) {
-    this.skills.health.value -= damage;
+    let damageRoll = Math.round(Math.random() * damage);
+    let defenceRoll = Math.round(Math.random() * this.defence);
+
+    let dmg = damageRoll - defenceRoll;
+    if (dmg < 0) {
+      dmg = 0;
+    }
+
+    this.skills.health.value -= dmg;
 
     if (this.skills.health.value < 0) {
       this.skills.health.value = 0;
@@ -535,6 +555,7 @@ class Interactable extends Entity {
       type: 'update',
       networkId: this.networkId,
       inCombat: true,
+      damage: dmg,
       health: {
         value: this.skills.health.value,
         max: this.skills.health.level
