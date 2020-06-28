@@ -5,7 +5,7 @@ class Display {
     this.zoomOut = this.zoomOut.bind(this);
 
     this.pos = new Vector2();
-    this.drawDistance = 14;
+    this.drawDistance = 25;
 
     this.maxInZoom = 1;
     this.maxOutZoom = 3;

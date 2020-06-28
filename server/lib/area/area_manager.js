@@ -31,6 +31,7 @@ class AreaManager {
     const targetLink = targetArea.getLinkByType(`enter_${originalArea.name}`);
     entity.pos = Vector2.clone(targetLink.pos);
     entity.lastIntPos = Vector2.clone(targetLink.pos);
+    entity.clearPaths();
     targetArea.addExistingEntity(entity);
     targetArea.spawnEntity(entity);
     targetArea.broadcast({
@@ -57,6 +58,7 @@ class AreaManager {
     entity.area = targetLink.area;
     entity.pos = Vector2.clone(targetLink.pos);
     entity.lastIntPos = Vector2.clone(targetLink.pos);
+    entity.clearPaths();
     targetLink.area.addExistingEntity(entity);
     targetLink.area.spawnEntity(entity);
     targetLink.area.broadcast({

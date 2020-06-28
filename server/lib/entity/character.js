@@ -18,9 +18,11 @@ class Player extends Interactable {
 
   spawn() {
     const spawnLink = this._data.connection.user.spawnLink;
+
     this.area.spawnEntity(this);
     this._isSpawned = true;
 
+    this.clearPaths();
     this._skills.health.restore();
 
     if (spawnLink.area.name !== this.area.name) {
@@ -45,10 +47,6 @@ class Player extends Interactable {
         entity: this
       });
     }
-  }
-
-  dispose() {
-    super.dispose();
   }
 }
 

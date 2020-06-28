@@ -537,6 +537,10 @@ class Interactable extends Entity {
    * Attacking entity calls target's doDamage.
    */
   doDamage(damage, damageType) {
+    if (!this.isSpawned) { // if target is already despawned
+      return;
+    }
+
     let damageRoll = Math.round(Math.random() * damage);
     let defenceRoll = Math.round(Math.random() * this.defence);
 
@@ -551,9 +555,6 @@ class Interactable extends Entity {
       this.skills.health.value = 0;
     }
 
-    if (!this.isSpawned) {
-      throw new Error(`trying to despawn despawned object with networkId: ${this.ownerEntity.networkId}`)
-    }
     this.area.broadcast({
       type: 'update',
       networkId: this.networkId,
@@ -569,6 +570,11 @@ class Interactable extends Entity {
     if (this.skills.health.value === 0) {
       this.despawn();
     }
+  }
+
+  clearPaths() {
+    this._path = null;
+    this._nextPath = null;
   }
 
   spawn() {
@@ -590,12 +596,7 @@ class Interactable extends Entity {
     if (this._action) {
       this.finishAction();
     }
-    if (this._path) {
-      this._path = null;
-    }
-    if (this._nextPath) {
-      this._nextPath = null;
-    }
+    this.clearPaths();
 
     this._targetOfEntities.forEach(entity => {
       entity.finishAction();
