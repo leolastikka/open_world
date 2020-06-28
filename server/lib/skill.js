@@ -29,6 +29,7 @@ class Skills {
     this._health = new Health('Health', 10, 0, 10);
     this._melee = new Skill('Melee', 1, 0);
     this._guns = new Skill('Guns', 1, 0);
+    this._energy = new Skill('Energy', 1, 0);
     this._defence = new Skill('Defence', 1 ,0);
   }
 
@@ -44,6 +45,10 @@ class Skills {
     return this._guns;
   }
 
+  get energy() {
+    return this._energy;
+  }
+
   get defence() {
     return this._defence;
   }
@@ -53,6 +58,7 @@ class Skills {
       health: this._health,
       melee: this._melee,
       guns: this._guns,
+      energy: this._energy,
       defence: this._defence
     };
   }

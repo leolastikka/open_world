@@ -14,6 +14,8 @@ class ResourceManager {
     this._wallsTiles = [13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46];
     this._greenGlowTile = 13;
     this._blueGlowTile = 12;
+    this._damageTile = 53;
+    this._energyDamageTile = 54;
 
     const Rect = ResourceManager.getSpriteRectByIndex;
 
@@ -172,6 +174,20 @@ class ResourceManager {
           name: 'attack',
           frames: [[Rect(106), 0.25]]
         }
+      ],
+      standard_coil: [
+        {
+          name: 'idle',
+          frames: [[Rect(75), 1]]
+        },
+        {
+          name: 'walk',
+          frames: [[Rect(75), 0.2], [Rect(91), 0.2]]
+        },
+        {
+          name: 'attack',
+          frames: [[Rect(107), 0.25]]
+        }
       ]
     };
 
@@ -231,6 +247,14 @@ class ResourceManager {
 
   static get blueGlowTile() {
     return this._blueGlowTile;
+  }
+
+  static get damageTile() {
+    return this._damageTile;
+  }
+
+  static get energyDamageTile() {
+    return this._energyDamageTile;
   }
 
   static get audioContext() {

@@ -183,7 +183,7 @@ class GameState extends State {
       entity.health = data.health;
     }
     if (data.damage !== undefined) {
-      entity.showDamage(data.damage);
+      entity.showDamage(data.damage, data.damageType);
     }
     if (data.armorType) {
       entity.renderer.setArmor(data.armorType);

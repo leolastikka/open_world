@@ -155,7 +155,8 @@ class Game {
           'standard_mace',
           'standard_pole_hammer',
           'standard_pistol',
-          'standard_smg'
+          'standard_smg',
+          'standard_coil'
         ]
       }
     }, EntityManager.getDataByType('player'));

@@ -41,7 +41,7 @@
     "name": "Standard Pistol",
     "damage": 2,
     "speed": 1,
-    "range": 4,
+    "range": 7,
     "skill": "guns"
   },
   {
@@ -50,8 +50,17 @@
     "name": "Standard SMG",
     "damage": 1,
     "speed": 0.5,
-    "range": 4,
+    "range": 6,
     "skill": "guns"
+  },
+  {
+    "type": "standard_coil",
+    "baseType": "weapon",
+    "name": "Standard Coil",
+    "damage": 3,
+    "speed": 1.5,
+    "range": 6,
+    "skill": "energy"
   },
   {
     "type": "worker_outfit",

@@ -67,6 +67,9 @@ class Interactable extends Entity {
     else if (weapon.skill === 'guns') {
       damage += this.skills.guns.level;
     }
+    else if (weapon.skill === 'energy') {
+      damage += this.skills.energy.level;
+    }
     return damage;
   }
 
@@ -338,7 +341,7 @@ class Interactable extends Entity {
 
   _updateInteractAction() {
     let diff = Vector2.sub(this._action.targetEntity.pos, this.pos);
-    if (diff.length <= this._action.range) { // if inside interaction range
+    if (diff.length <= this._action.range + 0.5) { // if inside interaction range
       this._doActionInRange();
 
       if (this._path && this._path.length > 1) { // if still have path left, end it
@@ -515,7 +518,7 @@ class Interactable extends Entity {
         networkId: this.networkId
       });
 
-      this._action.targetEntity.doDamage(this.damage);
+      this._action.targetEntity.doDamage(this.damage, this._equipment.weapon.skill);
       this._nextInteractionTime = Time.totalTime + this._equipment.weapon.speed;
 
       if (this._action) {
@@ -533,7 +536,7 @@ class Interactable extends Entity {
   /**
    * Attacking entity calls target's doDamage.
    */
-  doDamage(damage) {
+  doDamage(damage, damageType) {
     let damageRoll = Math.round(Math.random() * damage);
     let defenceRoll = Math.round(Math.random() * this.defence);
 
@@ -556,6 +559,7 @@ class Interactable extends Entity {
       networkId: this.networkId,
       inCombat: true,
       damage: dmg,
+      damageType: damageType,
       health: {
         value: this.skills.health.value,
         max: this.skills.health.level

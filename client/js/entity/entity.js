@@ -127,6 +127,7 @@ class Character extends Entity {
     }
     if (this.latestDamage) {
       if (Time.totalTime >= this.latestDamage.endTime) {
+        this.latestDamage.effectRenderer.dispose();
         this.latestDamage = null;
       }
     }
@@ -197,11 +198,25 @@ class Character extends Entity {
     }
   }
 
-  showDamage(damage) {
+  showDamage(damage, damageType) {
+    let damageSpriteRect = null;
+    if (damageType === 'energy') {
+      damageSpriteRect = ResourceManager.getSpriteRectByIndex(ResourceManager.energyDamageTile);
+    }
+    else {
+      damageSpriteRect = ResourceManager.getSpriteRectByIndex(ResourceManager.damageTile);
+    }
     this.latestDamage = {
       damage: damage,
-      endTime: Time.totalTime + 1 // show for 1 second
+      endTime: Time.totalTime + 1, // show for 1 second
+      effectRenderer: new SpriteRenderer(
+        RenderLayer.Walls,
+        ResourceManager.texture,
+        damageSpriteRect
+      ),
+      effectEndTime: Time.totalTime + 0.25 // show damage effect for 0.25 s
     };
+    this.latestDamage.effectRenderer.entity = this;
   }
 
   renderGUI(display) {

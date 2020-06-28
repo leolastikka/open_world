@@ -179,6 +179,11 @@ class CharacterRenderer {
     if (this._weaponRenderer) {
       this._weaponRenderer.render(display);
     }
+    if (this.entity.latestDamage) {
+      if (Time.totalTime < this.entity.latestDamage.effectEndTime) {
+        this.entity.latestDamage.effectRenderer.render(display);
+      }
+    }
   }
 
   dispose() {
