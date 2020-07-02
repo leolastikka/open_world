@@ -1,5 +1,5 @@
 const Interactable = require('./interactable');
-const { MoveAction } = require('../action');
+const { MoveAction, AttackAction } = require('../action');
 const { Vector2 } = require('../math');
 
 class Player extends Interactable {
@@ -74,6 +74,28 @@ class Enemy extends NPC {
   constructor(area, data, name, pos) {
     super(area, data, name, pos);
     this._attackable = true;
+  }
+
+  _updateInteractAction() {
+    if (this._action instanceof AttackAction) {
+      const top = this._aggroList.top;
+      if (top && top.networkId !== this._action.targetEntity.networkId) {
+        const target = this.area.getEntityByNetworkId(top.networkId);
+        this.startAction(new AttackAction(this, target));
+        return;
+      }
+    }
+    super._updateInteractAction();
+  }
+
+  _updateIdle() {
+    const top = this._aggroList.top
+    if (top) {
+      console.log(`take new target: `, top);
+      const target = this.area.getEntityByNetworkId(top.networkId);
+      this.startAction(new AttackAction(this, target));
+    }
+    super._updateIdle();
   }
 
   get actions() {

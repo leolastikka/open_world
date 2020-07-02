@@ -14,6 +14,7 @@ const {
 const StoryManager = require('../story_manager');
 const { Equipment, ItemManager } = require('../item');
 const Skills = require('../skill');
+const { AggroList } = require('../combat');
 
 class Interactable extends Entity {
   constructor(area, data, name, pos) {
@@ -31,6 +32,7 @@ class Interactable extends Entity {
     this._targetLastIntPos = null;
     this._targetPosUpdated = false;
     this._targetOfEntities = [];
+    this._aggroList = new AggroList();
     this._attackable = false;
 
     this.lastIntPos = Vector2.clone(this.pos);
@@ -279,6 +281,10 @@ class Interactable extends Entity {
   }
 
   finishAction() {
+    if (this._action instanceof AttackAction) {
+      this._aggroList.remove(this._action.targetEntity.networkId);
+    }
+
     this._action.dispose();
     this._action = null;
   }
@@ -406,6 +412,7 @@ class Interactable extends Entity {
         entity.finishAction();
       });
       this._targetOfEntities = [];
+      this._aggroList.clear();
 
       this._action.dispose();
       this._action = null;
@@ -518,7 +525,7 @@ class Interactable extends Entity {
         networkId: this.networkId
       });
 
-      this._action.targetEntity.doDamage(this.damage, this._equipment.weapon.skill);
+      this._action.targetEntity.doDamage(this.networkId, this.damage, this._equipment.weapon.skill);
       this._nextInteractionTime = Time.totalTime + this._equipment.weapon.speed;
 
       if (this._action) {
@@ -536,7 +543,7 @@ class Interactable extends Entity {
   /**
    * Attacking entity calls target's doDamage.
    */
-  doDamage(damage, damageType) {
+  doDamage(attackerNetworkId, damage, damageType) {
     if (!this.isSpawned) { // if target is already despawned
       return;
     }
@@ -544,12 +551,13 @@ class Interactable extends Entity {
     let damageRoll = Math.round(Math.random() * damage);
     let defenceRoll = Math.round(Math.random() * this.defence);
 
-    let dmg = damageRoll - defenceRoll;
-    if (dmg < 0) {
-      dmg = 0;
+    let damageValue = damageRoll - defenceRoll;
+    if (damageValue < 0) {
+      damageValue = 0;
     }
 
-    this.skills.health.value -= dmg;
+    this.skills.health.value -= damageValue;
+    this._aggroList.add(attackerNetworkId, damageValue);
 
     if (this.skills.health.value < 0) {
       this.skills.health.value = 0;
@@ -559,7 +567,7 @@ class Interactable extends Entity {
       type: 'update',
       networkId: this.networkId,
       inCombat: true,
-      damage: dmg,
+      damage: damageValue,
       damageType: damageType,
       health: {
         value: this.skills.health.value,
@@ -602,6 +610,7 @@ class Interactable extends Entity {
       entity.finishAction();
     });
     this._targetOfEntities = [];
+    this._aggroList.clear();
 
     this.area.broadcast({
       type: 'remove',
