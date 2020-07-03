@@ -8,6 +8,7 @@ const { ItemManager } = require('./item');
 const {
   MoveAction,
   OptionAction,
+  CombatSettingsAction,
   EquipmentAction,
   TalkAction,
   AttackAction,
@@ -72,6 +73,11 @@ class Game {
     });
 
     user.connection.send({
+      type: 'combatSettings',
+      combatSettings: user.character.combatSettings
+    });
+
+    user.connection.send({
       type: 'player',
       entity: user.character
     });
@@ -117,6 +123,9 @@ class Game {
         break;
       case 'option':
         action = new OptionAction(data.target);
+        break;
+      case 'combatSettings':
+        action = new CombatSettingsAction(data.combatSettings);
         break;
       default:
         user.connection.close();

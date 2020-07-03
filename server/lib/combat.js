@@ -64,6 +64,17 @@ class AggroList {
   }
 }
 
+class CombatSettings {
+  constructor(combatSettings) {
+    this.autoRetaliate = true;
+
+    if (combatSettings) {
+      this.autoRetaliate = combatSettings.autoRetaliate === true;
+    }
+  }
+}
+
 module.exports = {
-  AggroList
+  AggroList,
+  CombatSettings
 };

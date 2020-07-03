@@ -17,6 +17,13 @@ class OptionAction extends Action {
   }
 }
 
+class CombatSettingsAction extends Action {
+  constructor(combatSettings) {
+    super();
+    this.combatSettings = combatSettings;
+  }
+}
+
 class EquipmentAction extends Action {
   constructor(actionType, itemType) {
     super();
@@ -94,6 +101,7 @@ class ConfigureAction extends InteractAction {
 module.exports = {
   MoveAction,
   OptionAction,
+  CombatSettingsAction,
   EquipmentAction,
   InteractAction,
   TalkAction,

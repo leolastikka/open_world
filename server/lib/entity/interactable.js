@@ -9,12 +9,13 @@ const {
   TalkAction,
   AttackAction,
   AreaLinkAction,
-  ConfigureAction
+  ConfigureAction,
+  CombatSettingsAction
 } = require('../action');
 const StoryManager = require('../story_manager');
 const { Equipment, ItemManager } = require('../item');
 const Skills = require('../skill');
-const { AggroList } = require('../combat');
+const { AggroList, CombatSettings } = require('../combat');
 
 class Interactable extends Entity {
   constructor(area, data, name, pos) {
@@ -33,6 +34,7 @@ class Interactable extends Entity {
     this._targetPosUpdated = false;
     this._targetOfEntities = [];
     this._aggroList = new AggroList();
+    this._combatSettings = new CombatSettings(data.combatSettings);
     this._attackable = false;
 
     this.lastIntPos = Vector2.clone(this.pos);
@@ -58,6 +60,10 @@ class Interactable extends Entity {
 
   get action() {
     return this._action;
+  }
+
+  get combatSettings() {
+    return this._combatSettings;
   }
 
   get damage() {
@@ -277,6 +283,14 @@ class Interactable extends Entity {
           });
         }
       }
+    }
+    else if (action instanceof CombatSettingsAction) {
+      this._combatSettings.autoRetaliate = action.combatSettings.autoRetaliate === true;
+
+      this.data.connection.send({
+        type: 'combatSettings',
+        combatSettings: this._combatSettings
+      });
     }
   }
 
@@ -560,10 +574,13 @@ class Interactable extends Entity {
       if (this._action) {
         // if this is first actual attack
         if (!this._action.targetEntity.action || !(this._action.targetEntity.action instanceof AttackAction)) {
-          // start combat for target too
-          this._action.targetEntity.startAction(
-            new AttackAction(this._action.targetEntity, this, 1)
-          );
+          // if autoRetaliate is on
+          if (this._action.targetEntity.combatSettings.autoRetaliate) {
+            // start combat for target too
+            this._action.targetEntity.startAction(
+              new AttackAction(this._action.targetEntity, this, 1)
+            );
+          }
         }
       }
     }

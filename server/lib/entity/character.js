@@ -91,7 +91,6 @@ class Enemy extends NPC {
   _updateIdle() {
     const top = this._aggroList.top
     if (top) {
-      console.log(`take new target: `, top);
       const target = this.area.getEntityByNetworkId(top.networkId);
       this.startAction(new AttackAction(this, target));
     }

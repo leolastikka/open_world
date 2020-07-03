@@ -26,6 +26,9 @@ class GameState extends State {
       ammo: null,
       inventory: []
     };
+    this.combatSettings = {
+      autoRetaliate: true
+    };
 
     this.loadingElement = document.getElementById('loading');
     this.loadingElement.removeAttribute('hidden');
@@ -142,6 +145,9 @@ class GameState extends State {
         break;
       case 'player':
         this.onPlayer(data);
+        break;
+      case 'combatSettings':
+        this.onCombatSettings(data);
         break;
       case 'areaData':
         this.onAreaData(data);
@@ -317,6 +323,17 @@ class GameState extends State {
       action: 'equipment',
       actionType: 'use',
       itemType: itemType
+    });
+  }
+  onCombatSettings(data) {
+    this.combatSettings = data.combatSettings;
+    this.gui.updateCombatSettings(data.combatSettings);
+  }
+  changeCombatSettings(combatSettings) {
+    this.sendWsAction({
+      type: 'action',
+      action: 'combatSettings',
+      combatSettings: combatSettings
     });
   }
 

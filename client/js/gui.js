@@ -481,6 +481,25 @@ class GUI extends EventTarget {
       inventory.appendChild(itemRow);
     });
   }
+  updateCombatSettings(combatSettings) {
+    const autoRetaliateButton = this.equipmentElement.querySelector('button[name="autoRetaliate"]');
+    if (combatSettings.autoRetaliate) {
+      autoRetaliateButton.innerHTML = 'Enabled';
+      autoRetaliateButton.onclick = () => {
+        this.game.state.changeCombatSettings({
+          autoRetaliate: false
+        });
+      }
+    }
+    else {
+      autoRetaliateButton.innerHTML = 'Disabled';
+      autoRetaliateButton.onclick = () => {
+        this.game.state.changeCombatSettings({
+          autoRetaliate: true
+        });
+      }
+    }
+  }
 
   _onToggleSettings() {
     const isOpen = !this.settingsElement.hasAttribute('hidden');
