@@ -40,6 +40,11 @@ class Vector2 {
     return this.x === vector.x && this.y === vector.y;
   }
 
+  equalsRounded(vector) {
+    return Math.round(this.x) === Math.round(vector.x) &&
+      Math.round(this.y) === Math.round(vector.y);
+  }
+
   static add(v1, v2) {
     return new Vector2(v1.x + v2.x, v1.y + v2.y);
   }

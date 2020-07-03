@@ -29,8 +29,6 @@ class AggroList {
   constructor() {
     this._attackers = [];
     this._oldAttackerTresholdTime = 5; // seconds
-
-    this._oldTop = null;
   }
 
   get top() {
@@ -39,7 +37,6 @@ class AggroList {
       return null;
     }
     this._attackers.sort((a, b) => b.damage - a.damage);
-    this._oldTop = this._attackers[0];
     return this._attackers[0];
   }
 

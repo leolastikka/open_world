@@ -346,8 +346,10 @@ class Interactable extends Entity {
   }
 
   _updateInteractAction() {
-    let diff = Vector2.sub(this._action.targetEntity.pos, this.pos);
-    if (diff.length <= this._action.range + 0.5) { // if inside interaction range
+    const diff = Vector2.sub(this._action.targetEntity.pos, this.pos);
+    const bothInSamePos = this.pos.equalsRounded(this._action.targetEntity.pos);
+    if (!bothInSamePos && // if both are not in same position
+        diff.length <= this._action.range) { // if inside interaction range
       this._doActionInRange();
 
       if (this._path && this._path.length > 1) { // if still have path left, end it
@@ -361,9 +363,13 @@ class Interactable extends Entity {
         });
       }
     }
-    else { // if have to move closer
+    else if (this._path) {
+      this._updateMove();
+      return;
+    }
+    else { // if have to move closer or further
       let targetPosUpdated = !this._action.targetEntity.lastIntPos.equals(this._targetLastIntPos);
-      if (targetPosUpdated || !this._path) { // if need to calculate new path
+      if (bothInSamePos || targetPosUpdated || !this._path) { // if need to calculate new path
         this._startInteractAction();
       }
       else { // if continue using old path
@@ -465,9 +471,15 @@ class Interactable extends Entity {
 
   _startInteractAction() {
     this._targetLastIntPos = this._action.targetEntity.lastIntPos;
-    let diff = Vector2.sub(this._action.targetEntity.lastIntPos, this.pos);
-    if (diff.length <= this._action.range) { // if inside interaction range
+    const diff = Vector2.sub(this._action.targetEntity.pos, this.pos);
+    const bothInSamePos = this.pos.equalsRounded(this._action.targetEntity.pos)
+    if (!bothInSamePos && // if both are not in same position
+        diff.length <= this._action.range) { // if inside interaction range
       this._doActionInRange();
+    }
+    else if (this._path) {
+      this._updateMove();
+      return;
     }
     else { // if need to move
       let startPos = (this._path && this._path.length) ? this._path[0] : this.lastIntPos;
@@ -481,6 +493,14 @@ class Interactable extends Entity {
       if (this._path) { // if already has a path
         if (!this._nextPath) { // if no next path
           this._path = [this._path[0]]; // reduce current path to only next node
+
+          this.area.broadcast({
+            type: 'move',
+            networkId: this.networkId,
+            pos: this.pos,
+            path: this._path,
+            speed: this.speed
+          });
         }
         this._nextPath = shortestPath;
       }
@@ -524,6 +544,15 @@ class Interactable extends Entity {
         type: 'attack',
         networkId: this.networkId
       });
+
+      // // for debugging
+      // this.area.broadcast({
+      //   type: 'move',
+      //   networkId: this.networkId,
+      //   pos: this.pos,
+      //   path: this._path,
+      //   speed: this.speed
+      // });
 
       this._action.targetEntity.doDamage(this.networkId, this.damage, this._equipment.weapon.skill);
       this._nextInteractionTime = Time.totalTime + this._equipment.weapon.speed;
