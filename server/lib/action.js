@@ -33,15 +33,20 @@ class EquipmentAction extends Action {
 }
 
 class InteractAction extends Action {
-  constructor(ownerEntity, targetEntity, range) {
+  constructor(ownerEntity, targetEntity, range = 1, minRange = 0) {
     super();
     this.ownerEntity = ownerEntity;
     this.targetEntity = targetEntity;
     this._range = range;
+    this._minRange = minRange;
   }
 
   get range() {
     return this._range;
+  }
+
+  get minRange() {
+    return this._minRange;
   }
 
   dispose() {
@@ -63,21 +68,21 @@ class InteractAction extends Action {
 }
 
 class TalkAction extends InteractAction {
-  constructor(ownerEntity, targetObject, range) {
-    super(ownerEntity, targetObject, range);
+  constructor(ownerEntity, targetObject, range, minRange) {
+    super(ownerEntity, targetObject, range, minRange);
     this.clientGuiOpened = false;
   }
 }
 
 class TradeAction extends InteractAction {
-  constructor(ownerEntity, targetObject, range) {
-    super(ownerEntity, targetObject, range);
+  constructor(ownerEntity, targetObject, range, minRange) {
+    super(ownerEntity, targetObject, range, minRange);
   }
 }
 
 class AttackAction extends InteractAction {
-  constructor(ownerEntity, targetObject, range) {
-    super(ownerEntity, targetObject, range);
+  constructor(ownerEntity, targetObject, range, minRange = 0.5) {
+    super(ownerEntity, targetObject, range, minRange);
   }
 
   get range() {
@@ -86,14 +91,14 @@ class AttackAction extends InteractAction {
 }
 
 class AreaLinkAction extends InteractAction {
-  constructor(ownerEntity, targetObject, range) {
-    super(ownerEntity, targetObject, range);
+  constructor(ownerEntity, targetObject, range, minRange) {
+    super(ownerEntity, targetObject, range, minRange);
   }
 }
 
 class ConfigureAction extends InteractAction {
-  constructor(ownerEntity, targetObject, range) {
-    super(ownerEntity, targetObject, range);
+  constructor(ownerEntity, targetObject, range, minRange) {
+    super(ownerEntity, targetObject, range, minRange);
     this.clientGuiOpened = false;
   }
 }

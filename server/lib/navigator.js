@@ -39,7 +39,7 @@ class Navigator {
     return path;
   }
 
-  findShortestPath = (startPos, endPositions) => {
+  findShortestPath = (startPos, endPositions, minRange = 0) => {
     let resultPath = null;
 
     if (!this._isValidPos(startPos)) {
@@ -52,10 +52,10 @@ class Navigator {
     });
 
     paths.forEach(path => {
-      if (!resultPath) {
+      if (!resultPath && path.length > minRange) {
         resultPath = path;
       }
-      else if (path.length < resultPath.length) {
+      else if (resultPath && path.length < resultPath.length && path.length > minRange) {
         resultPath = path;
       }
     });

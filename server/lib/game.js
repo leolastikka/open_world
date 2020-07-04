@@ -107,10 +107,10 @@ class Game {
         action = new MoveAction(target);
         break;
       case 'talk':
-        action = new TalkAction(character, target, 1);
+        action = new TalkAction(character, target, 1, 0.5);
         break;
       case 'attack':
-        action = new AttackAction(character, target, 1);
+        action = new AttackAction(character, target, 1, 0.5);
         break;
       case 'equipment':
         action = new EquipmentAction(data.actionType, data.itemType);

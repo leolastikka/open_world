@@ -90,6 +90,10 @@ class Interactable extends Entity {
     return defence;
   }
 
+  get _pathEndReached() {
+    return this.pos.equals(this.lastIntPos) && !this._path;
+  }
+
   update() {
     if (this._isSpawned) {
       if (!this._action) {
@@ -301,12 +305,14 @@ class Interactable extends Entity {
 
     this._action.dispose();
     this._action = null;
+
+    this._targetLastIntPos = null;
   }
 
   _updateIdle() {}
 
-  _updateMove() {
-    if (!this._path) {
+  _updateMove(onlyMove = false) {
+    if (!this._path && !onlyMove) {
       this._doActionInRange();
       return;
     }
@@ -349,7 +355,9 @@ class Interactable extends Entity {
         }
         else {
           this._path = null;
-          this._doActionInRange();
+          if (!onlyMove) {
+            this._doActionInRange();
+          }
           return;
         }
       }
@@ -361,29 +369,18 @@ class Interactable extends Entity {
 
   _updateInteractAction() {
     const diff = Vector2.sub(this._action.targetEntity.pos, this.pos);
-    const bothInSamePos = this.pos.equalsRounded(this._action.targetEntity.pos);
-    if (!bothInSamePos && // if both are not in same position
-        diff.length <= this._action.range) { // if inside interaction range
+    const distance = diff.length;
+    const insideRange = this._action.minRange <= distance && distance <= this._action.range;
+    if (insideRange) { // if inside interaction range
       this._doActionInRange();
 
-      if (this._path && this._path.length > 1) { // if still have path left, end it
-        this._path = [this._path[0]];
-        this.area.broadcast({
-          type: 'move',
-          networkId: this.networkId,
-          pos: this.pos,
-          path: this._path,
-          speed: this.speed
-        });
+      if (!this._pathEndReached) {
+        this._updateMove(true);
       }
     }
-    else if (this._path) {
-      this._updateMove();
-      return;
-    }
     else { // if have to move closer or further
-      let targetPosUpdated = !this._action.targetEntity.lastIntPos.equals(this._targetLastIntPos);
-      if (bothInSamePos || targetPosUpdated || !this._path) { // if need to calculate new path
+      const targetPosUpdated = !this._action.targetEntity.lastIntPos.equals(this._targetLastIntPos);
+      if (targetPosUpdated || !this._path) { // if need to calculate new path
         this._startInteractAction();
       }
       else { // if continue using old path
@@ -391,15 +388,14 @@ class Interactable extends Entity {
       }
     }
 
-    if (this._action) { // update interaction if needed
+    if (this._action instanceof InteractAction) { // update interaction if needed
       this._targetLastIntPos = Vector2.clone(this._action.targetEntity.lastIntPos);
     }
   }
 
   _doActionInRange() {
     if (this._action instanceof MoveAction) {
-      this._action.dispose();
-      this._action = null;
+      this.finishAction();
     }
     else if (this._action instanceof TalkAction) {
         if (!this._action.clientGuiOpened) {
@@ -434,8 +430,7 @@ class Interactable extends Entity {
       this._targetOfEntities = [];
       this._aggroList.clear();
 
-      this._action.dispose();
-      this._action = null;
+      this.finishAction();
     }
     else if (this._action instanceof ConfigureAction) {
       const type = this._action.targetEntity.data.baseType;
@@ -484,50 +479,62 @@ class Interactable extends Entity {
   }
 
   _startInteractAction() {
-    this._targetLastIntPos = this._action.targetEntity.lastIntPos;
-    const diff = Vector2.sub(this._action.targetEntity.pos, this.pos);
-    const bothInSamePos = this.pos.equalsRounded(this._action.targetEntity.pos)
-    if (!bothInSamePos && // if both are not in same position
-        diff.length <= this._action.range) { // if inside interaction range
-      this._doActionInRange();
+    if (!this._targetLastIntPos) {
+      this._targetLastIntPos = this._action.targetEntity.lastIntPos;
     }
-    else if (this._path) {
-      this._updateMove();
-      return;
+
+    const diff = Vector2.sub(this._action.targetEntity.pos, this.pos);
+    const distance = diff.length;
+    const insideRange = this._action.minRange <= distance && distance <= this._action.range;
+    if (insideRange) { // if inside interaction range
+      this._doActionInRange();
+
+      if (!this._pathEndReached) {
+        this._updateMove(true);
+      }
     }
     else { // if need to move
-      let startPos = (this._path && this._path.length) ? this._path[0] : this.lastIntPos;
-      let shortestPath = this.area.navigator.findShortestPath(
-        Vector2.clone(startPos),
-        this._action.targetEntity.interactPositions
-      );
-      if (!shortestPath || shortestPath.length === 0) {
-        return;
-      }
-      if (this._path) { // if already has a path
-        if (!this._nextPath) { // if no next path
-          this._path = [this._path[0]]; // reduce current path to only next node
+      const targetPosUpdated = !this._action.targetEntity.lastIntPos.equals(this._targetLastIntPos);
+      if (targetPosUpdated || !this._path) { // if need to calculate new path
+        let startPos = (this._path && this._path.length) ? this._path[0] : this.lastIntPos;
+        let shortestPath = this.area.navigator.findShortestPath(
+          Vector2.clone(startPos),
+          this._action.targetEntity.interactPositions,
+          this._action.minRange
+        );
+        if (!shortestPath || shortestPath.length === 0) {
+          this.finishAction();
+          return;
+        }
+        if (this._path) { // if already has a path
+          if (!this._nextPath) { // if no next path
+            this._path = [this._path[0]]; // reduce current path to only next node
+            this._nextPath = null;
+
+            this.area.broadcast({
+              type: 'move',
+              networkId: this.networkId,
+              pos: this.pos,
+              path: this._path,
+              speed: this.speed
+            });
+          }
+          this._nextPath = shortestPath;
+        }
+        else { // if no path
+          this._path = shortestPath;
 
           this.area.broadcast({
             type: 'move',
             networkId: this.networkId,
             pos: this.pos,
-            path: this._path,
+            path: shortestPath,
             speed: this.speed
           });
         }
-        this._nextPath = shortestPath;
       }
-      else { // if no path
-        this._path = shortestPath;
-
-        this.area.broadcast({
-          type: 'move',
-          networkId: this.networkId,
-          pos: this.pos,
-          path: shortestPath,
-          speed: this.speed
-        });
+      else { // if continue using old path
+        this._updateMove();
       }
     }
   }
@@ -559,15 +566,6 @@ class Interactable extends Entity {
         networkId: this.networkId
       });
 
-      // // for debugging
-      // this.area.broadcast({
-      //   type: 'move',
-      //   networkId: this.networkId,
-      //   pos: this.pos,
-      //   path: this._path,
-      //   speed: this.speed
-      // });
-
       this._action.targetEntity.doDamage(this.networkId, this.damage, this._equipment.weapon.skill);
       this._nextInteractionTime = Time.totalTime + this._equipment.weapon.speed;
 
@@ -578,7 +576,7 @@ class Interactable extends Entity {
           if (this._action.targetEntity.combatSettings.autoRetaliate) {
             // start combat for target too
             this._action.targetEntity.startAction(
-              new AttackAction(this._action.targetEntity, this, 1)
+              new AttackAction(this._action.targetEntity, this)
             );
           }
         }
