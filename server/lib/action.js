@@ -1,3 +1,5 @@
+const { Vector2 } = require('./math');
+
 class Action {
   constructor() {}
   dispose() {}
@@ -47,6 +49,12 @@ class InteractAction extends Action {
 
   get minRange() {
     return this._minRange;
+  }
+
+  get insideRange() {
+    const diff = Vector2.sub(this.targetEntity.pos, this.ownerEntity.pos);
+    const distance = diff.length;
+    return this._minRange <= distance && distance <= this._range;
   }
 
   dispose() {

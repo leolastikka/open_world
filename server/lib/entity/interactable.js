@@ -313,6 +313,12 @@ class Interactable extends Entity {
 
   _updateMove(onlyMove = false) {
     if (!this._path && !onlyMove) {
+      if (this._action instanceof InteractAction) {
+        if (this._action.insideRange) {
+          this._doActionInRange();
+        }
+        return;
+      }
       this._doActionInRange();
       return;
     }
@@ -356,6 +362,12 @@ class Interactable extends Entity {
         else {
           this._path = null;
           if (!onlyMove) {
+            if (this._action instanceof InteractAction) {
+              if (this._action.insideRange) {
+                this._doActionInRange();
+              }
+              return;
+            }
             this._doActionInRange();
           }
           return;
@@ -479,10 +491,6 @@ class Interactable extends Entity {
   }
 
   _startInteractAction() {
-    if (!this._targetLastIntPos) {
-      this._targetLastIntPos = this._action.targetEntity.lastIntPos;
-    }
-
     const diff = Vector2.sub(this._action.targetEntity.pos, this.pos);
     const distance = diff.length;
     const insideRange = this._action.minRange <= distance && distance <= this._action.range;
@@ -494,7 +502,15 @@ class Interactable extends Entity {
       }
     }
     else { // if need to move
-      const targetPosUpdated = !this._action.targetEntity.lastIntPos.equals(this._targetLastIntPos);
+      let targetPosUpdated = false;
+      if (!this._targetLastIntPos) {
+        this._targetLastIntPos = this._action.targetEntity.lastIntPos;
+        targetPosUpdated = true;
+      }
+      else {
+        targetPosUpdated = !this._action.targetEntity.lastIntPos.equals(this._targetLastIntPos);
+      }
+
       if (targetPosUpdated || !this._path) { // if need to calculate new path
         let startPos = (this._path && this._path.length) ? this._path[0] : this.lastIntPos;
         let shortestPath = this.area.navigator.findShortestPath(
