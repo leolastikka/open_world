@@ -500,6 +500,10 @@ class GUI extends EventTarget {
       }
     }
   }
+  updateCombatStats(damage, defence) {
+    this.equipmentElement.querySelector('span[name="damage"]').innerHTML = damage;
+    this.equipmentElement.querySelector('span[name="defence"]').innerHTML = defence;
+  }
 
   _onToggleSettings() {
     const isOpen = !this.settingsElement.hasAttribute('hidden');

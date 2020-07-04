@@ -69,7 +69,9 @@ class Game {
 
     user.connection.send({
       type: 'equipment',
-      equipment: user.character.equipment
+      equipment: user.character.equipment,
+      damage: user.character.damage,
+      defence: user.character.defence
     });
 
     user.connection.send({

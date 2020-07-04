@@ -268,7 +268,9 @@ class Interactable extends Entity {
       if (equipmentUpdated) {
         this.data.connection.send({
           type: 'equipment',
-          equipment: this.equipment
+          equipment: this.equipment,
+          damage: this.damage,
+          defence: this.defence
         });
 
         if (item.baseType === 'armor') {

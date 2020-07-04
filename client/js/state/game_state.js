@@ -300,6 +300,7 @@ class GameState extends State {
   onEquipment(data) {
     this.equipment = data.equipment;
     this.gui.updateEquipment(data.equipment);
+    this.gui.updateCombatStats(data.damage, data.defence);
   }
   equipItem(itemType) {
     this.sendWsAction({
