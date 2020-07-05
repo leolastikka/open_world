@@ -51,12 +51,6 @@ class InteractAction extends Action {
     return this._minRange;
   }
 
-  get insideRange() {
-    const diff = Vector2.sub(this.targetEntity.pos, this.ownerEntity.pos);
-    const distance = diff.length;
-    return this._minRange <= distance && distance <= this._range;
-  }
-
   dispose() {
     super.dispose();
     // remove this action from target

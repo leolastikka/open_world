@@ -90,6 +90,10 @@ class Interactable extends Entity {
     return defence;
   }
 
+  get isMoving() {
+    return this._path !== null;
+  }
+
   get _pathEndReached() {
     return this.pos.equals(this.lastIntPos) && !this._path;
   }
@@ -315,12 +319,6 @@ class Interactable extends Entity {
 
   _updateMove(onlyMove = false) {
     if (!this._path && !onlyMove) {
-      if (this._action instanceof InteractAction) {
-        if (this._action.insideRange) {
-          this._doActionInRange();
-        }
-        return;
-      }
       this._doActionInRange();
       return;
     }
@@ -364,12 +362,6 @@ class Interactable extends Entity {
         else {
           this._path = null;
           if (!onlyMove) {
-            if (this._action instanceof InteractAction) {
-              if (this._action.insideRange) {
-                this._doActionInRange();
-              }
-              return;
-            }
             this._doActionInRange();
           }
           return;
@@ -391,6 +383,12 @@ class Interactable extends Entity {
       if (!this._pathEndReached) {
         this._updateMove(true);
       }
+    }
+    // if inside max range and target is moving to better position and target is targeting this
+    else if (distance <= this._action.range &&
+            this._action.targetEntity.isMoving &&
+            this._action.targetEntity.action.targetEntity === this) { 
+      return; // wait for target to reach new position
     }
     else { // if have to move closer or further
       const targetPosUpdated = !this._action.targetEntity.lastIntPos.equals(this._targetLastIntPos);
@@ -502,6 +500,12 @@ class Interactable extends Entity {
       if (!this._pathEndReached) {
         this._updateMove(true);
       }
+    }
+    // if inside max range and target is moving to better position and target is targeting this
+    else if (distance <= this._action.range &&
+            this._action.targetEntity.isMoving &&
+            this._action.targetEntity.action.targetEntity === this) { 
+      return; // wait for target to reach new position
     }
     else { // if need to move
       let targetPosUpdated = false;
