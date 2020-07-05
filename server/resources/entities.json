@@ -22,7 +22,7 @@
     "baseType": "npc",
 
     "respawnTime": 15,
-    "speed": 1,
+    "speed": 1.75,
 
     "equipment": {
       "weapon": "standard_baton",
@@ -41,7 +41,7 @@
       "armor": "worker_outfit"
     },
     
-    "speed": 0.75
+    "speed": 1.25
   },
   {
     "description": "City Worker",
@@ -52,7 +52,7 @@
       "armor": "worker_outfit"
     },
 
-    "speed": 0.75
+    "speed": 1.25
   },
   {
     "description": "Start Area Info",
@@ -87,7 +87,7 @@
     "baseType": "enemy",
 
     "respawnTime": 3,
-    "speed": 0.75
+    "speed": 1.5
   },
   {
     "description": "Medium Enemy",
@@ -99,6 +99,6 @@
     },
   
     "respawnTime": 3,
-    "speed": 0.75
+    "speed": 1.5
   }
 ]

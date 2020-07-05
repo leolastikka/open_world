@@ -10,10 +10,10 @@ class Player extends Interactable {
   get speed() {
     if (this.equipment.armor) {
       if (this.equipment.armor.type === 'sairaan_nopee_outfit') {
-        return 5;
+        return 6;
       }
     }
-    return 2;
+    return 3;
   }
 
   spawn() {
