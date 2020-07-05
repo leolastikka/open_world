@@ -132,6 +132,9 @@ class Equipment {
 
   unequip(itemType) {
     const item = ItemManager.getByType(itemType);
+    if (!item) {
+      return false;
+    }
 
     if (item.baseType === 'armor' && this._armor.type === itemType) {
       this._armor = null;

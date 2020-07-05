@@ -176,6 +176,7 @@ class GameState extends State {
   onAreaData(data) {
     EntityManager.createArea(data);
     ResourceManager.playMusic(data.music);
+    this.gui.updateAreaName(data.name);
   }
 
   onEntityUpdate(data) {

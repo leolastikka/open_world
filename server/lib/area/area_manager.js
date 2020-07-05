@@ -11,8 +11,8 @@ class AreaManager {
     this._loadAreas();
   }
 
-  static getByName(name) {
-    return this._areas.find(a => a.name === name);
+  static getByType(type) {
+    return this._areas.find(a => a.type === type);
   }
 
   static update() {
@@ -28,7 +28,7 @@ class AreaManager {
       networkId: entity.networkId
     });
     entity.area = targetArea;
-    const targetLink = targetArea.getLinkByType(`enter_${originalArea.name}`);
+    const targetLink = targetArea.getLinkByType(`enter_${originalArea.type}`);
     entity.pos = Vector2.clone(targetLink.pos);
     entity.lastIntPos = Vector2.clone(targetLink.pos);
     entity.clearPaths();
@@ -81,7 +81,8 @@ class AreaManager {
     //create area for each area file
     areaFiles.forEach(areaFile => {
       const areaJson = JSON.parse(FS.readFileSync(Path.join(__dirname, `${areasDir}/${areaFile}`)));
-      const areaName = areaFile.slice(0, -('.json'.length));
+      const areaType = areaFile.slice(0, -('.json'.length));
+      const areaName = areaJson.properties.find(prop => prop.name === 'name').value;
       const music = areaJson.properties.find(prop => prop.name === 'music').value;
 
       const areaSize = areaJson.width;
@@ -113,7 +114,7 @@ class AreaManager {
       }
 
       // create new area
-      const area = new Area(areaName, areaSize, music, floor, walls);
+      const area = new Area(areaType, areaName, areaSize, music, floor, walls);
 
       // Use tileHeight also for x axis, because editor handles isometric object grid as squares
 

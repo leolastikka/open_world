@@ -205,7 +205,7 @@ class Interactable extends Entity {
           this._action.targetEntity.networkId === action.targetEntity.networkId) { // if already doing same action
         return;
       }
-      else if (this.area.name === action.targetEntity.data.targetName) { // if already in the same area
+      else if (this.area.type === action.targetEntity.data.targetName) { // if already in the same area
         return;
       }
       else if (this._action instanceof InteractAction) {
@@ -430,7 +430,7 @@ class Interactable extends Entity {
       const AreaManager = require('../area/area_manager'); // define here, otherwise undefined
       AreaManager.changeEntityArea(
         this,
-        AreaManager.getByName(this._action.targetEntity.data.targetName
+        AreaManager.getByType(this._action.targetEntity.data.targetName
         ));
       this.data.connection.send({
         type: 'changeArea'

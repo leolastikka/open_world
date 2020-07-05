@@ -119,11 +119,14 @@
     </div>
 
     <ul id="dropdownMenu" hidden="hidden"></ul>
+    <div id="tooltip" hidden="hidden"></div>
 
     <div id="action">
       <p name="last"></p>
       <p name="suggestion"></p>
     </div>
+
+    <div id="areaName">Current Area:<br><span></span></div>
 
     <div id="dialog" class="scroller" hidden="hidden">
       <button name="close-x" class="close"><i class="icon-cancel"></i></button>
@@ -159,44 +162,23 @@
       <button name="close-x" class="close"><i class="icon-cancel"></i></button>
       <h3>Combat</h3>
       <p>
-        Max damage <span name="damage"></span> (weapon + skill)<br>
-        Max defence <span name="defence"></span> (armor + skill)
+        Max damage <span name="damage"></span><br>(weapon + skill)<br>
+        Max defence <span name="defence"></span><br>(armor + skill)
       </p>
-      <label>Enable auto retaliation in combat</label>
+      <label>Auto retaliation in combat</label>
       <button name="autoRetaliate">Enabled</button>
       <h3>Equipment</h3>
-      <table>
-        <tr>
+      <table name="wornEquipment">
+        <tr name="header">
           <th>Type</th>
           <th>Name</th>
-          <th>Info</th>
           <th>Actions</th>
-        </tr>
-        <tr>
-          <td>Armor</td>
-          <td name="armorName"></td>
-          <td name="armorInfo"></td>
-          <td><button name="armor" disabled>Unequip</button></td>
-        </tr>
-        <tr>
-          <td>Weapon</td>
-          <td name="weaponName"></td>
-          <td name="weaponInfo"></td>
-          <td><button name="weapon" disabled>Unequip</button></td>
-        </tr>
-        <tr>
-          <td>Ammo</td>
-          <td name="ammoName"></td>
-          <td name="ammoInfo"></td>
-          <td><button name="ammo" disabled>Unequip</button></td>
         </tr>
       </table>
       <h3>Inventory</h3>
       <table name="inventory">
         <tr name="header">
-          <th>Type</th>
           <th>Name</th>
-          <th>Info</th>
           <th>Actions</th>
         </tr>
       </table>

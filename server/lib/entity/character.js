@@ -25,7 +25,7 @@ class Player extends Interactable {
     this.clearPaths();
     this._skills.health.restore();
 
-    if (spawnLink.area.name !== this.area.name) {
+    if (spawnLink.area.type !== this.area.type) {
       const AreaManager = require('../area/area_manager');
       AreaManager.changeEntityAreaByLink(this, spawnLink);
 

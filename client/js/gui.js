@@ -51,6 +51,7 @@ class GUI extends EventTarget {
     this.settingsVolumeSlider = this.settingsElement.querySelector('input[name="volume"]');
     this.settingsDistanceSlider = this.settingsElement.querySelector('input[name="distance"]');
     this.dropdownMenuElement = document.getElementById('dropdownMenu');
+    this.tooltipElement = document.getElementById('tooltip');
     this.dialogElement = document.getElementById('dialog');
     this.dialogCloseButton = this.dialogElement.querySelector('button[name="close"]');
     this.reconstructorElement = document.getElementById('reconstructor');
@@ -233,23 +234,40 @@ class GUI extends EventTarget {
     this.dropdownMenuElement.style.left = `${menuPos.x}px`;
     this.dropdownMenuElement.style.top = `${menuPos.y}px`;
   }
-
   clickDropdownMenuItem(action, event) {
     let e = new Event('action');
     e.action = action;
     this.dispatchEvent(e);
     this.pointerUnitData.pos = null;
   }
-
   closeDropdownMenu() {
     this.dropdownMenuElement.setAttribute('hidden', 'hidden');
     this.dropdownMenuElement.innerHTML = '';
+  }
+
+  openTooltip(x, y, text) {
+    this.tooltipElement.innerHTML = text;
+    this.tooltipElement.removeAttribute('hidden');
+
+    const menuPos = new Vector2(x, y);
+    if (menuPos.x + this.tooltipElement.offsetWidth > this.game.display.width) {
+      menuPos.x -= menuPos.x + this.tooltipElement.offsetWidth - this.game.display.width;
+    }
+    if (menuPos.y + this.tooltipElement.offsetHeight > this.game.display.height) {
+      menuPos.y -= menuPos.y + this.tooltipElement.offsetHeight - this.game.display.height;
+    }
+    this.tooltipElement.style.left = `${menuPos.x}px`;
+    this.tooltipElement.style.top = `${menuPos.y}px`;
+  }
+  closeTooltip() {
+    this.tooltipElement.setAttribute('hidden', 'hidden');
   }
 
   openDialog(title, text) {
     this.dialogElement.querySelector('h3[name="title"]').innerHTML = title;
     this.dialogElement.querySelector('p[name="content"]').innerHTML = text;
     this.dialogElement.removeAttribute('hidden');
+    this.dialogElement.scrollTop = 0;
 
     this.closeDropdownMenu();
     this.closeLog();
@@ -402,46 +420,71 @@ class GUI extends EventTarget {
   }
   closeEquipment() {
     this.equipmentElement.setAttribute('hidden', 'hidden');
+    this.closeTooltip();
   }
   updateEquipment(equipment) {
-    const armorName = this.equipmentElement.querySelector('td[name="armorName"]');
-    armorName.innerHTML = equipment.armor ? equipment.armor.name : '-';
-    const armorInfo = this.equipmentElement.querySelector('td[name="armorInfo"]');
-    armorInfo.innerHTML = equipment.armor ? equipment.armor.info : '-';
-    const armorButton = this.equipmentElement.querySelector('button[name="armor"]');
-    armorButton.disabled = equipment.armor ? false : true;
-    if (equipment.armor) {
-      armorButton.onclick = () => {
-        const itemType = equipment.armor.type;
-        this.game.state.unequipItem(itemType);
-      };
+    const wornItems = [
+      {
+        baseType: 'Armor',
+        item: equipment.armor,
+        name: equipment.armor ? equipment.armor.name : '-',
+        info: equipment.armor ? equipment.armor.info : '-',
+        disabled: equipment.armor ? false : true,
+        itemType: equipment.armor ? equipment.armor.type : '-'
+      },
+      {
+        baseType: 'Weapon',
+        item: equipment.weapon,
+        name: equipment.weapon ? equipment.weapon.name : '-',
+        info: equipment.weapon ? equipment.weapon.info : '-',
+        disabled: equipment.weapon.type !== 'unarmed' ? false : true,
+        itemType: equipment.weapon ? equipment.weapon.type : '-'
+      },
+      {
+        baseType: 'Ammo',
+        item: equipment.ammo,
+        name: equipment.ammo ? equipment.ammo.name : '-',
+        info: equipment.ammo ? equipment.ammo.info : '-',
+        disabled: equipment.ammo ? false : true,
+        itemType: equipment.ammo ? equipment.ammo.type : '-'
+      }
+    ];
+
+    const wornEquipment = this.equipmentElement.querySelector('table[name="wornEquipment"]');
+    // remove all rows other than header row
+    for(let i = 1; i < wornEquipment.rows.length;) {
+      wornEquipment.deleteRow(i);
     }
 
-    const weaponName = this.equipmentElement.querySelector('td[name="weaponName"]');
-    weaponName.innerHTML = equipment.weapon.name;
-    const weaponInfo = this.equipmentElement.querySelector('td[name="weaponInfo"]');
-    weaponInfo.innerHTML = equipment.weapon.info;
-    const weaponButton = this.equipmentElement.querySelector('button[name="weapon"]');
-    weaponButton.disabled = equipment.weapon.type !== 'unarmed' ? false : true;
-    if (equipment.weapon) {
-      weaponButton.onclick =  () => {
-        const itemType = equipment.weapon.type;
-        this.game.state.unequipItem(itemType);
+    wornItems.forEach(item => {
+      const itemRow = document.createElement('tr');
+      itemRow.onmouseenter = (event) => {
+        const text = `<b>Name:</b><br>${item.name}<br><b>Type:</b><br>${item.baseType}<br><b>Info</b>:<br>${item.info}`;
+        this.openTooltip(event.clientX, event.clientY, text);
       };
-    }
-
-    const ammoName = this.equipmentElement.querySelector('td[name="ammoName"]');
-    ammoName.innerHTML = equipment.ammo ? equipment.ammo.name : '-';
-    const ammoInfo = this.equipmentElement.querySelector('td[name="ammoInfo"]');
-    ammoInfo.innerHTML = equipment.ammo ? equipment.ammo.info : '-';
-    const ammoButton = this.equipmentElement.querySelector('button[name="ammo"]');
-    ammoButton.disabled = equipment.ammo ? false : true;
-    if (equipment.ammo) {
-      ammoButton.onclick = () => {
-        const itemType = equipment.ammo.type;
-        this.game.state.unequipItem(itemType);
+      itemRow.onmouseleave = () => {
+        this.closeTooltip();
       };
-    }
+      const typeTd = document.createElement('td');
+      typeTd.innerHTML = item.baseType;
+      const nameTd = document.createElement('td');
+      nameTd.innerHTML = item.name;
+      const actionsTd = document.createElement('td');
+      const actionButton = document.createElement('button');
+      actionButton.innerHTML = 'Unequip';
+      actionButton.disabled = item.disabled;
+      if (!actionButton.disabled) {
+        actionButton.onclick = () => {
+          const itemType = item.itemType;
+          this.game.state.unequipItem(itemType);
+        };
+      }
+      actionsTd.appendChild(actionButton);
+      itemRow.appendChild(typeTd);
+      itemRow.appendChild(nameTd);
+      itemRow.appendChild(actionsTd);
+      wornEquipment.appendChild(itemRow);
+    });
 
     const inventory = this.equipmentElement.querySelector('table[name="inventory"]');
     // remove all rows other than header row
@@ -451,12 +494,16 @@ class GUI extends EventTarget {
 
     equipment.inventory.forEach(item => {
       const itemRow = document.createElement('tr');
-      const typeTd = document.createElement('td');
-      typeTd.innerHTML = item.baseType.charAt(0).toUpperCase() + item.baseType.substr(1);
+      itemRow.onmouseenter = (event) => {
+        const type = item.baseType.charAt(0).toUpperCase() + item.baseType.substr(1);
+        const text = `<b>Name:</b><br>${item.name}<br><b>Type</b>:<br>${type}<br><b>Info</b>:<br>${item.info}`;
+        this.openTooltip(event.clientX, event.clientY, text);
+      };
+      itemRow.onmouseleave = () => {
+        this.closeTooltip();
+      };
       const nameTd = document.createElement('td');
       nameTd.innerHTML = item.name;
-      const infoTd = document.createElement('td');
-      infoTd.innerHTML = item.info;
       const actionsTd = document.createElement('td');
       const actionButton = document.createElement('button');
       if (['armor', 'weapon', 'ammo'].includes(item.baseType)) {
@@ -474,9 +521,7 @@ class GUI extends EventTarget {
         };
       }
       actionsTd.appendChild(actionButton);
-      itemRow.appendChild(typeTd);
       itemRow.appendChild(nameTd);
-      itemRow.appendChild(infoTd);
       itemRow.appendChild(actionsTd);
       inventory.appendChild(itemRow);
     });
@@ -590,6 +635,10 @@ class GUI extends EventTarget {
       action: 'option',
       target: 'setSpawn'
     });
+  }
+
+  updateAreaName(name) {
+    document.getElementById('areaName').querySelector('span').innerHTML = name;
   }
 
   dispose() {

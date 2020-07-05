@@ -109,18 +109,38 @@ i {
 }
 #dialog, #settings, #equipment, #log, #reconstructor {
   position: absolute;
-  left: 0;
+  right: 0;
   top: 0;
   z-index: 5;
-  margin: 8vh 8vw;
+  margin: 1vh 10vmin;
   padding: 1vh 1vw;
-  width: 80vw;
-  height: 80vh;
+  width: 20vw;
+  height: 95vh;
   text-align: center;
   color: yellowgreen;
   background-color: rgba(1, 32, 9, 0.90); /* dark green transparent */
   border: 2px solid yellowgreen;
   overflow-y: scroll;
+}
+#dialog {
+  right: 0;
+  left: 0;
+  top: auto;
+  bottom: 0;
+  width: 50vw;
+  height: 25vh;
+  margin: 1vh auto;
+}
+#tooltip {
+  position: absolute;
+  z-index: 6;
+  color: yellowgreen;
+  background: #012009; /* dark green */
+  border: 2px solid yellowgreen;
+  padding: 5px;
+  margin: 0;
+  white-space: nowrap;
+  box-shadow: 0px 0px 10px 5px greenyellow;
 }
 #settings {
   z-index: 6;
@@ -134,12 +154,15 @@ i {
 }
 #quests .content, #messages .content {
   border: 2px solid yellowgreen;
-  margin-top: 0;
+  margin: 0 -1vw;
   overflow: hidden;
 }
 .content .closed, .content .closed p {
   height: 0;
   margin: 0;
+}
+.content p, .content ul {
+  padding: 0 2vw;
 }
 .close {
   position: absolute;
@@ -157,21 +180,33 @@ table {
   width: 100%;
   border: 2px solid yellowgreen;
   table-layout: fixed;
+  border-collapse: collapse;
 }
-td {
+tr {
   border: 2px solid yellowgreen;
 }
 #action {
   position: absolute;
   z-index: 4;
   left: 0;
-  top: 3em;
+  top: 1em;
   color: yellowgreen;
   background-color: rgba(1, 32, 9, 0.75); /* dark green transparent */
-  font-weight: bold;
 }
 #action p {
   margin: 0;
+}
+#areaName {
+  position: absolute;
+  top: 1em;
+  right: 0;
+  left: 0;
+  color: yellowgreen;
+  background-color: rgba(1, 32, 9, 0.75);
+  text-align: center;
+  width: max-content;
+  margin: 0 auto;
+  padding: 5px;
 }
 
 input[type=range] {
@@ -255,6 +290,9 @@ input[type=range]::-moz-range-thumb {
     height: auto;
     width: 8vw;
   }
+  #dialog, #equipment {
+    width: 50%;
+  }
 }
 
 /* Small devices (landscape phones, 576px and up) */
@@ -291,6 +329,6 @@ input[type=range]::-moz-range-thumb {
   }
   #dialog, #settings, #equipment, #log {
     width: 100%;
-    margin: 0;
+    margin: 0 0 20vh 0;
   }
 }

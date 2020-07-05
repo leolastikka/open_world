@@ -4,8 +4,9 @@ const { NPC, Enemy, Player } = require('../entity/character');
 const { EntityVisibility } = require('../entity/entity');
 
 class Area {
-  constructor(name, size, music, floor, walls) {
-    this._name = name;
+  constructor(type, name, size, music, floor, walls) {
+    this._type = type; // underscored id name
+    this._name = name; // visible name
     this._size = size;
     this._music = music;
     this._floor = floor;
@@ -17,6 +18,10 @@ class Area {
     this._entityDestroyed = false;
 
     this._connections = [];
+  }
+
+  get type() {
+    return this._type;
   }
 
   get name() {

@@ -54,6 +54,7 @@ class Game {
   onReady = (user) => {
     user.connection.send({
       type: 'areaData',
+      name: user.area.name,
       floor: user.area.floor,
       walls: user.area.walls,
       walkable: user.area.navigator.getWalkabilityData(),
@@ -84,7 +85,7 @@ class Game {
       entity: user.character
     });
 
-    user.emit('enterArea', user.area.name);
+    user.emit('enterArea', user.area.type);
   }
 
   onAction = (user, data) => {
@@ -150,7 +151,7 @@ class Game {
   }
 
   spawnPlayer = (connection) => {
-    const area = AreaManager.getByName('start');
+    const area = AreaManager.getByType('start');
     const startLink = area.getLinkByType('enter_start');
 
     const data = Object.assign({
