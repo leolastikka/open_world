@@ -41,7 +41,7 @@
       "armor": "worker_outfit"
     },
     
-    "speed": 1.25
+    "speed": 0.75
   },
   {
     "description": "City Worker",
@@ -52,7 +52,7 @@
       "armor": "worker_outfit"
     },
 
-    "speed": 1.25
+    "speed": 0.75
   },
   {
     "description": "Start Area Info",
