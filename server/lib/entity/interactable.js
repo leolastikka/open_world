@@ -322,6 +322,9 @@ class Interactable extends Entity {
       this._doActionInRange();
       return;
     }
+    else if (!this._path) {
+      return;
+    }
 
     let nextPos = this._path[0];
     let movementDistance = this.speed * Time.deltaTime;
